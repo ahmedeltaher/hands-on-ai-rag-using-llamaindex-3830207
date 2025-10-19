@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التخزين والاسترجاع مع Qdrant - إدارة Vector Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 50%, #74b9ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #00b894;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "💾";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.setup h2::before {
+            content: "⚙️";
+        }
+        
+        .card.loading h2::before {
+            content: "📁";
+        }
+        
+        .card.preparation h2::before {
+            content: "🔧";
+        }
+        
+        .card.qdrant h2::before {
+            content: "🗄️";
+        }
+        
+        .card.client h2::before {
+            content: "🔗";
+        }
+        
+        .card.storage h2::before {
+            content: "📦";
+        }
+        
+        .card.indexing h2::before {
+            content: "🏗️";
+        }
+        
+        .card.dashboard h2::before {
+            content: "📊";
+        }
+        
+        .card.visualization h2::before {
+            content: "📈";
+        }
+        
+        .card.retrieval h2::before {
+            content: "🔍";
+        }
+        
+        .card.retrievers h2::before {
+            content: "🤖";
+        }
+        
+        .card.vector h2::before {
+            content: "📡";
+        }
+        
+        .card.querying h2::before {
+            content: "❓";
+        }
+        
+        .card.results h2::before {
+            content: "📋";
+        }
+        
+        .card.summary h2::before {
+            content: "🎉";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #81C784;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #d1f2eb 0%, #a3e9d0 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #00b894;
+        }
+        
+        .info-box {
+            background: #e8f8f5;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #00b894;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .step-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #00b894;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .step-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(0, 184, 148, 0.2);
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 15px;
+            font-size: 1.2em;
+        }
+        
+        .step-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .step-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .storage-components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .component-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-right: 4px solid #74b9ff;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .component-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(116, 185, 255, 0.2);
+        }
+        
+        .component-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #74b9ff;
+        }
+        
+        .component-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .component-description {
+            color: #636e72;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .qdrant-features {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .features-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .feature-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .feature-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .retriever-types {
+            background: #f1f2f6;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #00b894;
+        }
+        
+        .types-title {
+            color: #2d3436;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .type-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #00cec9;
+        }
+        
+        .type-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .type-description {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .similarity-demo {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .similarity-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .similarity-settings {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .dashboard-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-right: 4px solid #e17055;
+        }
+        
+        .feature-card-icon {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #e17055;
+            text-align: center;
+        }
+        
+        .feature-card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .feature-card-description {
+            color: #636e72;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .next-lesson {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 2px solid #74b9ff;
+            text-align: center;
+        }
+        
+        .next-title {
+            color: #0984e3;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .workflow-steps, .storage-components, .features-grid, .dashboard-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>التخزين والاسترجاع مع Qdrant</h1>
+            <p>إدارة شاملة لـ Vector Database وعمليات البحث المتقدمة</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>مقدمة: من الفهرسة للتخزين</h2>
+                <p>دلوقتي بعد ما عرفنا إزاي نحمل ونفهرس البيانات في LlamaIndex، هوريكم إزاي ممكن نحفظ البيانات بتاعتنا دلوقتي. وفي الدرس ده، هوريكم إزاي نحفظ البيانات في Qdrant، اللي هو الـ vector database اللي هنستخدمه في الكورس ده.</p>
+                
+                <div class="highlight">
+                    <strong>الهدف الأساسي:</strong> نتعلم إزاي نخزن الـ embeddings في Qdrant ونسترجعها بكفاءة، وده أساس أي نظام RAG فعال.
+                </div>
+            </div>
+
+            <div class="card setup">
+                <h2>الإعداد الأولي والـ API Keys</h2>
+                <p>يلا نعمل الـ standard imports بتاعتنا. هنحط الـ API keys لـ Cohere وOpenAI. كمان هنعمل instantiate للـ Qdrant URL والـ Qdrant API key.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد البيئة والـ API Keys</h3>
+                    <pre># Standard imports
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext
+from llama_index.vector_stores.qdrant import QdrantVectorStore
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.core.node_parser import SentenceSplitter
+import qdrant_client
+import os
+from dotenv import load_dotenv
+
+# تحميل متغيرات البيئة
+load_dotenv()
+
+# API Keys
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")</pre>
+                </div>
+            </div>
+
+            <div class="card loading">
+                <h2>تحميل البيانات: كتاب "It Can Be Done"</h2>
+                <p>الfunction هنا مجرد هتعمل directory اسمه data. أنا عملت ده خلاص هنا. وفي الأساس احنا بنحمل text file. الـ text file ده هيكون كتاب قصائد اسمه "It can be done." يبقى احنا بنحفظ ده على الديسك.</p>
+                
+                <div class="info-box">
+                    <h4>📚 عن كتاب "It Can Be Done"</h4>
+                    <p>ده كتاب قصائد ملهمة هيكون مصدر البيانات بتاعتنا. الكتاب ده مناسب للتجربة لأنه بيحتوي على محتوى متنوع وغني.</p>
+                </div>
+                
+                <div class="code-card">
+                    <h3>إنشاء Directory وتحميل الملف</h3>
+                    <pre># إنشاء directory للبيانات
+import os
+os.makedirs("data", exist_ok=True)
+
+# تحميل النص (تم بالفعل)
+# الملف محفوظ في data/it_can_be_done.txt</pre>
+                </div>
+                
+                <p>أنا عملت ده خلاص ودلوقتي هحمل الـ text document نفسه كـ LlamaIndex document object باستخدام الـ simple directory reader.</p>
+                
+                <div class="code-card">
+                    <h3>تحميل الوثيقة باستخدام SimpleDirectoryReader</h3>
+                    <pre># تحميل الوثيقة كـ LlamaIndex document object
+documents = SimpleDirectoryReader(
+    input_files=["data/it_can_be_done.txt"]
+).load_data()
+
+# ملاحظة: لازم input_files يكون list حتى لو ملف واحد</pre>
+                </div>
+                
+                <div class="highlight">
+                    <strong>تذكر:</strong> الـ simple directory reader عادة لو تمرر له path بس، هيقرأ كل الملفات في الـ path ده، أو ممكن تحدد ملف معين وتمرره كـ input files argument، ولازم تمرره كـ list.
+                </div>
+            </div>
+
+            <div class="card preparation">
+                <h2>إعداد Node Parser وEmbedding Model</h2>
+                <p>هعمل instantiate لـ node parser وembedding model. لحد النقطة دي، احنا حملنا الـ document بتاعنا. احنا لسه معملناش parse للـ nodes، بس عملنا instantiate لـ node parser.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد Node Parser وEmbedding Model</h3>
+                    <pre># إعداد node parser
+node_parser = SentenceSplitter(
+    chunk_size=512,
+    chunk_overlap=50
+)
+
+# إعداد embedding model
+embedding_model = OpenAIEmbedding(
+    model="text-embedding-3-small"
+)</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔧 مكونات الإعداد</h4>
+                    <p><strong>Node Parser:</strong> هيقسم النصوص لقطع أصغر قابلة للإدارة</p>
+                    <p><strong>Embedding Model:</strong> هيحول النصوص لـ vectors رقمية للبحث</p>
+                </div>
+            </div>
+
+            <div class="card qdrant">
+                <h2>إعداد Qdrant Vector Database</h2>
+                <p>ودلوقتي اللي محتاجين نعمله هو إننا نعمل index. يبقى احنا هنعمل vector store index باستخدام Qdrant.</p>
+                
+                <div class="workflow-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Initialize Client</div>
+                        <div class="step-description">إنشاء اتصال مع Qdrant cloud</div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Create Collection</div>
+                        <div class="step-description">إنشاء مجموعة لحفظ البيانات</div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Assign Vector Store</div>
+                        <div class="step-description">تحديد Qdrant كـ vector store</div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Initialize Index</div>
+                        <div class="step-description">إنشاء الفهرس باستخدام storage context</div>
+                    </div>
+                </div>
+                
+                <p>عشان نستخدم Qdrant لحفظ embeddings، محتاجين نعمل initialize للـ client، نعمل collection لحفظ البيانات في Qdrant، بعدين نحدد Qdrant كـ vector store في الـ storage context، بعدين نعمل initialize للـ vector store باستخدام storage context.</p>
+            </div>
+
+            <div class="card client">
+                <h2>إنشاء Qdrant Client والVector Store</h2>
+                <p>هتكلم عن إيه هو storage context في شوية، بس يلا نعمل initialize للـ Qdrant client. محتاجين نمرر الـ Qdrant URL والـ API key.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Qdrant Client</h3>
+                    <pre># إنشاء Qdrant client
+client = qdrant_client.QdrantClient(
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY
+)</pre>
+                </div>
+                
+                <p>وبعدين لما يكون عندنا ده، هنعمل instantiate للـ vector store باستخدام الـ Qdrant vector store ونمرر الـ client والـ collection name. في الحالة دي، الـ collection name، هخليه بس "it_can_be_done".</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Vector Store</h3>
+                    <pre># إنشاء vector store
+vector_store = QdrantVectorStore(
+    client=client,
+    collection_name="it_can_be_done",
+    embedding=embedding_model
+)
+
+# ملاحظة: لازم نمرر embedding model كمان</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🗄️ مكونات Vector Store</h4>
+                    <p><strong>Client:</strong> الاتصال بـ Qdrant cloud</p>
+                    <p><strong>Collection Name:</strong> اسم المجموعة اللي هتخزن فيها البيانات</p>
+                    <p><strong>Embedding Model:</strong> النموذج المستخدم لتحويل النصوص لـ vectors</p>
+                </div>
+            </div>
+
+            <div class="card storage">
+                <h2>فهم Storage Context في LlamaIndex</h2>
+                <p>ودلوقتي نقدر نتكلم عن storage context. الـ storage context في LlamaIndex مجرد abstraction بيقول، دول الـ nodes اللي أنا عايز أحفظهم، وبيخلي حفظ واسترجاع البيانات سهل.</p>
+                
+                <div class="storage-components">
+                    <div class="component-card">
+                        <div class="component-icon">📄</div>
+                        <div class="component-name">Document Store</div>
+                        <div class="component-description">لحفظ الوثائق الأصلية والـ metadata</div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-icon">📇</div>
+                        <div class="component-name">Index Store</div>
+                        <div class="component-description">لحفظ معلومات الفهارس والهيكل</div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-icon">🔢</div>
+                        <div class="component-name">Vector Store</div>
+                        <div class="component-description">لحفظ الـ embeddings والبحث فيها</div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-icon">🕸️</div>
+                        <div class="component-name">Graph Store</div>
+                        <div class="component-description">لحفظ العلاقات بين الوثائق</div>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>إنشاء Storage Context</h3>
+                    <pre># إنشاء storage context
+storage_context = StorageContext.from_defaults(
+    vector_store=vector_store
+)
+
+# ده بيقول للـ LlamaIndex: 
+# "شوف، ده الـ vector store اللي أنا بستخدمه
+# ده المكان اللي أنا عايز أحفظ فيه كل الـ nodes والـ embeddings بتاعتي"</pre>
+                </div>
+                
+                <div class="highlight">
+                    <strong>المفهوم الأساسي:</strong> الـ Storage Context مجرد pointer لمكان حفظ البيانات. بيخلي LlamaIndex يعرف فين يروح يدور على البيانات ويحفظها.
+                </div>
+            </div>
+
+            <div class="card indexing">
+                <h2>إنشاء Vector Store Index</h2>
+                <p>دلوقتي أقدر أعمل index. يبقى هعمل الـ vector store index من documents، صح؟ وأنا بغير النمط عليكم شوية لأن في malice in forethought لأنكم هتتعلموا عن الـ ingestion pipeline في module لاحق.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Index مع Transformations</h3>
+                    <pre># إنشاء vector store index
+index = VectorStoreIndex.from_documents(
+    documents,
+    storage_context=storage_context,
+    transformations=[node_parser],
+    embed_model=embedding_model
+)
+
+# الـ transformations argument بيقول:
+# "اقسم النص لقطع أصغر باستخدام الـ embedding model ده واحفظه في المكان ده"</pre>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>⚙️ عملية التحويل</h3>
+                    <p>اللي بنعمله هنا هو إننا بنمرر الـ transformation argument للـ vector store index class وبنقول له: "اقسم النص بتاعي لـ chunks أصغر باستخدام الـ embedding model ده واحفظه في المكان ده".</p>
+                </div>
+                
+                <p>يبقى دلوقتي احنا بنينا الـ index ده اللي هو مكان الـ vectors والنص بتاعنا هيعيش فيه.</p>
+                
+                <div class="info-box">
+                    <h4>🏗️ ما يحدث أثناء الإنشاء</h4>
+                    <p>النظام بيقرأ الوثائق، بيقسمها لـ nodes، بيحول كل node لـ embedding، وبيحفظ كل ده في Qdrant مع إمكانية البحث السريع.</p>
+                </div>
+            </div>
+
+            <div class="card dashboard">
+                <h2>استكشاف Qdrant Dashboard</h2>
+                <p>يلا نشغل الكود ده هنا، صح؟ ونقدر نشوف progress هنا. عظيم. دلوقتي بعد ما ده خلص، تقدر تدخل على Qdrant، تروح overview. تقدر تبص على الـ clusters بتاعتك.</p>
+                
+                <div class="qdrant-features">
+                    <div class="features-title">🗄️ مميزات Qdrant Dashboard</div>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon">🔍</div>
+                            <div class="feature-name">Overview</div>
+                            <div class="feature-description">نظرة عامة على البيانات</div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">🏢</div>
+                            <div class="feature-name">Clusters</div>
+                            <div class="feature-description">إدارة مجموعات الخوادم</div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">📊</div>
+                            <div class="feature-name">Collections</div>
+                            <div class="feature-description">مجموعات البيانات المخزنة</div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">📈</div>
+                            <div class="feature-name">Visualization</div>
+                            <div class="feature-description">تصور البيانات والعلاقات</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>هنشوف إن عندنا cluster هنا. اضغط على الـ carrot ده، اضغط open dashboard وشوف دلوقتي إن عندنا collection، صح؟</p>
+                
+                <div class="dashboard-features">
+                    <div class="feature-card">
+                        <div class="feature-card-icon">📄</div>
+                        <div class="feature-card-title">Collection Content</div>
+                        <div class="feature-card-description">الـ collection ده فيه كل المحتوى بتاع الـ node بتاعنا، يعني كل الـ metadata ومعلومات تانية كتير هنا.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-card-icon">🔢</div>
+                        <div class="feature-card-title">Vector Information</div>
+                        <div class="feature-card-description">كمان فيه vectors. طول الـ vector بتاعنا 1536، واللي هو dimensionality بتاع text embedding three model.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-card-icon">📋</div>
+                        <div class="feature-card-title">Vector Preview</div>
+                        <div class="feature-card-description">تقدر تنسخ الـ default vector ده لو عايز، مجرد تنسخ وتلصق هنا وتقدر تشوف التمثيل vector للنص ده اللي احنا فهرسناه.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card visualization">
+                <h2>تصور البيانات في Qdrant</h2>
+                <p>اللي مثير للاهتمام إنك تقدر تعمل شوية visualization كمان. يبقى لو نروح للـ visualization tab، ننزل هنا، نضغط run، وهتشوف إن هنا كل الـ vectors اللي احنا عملناها embed.</p>
+                
+                <div class="similarity-demo">
+                    <div class="similarity-title">📈 تصور العلاقات</div>
+                    <div class="similarity-settings">
+                        <p>تقدر تحصل على شوية vectors هنا اللي عندهم نوع من التشابه، واللي ده مثير للاهتمام جداً. تقدر تكليك حوالين هنا، وفي الأساس ده مجرد طريقة عشان تشوف، okay، visually زي، أوه، الـ vectors دول قريبين من بعض. إيه هم؟ إيه ممكن يكونوا الـ vectors دول؟</p>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🎯 استخدامات التصور</h4>
+                    <p><strong>تحليل التشابه:</strong> شوف النصوص اللي قريبة من بعضها</p>
+                    <p><strong>فهم البيانات:</strong> اكتشف أنماط في المحتوى</p>
+                    <p><strong>تحسين النتائج:</strong> حدد المناطق اللي محتاجة تحسين</p>
+                </div>
+                
+                <div class="code-card">
+                    <h3>استكشاف البيانات في Dashboard</h3>
+                    <pre># خطوات استكشاف البيانات في Qdrant Dashboard:
+
+# 1. اذهب إلى visualization tab
+# 2. اضغط على run 
+# 3. استكشف الـ vectors المعروضة
+# 4. انقر على vectors متقاربة لرؤية المحتوى
+# 5. احصل على node ID و document ID للتحليل
+
+# طريقة أخرى:
+# - ارجع لصفحة البيانات
+# - scroll down واعثر على "find similar"
+# - احصل على أكثر vectors مشابهة لواحد معين</pre>
+                </div>
+                
+                <p>وبعدين تقدر تمسك الـ node ID والـ document ID وتبص على إيه اللي جواه. يبقى طريقة تانية ممكن تعملها هي إنك ترجع هنا وتعمل scroll down وتلاقي similar. وهتحصل على أكثر vectors مشابهة للواحد ده.</p>
+            </div>
+
+            <div class="card retrieval">
+                <h2>الانتقال للاسترجاع: Retrieval</h2>
+                <p>يبقى مجرد شوية حاجات مثيرة للاهتمام ممكن تعملها مع الـ Qdrant UI. يبقى دلوقتي يلا نرجع للكود ونتكلم عن retrieval.</p>
+                
+                <div class="highlight">
+                    <strong>الهدف:</strong> دلوقتي احنا فهرسنا البيانات بتاعتنا. البيانات عايشة في الـ Qdrant cloud. دلوقتي نقدر نعمل شوية retrieval.
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔍 مفهوم Retrieval</h4>
+                    <p>الـ Retrieval هو عملية البحث في البيانات المفهرسة للعثور على المعلومات الأكثر صلة بسؤال المستخدم. ده قلب نظام RAG.</p>
+                </div>
+            </div>
+
+            <div class="card retrievers">
+                <h2>أنواع Retrievers في LlamaIndex</h2>
+                <p>يبقى retriever في الواقع interface مكشوف من الـ index. يبقى index مع الـ retriever بتاعه هو اللي بنستخدمه لحفظ وجلب البيانات. والـ retriever ده في الواقع جزء من الـ index.</p>
+                
+                <div class="retriever-types">
+                    <div class="types-title">🤖 أنواع Retrievers المتاحة</div>
+                    
+                    <div class="type-item">
+                        <div class="type-name">Vector Retriever</div>
+                        <div class="type-description">البحث بناءً على التشابه في الـ vector space</div>
+                    </div>
+                    
+                    <div class="type-item">
+                        <div class="type-name">Fusion Retriever</div>
+                        <div class="type-description">دمج نتائج من عدة retrievers مختلفة</div>
+                    </div>
+                    
+                    <div class="type-item">
+                        <div class="type-name">Recursive Retriever</div>
+                        <div class="type-description">البحث المتدرج في مستويات مختلفة</div>
+                    </div>
+                </div>
+                
+                <p>في retrievers مختلفة كتير ممكن تستخدمها في LlamaIndex. ابص على الـ source code، وتقدر تشوف شوية هنا، هنتكلم عن دول أكتر في الكورس لما نتكلم عن advanced RAG techniques.</p>
+                
+                <div class="warning-box">
+                    <h3>📚 للمطالعة الذاتية</h3>
+                    <p>هحترم وقتكم وأخليكم تقروا عن دول لوحدكم. بس اعرفوا إنهم موجودين وإننا هنتكلم عن شوية منهم أكتر في الكورس شوية.</p>
+                </div>
+            </div>
+
+            <div class="card vector">
+                <h2>استخدام Vector Retriever</h2>
+                <p>يبقى احنا هنستخدم vector retriever دلوقتي. يبقى لما بندور، الـ query بتاعنا هيتحول لـ vector embedding. هيتحول لـ vector embedding باستخدام نفس الـ embedding model بالضبط اللي احنا استخدمناه لعمل embed للـ vectors بتاعتنا.</p>
+                
+                <div class="info-box">
+                    <h4>🔄 عملية Vector Retrieval</h4>
+                    <p><strong>تحويل السؤال:</strong> سؤال المستخدم بيتحول لـ vector embedding</p>
+                    <p><strong>نفس النموذج:</strong> لازم نستخدم نفس embedding model اللي استخدمناه في الفهرسة</p>
+                    <p><strong>حساب التشابه:</strong> البحث عن أقرب vectors في قاعدة البيانات</p>
+                </div>
+                
+                <p>يبقى في الحالة دي، ده هيكون الـ text embedding three من OpenAI، text embedding three small من OpenAI.</p>
+                
+                <div class="similarity-demo">
+                    <div class="similarity-title">📡 Qdrant Points System</div>
+                    <div class="similarity-settings">
+                        <p>يبقى في Qdrant، لما بندخل الـ vectors دول، في Qdrant parlance، هم معروفين كـ points. يبقى اللي أنا بقول للـ index يعمله هنا هو يسترجع أعلى خمس points الأكثر تشابهاً لـ query المستخدم ويتأكد إن الـ retrieved vectors دول عندهم similarity على الأقل 0.75.</p>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>إنشاء Retriever مع إعدادات التشابه</h3>
+                    <pre># إنشاء retriever من الـ index
+retriever = index.as_retriever(
+    similarity_top_k=5,           # أعلى 5 نتائج
+    similarity_cutoff=0.75        # حد أدنى للتشابه 0.75
+)
+
+# ده بيقول للـ retriever:
+# "ارجعلي أعلى 5 points الأكثر تشابهاً مع الـ query
+# وتأكد إن التشابه على الأقل 0.75"</pre>
+                </div>
+            </div>
+
+            <div class="card querying">
+                <h2>تجربة الاستعلام العملي</h2>
+                <p>يبقى ده اللي أنا بقوله للـ retriever، إن دول الشروط للـ points اللي أنا عايز أسترجعها من Qdrant. يبقى أعمل instantiate للـ retriever بتاعي.</p>
+                
+                <div class="code-card">
+                    <h3>إجراء استعلام تجريبي</h3>
+                    <pre># إجراء استعلام
+query = "What lessons can be learned from the poems about success?"
+
+# استدعاء الـ retriever
+retrieved_nodes = retriever.retrieve(query)
+
+# عرض النتائج
+print(f"Number of retrieved nodes: {len(retrieved_nodes)}")
+for i, node in enumerate(retrieved_nodes):
+    print(f"Node {i+1} score: {node.score}")
+    print(f"Content preview: {node.text[:100]}...")
+    print("---")</pre>
+                </div>
+                
+                <p>دلوقتي بعد ما الـ retriever بتاعي اتعمله instantiate، أقدر أمرر query. يبقى هنا أنا مجرد بمرر generic query: "إيه الدروس اللي ممكن نتعلمها من القصائد عن النجاح؟"</p>
+            </div>
+
+            <div class="card results">
+                <h2>فهم النتائج والـ Scores</h2>
+                <p>وهتشوف هنا إننا انتهينا بخمس nodes، ودول nodes مع scores. يبقى لو تعمل scroll لحد آخر حاجة هنا، هتشوف إن عندنا كل النصوص لكل الـ nodes، وعندنا شوية similarity كمان.</p>
+                
+                <div class="info-box">
+                    <h4>📊 تفسير النتائج</h4>
+                    <p><strong>عدد النتائج:</strong> 5 nodes كما طلبنا</p>
+                    <p><strong>Similarity Scores:</strong> درجة التشابه مع السؤال</p>
+                    <p><strong>النص الكامل:</strong> محتوى كل node مع الـ metadata</p>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>⚠️ ملاحظة مهمة</h3>
+                    <p>هتلاحظ إن ولا واحد من الـ scores دول بيوصل لـ similarity threshold اللي حددناه. هنتكلم عن order of operations للموضوع ده في module لاحق، بس هنا احنا استرجعنا الوثائق بتاعتنا.</p>
+                </div>
+                
+                <div class="code-card">
+                    <h3>تحليل النتائج بالتفصيل</h3>
+                    <pre># تحليل مفصل للنتائج
+for i, node in enumerate(retrieved_nodes):
+    print(f"\n=== Node {i+1} ===")
+    print(f"Similarity Score: {node.score:.4f}")
+    print(f"Node ID: {node.node_id}")
+    print(f"Text Length: {len(node.text)} characters")
+    print(f"Content: {node.text}")
+    
+    # فحص الـ metadata
+    if hasattr(node, 'metadata') and node.metadata:
+        print(f"Metadata: {node.metadata}")
+    
+    print("-" * 50)</pre>
+                </div>
+            </div>
+
+            <div class="card summary">
+                <h2>الخطوة التالية: تكوين الإجابات</h2>
+                <p>يبقى الاحتمالات إنك مش عايز بس ترجع documents، إنت عايز الـ documents تتجمع في إجابة. يبقى احنا هنبني على النمط ده اللي شفناه هنا في الدرس الجاي، وبعدين هوريكم إزاي تقدروا تحصلوا على إجابة متولدة بناءً على الـ retrieved documents دول.</p>
+                
+                <div class="next-lesson">
+                    <div class="next-title">🚀 في الدرس القادم</div>
+                    <p>هنتعلم إزاي نحول الـ retrieved documents دي لإجابات مفيدة ومفهومة للمستخدم. هنشوف إزاي LLM بياخد النصوص المسترجعة ويكون منها إجابة شاملة.</p>
+                </div>
+                
+                <div class="workflow-steps">
+                    <div class="step-card">
+                        <div class="step-number">✅</div>
+                        <div class="step-title">التخزين</div>
+                        <div class="step-description">حفظ البيانات في Qdrant cloud بنجاح</div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">✅</div>
+                        <div class="step-title">الفهرسة</div>
+                        <div class="step-description">تحويل النصوص لـ vectors قابلة للبحث</div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">✅</div>
+                        <div class="step-title">الاسترجاع</div>
+                        <div class="step-description">البحث والعثور على المحتوى المناسب</div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">🔄</div>
+                        <div class="step-title">التوليد</div>
+                        <div class="step-description">القادم: تكوين إجابات من النتائج</div>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الإنجازات:</strong> نجحنا في حفظ البيانات في Qdrant، فهمنا Storage Context، جربنا الاسترجاع، وتعلمنا تحليل النتائج. دلوقتي جاهزين للخطوة الأخيرة: توليد الإجابات!
+                </div>
+                
+                <div class="code-card">
+                    <h3>إغلاق الاتصال</h3>
+                    <pre># إغلاق client (اختياري)
+# client.close()
+
+# سنراك في الفيديو القادم! 👋</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>💾 التخزين والاسترجاع: من البيانات الخام إلى knowledge قابل للبحث والاستعلام</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

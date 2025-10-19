@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاستعلام في LlamaIndex - Query Engines وChat Engines</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #e84393 0%, #fd79a8 50%, #6c5ce7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e84393 0%, #fd79a8 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #e84393;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "❓";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.setup h2::before {
+            content: "⚙️";
+        }
+        
+        .card.concept h2::before {
+            content: "💡";
+        }
+        
+        .card.engine h2::before {
+            content: "🔧";
+        }
+        
+        .card.workflow h2::before {
+            content: "🔄";
+        }
+        
+        .card.instantiation h2::before {
+            content: "🏗️";
+        }
+        
+        .card.testing h2::before {
+            content: "🧪";
+        }
+        
+        .card.response h2::before {
+            content: "💬";
+        }
+        
+        .card.source h2::before {
+            content: "📋";
+        }
+        
+        .card.verification h2::before {
+            content: "✅";
+        }
+        
+        .card.chat h2::before {
+            content: "💭";
+        }
+        
+        .card.modes h2::before {
+            content: "🎛️";
+        }
+        
+        .card.memory h2::before {
+            content: "🧠";
+        }
+        
+        .card.customization h2::before {
+            content: "⚡";
+        }
+        
+        .card.advanced h2::before {
+            content: "🚀";
+        }
+        
+        .card.summary h2::before {
+            content: "📊";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #81C784;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #fce4ec 0%, #f8bbd9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #e84393;
+        }
+        
+        .info-box {
+            background: #fdf2f8;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #e84393;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .query-process {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .process-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #e84393;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .process-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(232, 67, 147, 0.2);
+        }
+        
+        .process-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #e84393;
+        }
+        
+        .process-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .process-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .engine-features {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .features-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .feature-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .feature-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .test-results {
+            background: #f1f2f6;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #e84393;
+        }
+        
+        .results-title {
+            color: #2d3436;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .result-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #fd79a8;
+        }
+        
+        .result-type {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .result-content {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .chat-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .mode-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-right: 4px solid #74b9ff;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(116, 185, 255, 0.2);
+        }
+        
+        .mode-icon {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #74b9ff;
+            text-align: center;
+        }
+        
+        .mode-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .mode-description {
+            color: #636e72;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .verification-demo {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .verification-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .verification-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .customization-options {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 2px solid #74b9ff;
+        }
+        
+        .options-title {
+            color: #0984e3;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .option-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #74b9ff;
+        }
+        
+        .option-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .option-description {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .memory-showcase {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .memory-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .memory-details {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .query-process, .features-grid, .chat-modes {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>الاستعلام في LlamaIndex</h1>
+            <p>Query Engines وChat Engines للتفاعل الذكي مع البيانات</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>مقدمة: Query Engine كأساس الاستعلام</h2>
+                <p>في الدرس ده، هقدملكم مفهوم الـ query engine. الـ query engine أساسي في LlamaIndex لتوليد إجابة بناءً على الـ nodes اللي استرجعتموها من الـ vector database بتاعتكم، يلا نشوف ده في العمل.</p>
+                
+                <div class="highlight">
+                    <strong>الهدف الأساسي:</strong> نتعلم إزاي نستعلم على البيانات المفهرسة ونولد إجابات ذكية باستخدام LLM مع السياق المناسب.
+                </div>
+            </div>
+
+            <div class="card setup">
+                <h2>الإعداد الأولي كالمعتاد</h2>
+                <p>نبدأ، زي ما بنعمل عادة، بالـ imports بتاعتنا وضبط الـ API keys.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد البيئة والـ Imports</h3>
+                    <pre># Standard imports للاستعلام
+from llama_index.core import VectorStoreIndex, StorageContext
+from llama_index.vector_stores.qdrant import QdrantVectorStore
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.llms.cohere import Cohere
+from llama_index.core.memory import ChatMemoryBuffer
+import qdrant_client
+import os
+from dotenv import load_dotenv
+
+# تحميل متغيرات البيئة
+load_dotenv()
+
+# API Keys
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")</pre>
+                </div>
+            </div>
+
+            <div class="card concept">
+                <h2>إيه هو الاستعلام؟</h2>
+                <p>يبقى بعد ما حملنا البيانات بتاعتنا وبنينا index، محتاجين دلوقتي نعمل query للـ index ده ونولد إجابة. وفي الأساس كل اللي الاستعلام بيعمله هو مجرد prompt call للـ language model.</p>
+                
+                <div class="query-process">
+                    <div class="process-card">
+                        <div class="process-icon">❓</div>
+                        <div class="process-title">سؤال</div>
+                        <div class="process-description">طرح سؤال أو طلب معلومة</div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="process-icon">📝</div>
+                        <div class="process-title">ملخص</div>
+                        <div class="process-description">طلب تلخيص للمحتوى</div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="process-icon">🔧</div>
+                        <div class="process-title">تعليمات معقدة</div>
+                        <div class="process-description">إعطاء تعليمات متقدمة</div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="process-icon">🔗</div>
+                        <div class="process-title">Chain Calls</div>
+                        <div class="process-description">ربط عدة استدعاءات للـ LLM</div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>💡 إمكانيات الاستعلام</h4>
+                    <p><strong>أسئلة بسيطة:</strong> سؤال مباشر عن معلومة</p>
+                    <p><strong>طلب تلخيص:</strong> تلخيص أجزاء من المحتوى</p>
+                    <p><strong>تعليمات معقدة:</strong> مهام متقدمة ومعقدة</p>
+                    <p><strong>Chain Prompt Calls:</strong> ربط عدة استدعاءات للـ LLM</p>
+                    <p><strong>Agentic Reasoning:</strong> استخدام loops تفكير ذكية</p>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>🤖 ملاحظة عن الـ Agents</h3>
+                    <p>هنتكلم عن agents في الفيديو الجاي، بس يلا نركز على الاستعلام في الدرس ده.</p>
+                </div>
+            </div>
+
+            <div class="card instantiation">
+                <h2>إنشاء Qdrant Vector Store</h2>
+                <p>نبدأ بإنشاء الـ Qdrant vector store. عشان نعمل instantiate للـ Qdrant vector store، محتاجين نعمل instantiate للـ embedding model والـ client.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء المكونات الأساسية</h3>
+                    <pre># إنشاء embedding model
+embedding_model = OpenAIEmbedding(
+    model="text-embedding-3-small"
+)
+
+# إنشاء Qdrant client
+client = qdrant_client.QdrantClient(
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY
+)
+
+# إنشاء vector store
+vector_store = QdrantVectorStore(
+    client=client,
+    collection_name="it_can_be_done",
+    embedding=embedding_model
+)
+
+# إنشاء storage context
+storage_context = StorageContext.from_defaults(
+    vector_store=vector_store
+)
+
+# تحميل الـ index من الـ vectors المحفوظة
+index = VectorStoreIndex.from_vector_store(
+    vector_store=vector_store,
+    storage_context=storage_context
+)</pre>
+                </div>
+                
+                <p>نعمل instantiate للـ vector store، نخليه يشاور على الـ collection بتاعتنا وكمان الـ storage context وبعدين أخيراً نحمل الـ index من الـ stored vectors.</p>
+            </div>
+
+            <div class="card engine">
+                <h2>فهم Query Engine</h2>
+                <p>دلوقتي نقدر نتكلم عن الـ query engine. يبقى الـ query engine كمان construct بيستخدم الـ index وبالتبعية retriever عشان يجاوب على query المستخدم.</p>
+                
+                <div class="engine-features">
+                    <div class="features-title">🔧 مكونات Query Engine</div>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon">🔍</div>
+                            <div class="feature-name">Retrieval</div>
+                            <div class="feature-description">استرجاع البيانات المناسبة</div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">⚙️</div>
+                            <div class="feature-name">Post-processing</div>
+                            <div class="feature-description">معالجة النتائج</div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">🔗</div>
+                            <div class="feature-name">Injection</div>
+                            <div class="feature-description">إدراج في الـ prompt</div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">💬</div>
+                            <div class="feature-name">Response</div>
+                            <div class="feature-description">توليد الإجابة النهائية</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>يبقى هيسترجع البيانات المناسبة وبعدين يحقن ده في الـ prompt اللي هيتبعت للـ LLM عشان يولد إجابة.</p>
+                
+                <div class="info-box">
+                    <h4>🔄 العملية التفصيلية</h4>
+                    <p><strong>استخدام Retriever:</strong> لجلب البيانات المناسبة</p>
+                    <p><strong>معالجة إضافية:</strong> logic إضافي لتوليد الإجابة</p>
+                    <p><strong>تحت الكواليس:</strong> retrieval، post-processing، وresponse synthesis</p>
+                </div>
+            </div>
+
+            <div class="card workflow">
+                <h2>إنشاء Language Model وQuery Engine</h2>
+                <p>يبقى تحت الكواليس في retrieval وpost-processing وresponse synthesis بيحصل. في query engines كتير في LlamaIndex ممكن تستخدمها. تقدر تشوف هنا في الـ source code، في tons منهم.</p>
+                
+                <div class="warning-box">
+                    <h3>📚 التنوع في Query Engines</h3>
+                    <p>مش هتكلم عن كل الـ query engines المختلفة في الكورس ده، بس هتكلم عن شوية من أهمهم في الـ advanced RAG module.</p>
+                </div>
+                
+                <div class="code-card">
+                    <h3>إنشاء LLM وQuery Engine</h3>
+                    <pre># إنشاء language model
+llm = Cohere(
+    api_key=COHERE_API_KEY,
+    model="command-r-plus"
+)
+
+# إنشاء query engine
+query_engine = index.as_query_engine(
+    llm=llm
+)
+
+# دلوقتي جاهزين للاستعلام!</pre>
+                </div>
+                
+                <p>بس دلوقتي، يلا نعمل instantiate لـ language model، نعمل instantiate للـ query engine بتاعنا، وبعدين نطلب إجابة من الـ query engine.</p>
+            </div>
+
+            <div class="card testing">
+                <h2>اختبار السلوك: Sikh Stoics</h2>
+                <p>يبقى، لاحظ هنا، أنا بسأل السؤال هنا عن Sikh Stoics. يبقى عندي كتاب قصائد من زي الـ 1800s. يبقى أتوقع إننا مانحصلش على أي nodes مسترجعة من الـ language model لأن على حد علمي، Sikh Stoicism مش حاجة حقيقية.</p>
+                
+                <div class="test-results">
+                    <div class="results-title">🧪 اختبار السلوك المتوقع</div>
+                    
+                    <div class="result-item">
+                        <div class="result-type">التوقع:</div>
+                        <div class="result-content">عدم وجود nodes مناسبة، لأن Sikh Stoicism ليس موضوع حقيقي</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-type">السلوك المطلوب:</div>
+                        <div class="result-content">LLM لا يخترع إجابة، بل يقول بصراحة أنه لا يجد معلومات مناسبة</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-type">الهدف:</div>
+                        <div class="result-content">تجنب الـ hallucination والحصول على إجابة أمينة</div>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>اختبار مع سؤال غير موجود في البيانات</h3>
+                    <pre># سؤال عن موضوع غير موجود في البيانات
+query = "What can you tell me about Sikh Stoics?"
+
+# الحصول على الإجابة
+response = query_engine.query(query)
+
+print(response)</pre>
+                </div>
+                
+                <p>غير عني، مش أعرف مين تاني Sikh Stoic. يبقى أتوقع مايكونش عندي nodes مسترجعة وأتوقع الـ language model في الأساس مايعملش hallucinate، ميختلقش إجابة ومجرد يقول، "شوف يا عم، بناءً على السياق اللي عندي، ده اللي شايفه أو مش شايفه."</p>
+            </div>
+
+            <div class="card response">
+                <h2>تحليل الإجابة والسلوك</h2>
+                <p>يلا نعمل ده هنا. تمام، perfect. بيعمل بالضبط اللي احنا محتاجينه يعمله.</p>
+                
+                <div class="verification-demo">
+                    <div class="verification-title">✅ النتيجة المثالية</div>
+                    <div class="verification-content">
+                        <p>الـ language model بيقول بصراحة إنه مش لاقي معلومات عن الموضوع ده في السياق المتاح، بدل ما يخترع إجابة!</p>
+                    </div>
+                </div>
+                
+                <p>ولو عايز تشوف الـ source nodes اللي مربوطة بالإجابة، ممكن تعمل كده، مجرد تستدعي الـ .source_nodes attribute على الإجابة.</p>
+                
+                <div class="code-card">
+                    <h3>فحص Source Nodes</h3>
+                    <pre># فحص الـ source nodes
+source_nodes = response.source_nodes
+
+print(f"Number of source nodes: {len(source_nodes)}")
+
+# فحص أول node
+if len(source_nodes) > 0:
+    first_node = source_nodes[0]
+    print(f"First node text: {first_node.get_text()}")
+    print(f"Similarity score: {first_node.score}")
+    
+# فحص ثاني node
+if len(source_nodes) > 1:
+    second_node = source_nodes[1]
+    print(f"Second node text: {second_node.get_text()}")
+    print(f"Similarity score: {second_node.score}")</pre>
+                </div>
+            </div>
+
+            <div class="card source">
+                <h2>تحليل Source Nodes بالتفصيل</h2>
+                <p>وتشوف إننا حصلنا على nodes اتنين اترجعوا هنا. يلا نبص على إيه الـ nodes دول فعلاً فيهم.</p>
+                
+                <div class="info-box">
+                    <h4>📊 تحليل النتائج</h4>
+                    <p><strong>عدد النتائج:</strong> حصلنا على 2 nodes</p>
+                    <p><strong>Similarity Score:</strong> ربما منخفض جداً، في الحالة دي 0.31</p>
+                    <p><strong>المحتوى:</strong> لا يذكر Sikh Stoics على الإطلاق</p>
+                </div>
+                
+                <p>يبقى نقدر نقول source_nodes[0].get_text() وتقدر تقرأ النص هنا وتشوف إنه تم استرجاعه. وتقدر تشوف الـ similarity score هنا كان ربما منخفض جداً، في الحالة دي 0.31 على كل واحد منهم، بس هو مايذكرش Sikh Stoics خالص أو أي حاجة عن Sikhism أو stoicism من النظرة السريعة دي.</p>
+                
+                <p>وتشوف هنا، تاني، مافيش ذكر له. يبقى الـ language model، في الحالة دي command R plus كـ language model، بيعمل شغل كويس بيقول، okay، عندنا سياق تم استرجاعه، بس السياق ده مايتماشاش فعلاً مع اللي المستخدم بيسأل عنه.</p>
+                
+                <div class="highlight">
+                    <strong>السلوك المثالي:</strong> الـ LLM بيقول بصراحة "أنا مش أقدر أجاوب على السؤال ده" بدل ما يخترع إجابة. ده السلوك اللي عايزين نشوفه!
+                </div>
+            </div>
+
+            <div class="card verification">
+                <h2>اختبار مع بيانات موجودة: Rudyard Kipling</h2>
+                <p>يبقى دلوقتي يلا نقدم query ممكن يكون له إجابة في الكتاب ده. يبقى في الحالة دي، أنا بسأل عن قصائد لـ Rudyard Kipling.</p>
+                
+                <div class="code-card">
+                    <h3>فحص وجود البيانات في الملف الأصلي</h3>
+                    <pre># فحص سريع للتأكد من وجود البيانات
+# افتح الملف وابحث عن "Rudyard Kipling"
+# ستجد:
+# - قصيدة "If"
+# - قصيدة "When Earth's Last Picture is Painted" 
+# - سيرة ذاتية مختصرة
+# - ذكر في الفهرس</pre>
+                </div>
+                
+                <p>يلا نعمل شوية sanity check هنا. نقدر نروح data، نبص على النص، نقدر نعمل control F لـ Rudyard Kipling ونشوف، okay، هنا قصيدة واحدة اسمها If، قصيدة تانية اسمها When Earth's Last Picture is Painted.</p>
+                
+                <div class="verification-demo">
+                    <div class="verification-title">🔍 نتائج البحث في الملف</div>
+                    <div class="verification-content">
+                        <p><strong>قصيدة "If":</strong> موجودة في الكتاب</p>
+                        <p><strong>قصيدة "When Earth's Last Picture is Painted":</strong> موجودة كمان</p>
+                        <p><strong>سيرة مختصرة:</strong> معلومات عن Rudyard Kipling</p>
+                        <p><strong>الفهرس:</strong> مذكور في فهرس المحتويات</p>
+                    </div>
+                </div>
+                
+                <p>نقدر نشوف إن Rudyard Kipling مذكور في أماكن أكتر من مجرد جدول المحتويات. يبقى مثلاً هنا عندنا زي شوية biography ربما لـ Rudyard Kipling. وبعدين كمان تقدر تشوف إنه مذكور هنا في الـ index نوعاً ما للنص.</p>
+                
+                <div class="code-card">
+                    <h3>سؤال عن بيانات موجودة فعلاً</h3>
+                    <pre># سؤال عن شاعر موجود في البيانات
+kipling_query = "What poems by Rudyard Kipling are in this book?"
+
+# الحصول على الإجابة
+kipling_response = query_engine.query(kipling_query)
+
+print(kipling_response)
+
+# فحص source nodes للتأكد
+kipling_sources = kipling_response.source_nodes
+print(f"\nNumber of relevant sources: {len(kipling_sources)}")
+for i, node in enumerate(kipling_sources):
+    print(f"Source {i+1} score: {node.score}")
+    print(f"Content preview: {node.get_text()[:200]}...")
+    print("---")</pre>
+                </div>
+                
+                <p>أتوقع الـ language model يقولي إن في قصيدتين لـ Rudyard Kipling في الكتاب ده. يلا نشوف إيه اللي هيحصل. Awesome، اشتغل زي ما خططنا.</p>
+                
+                <div class="highlight">
+                    <strong>النتيجة الممتازة:</strong> النظام نجح في العثور على القصائد الموجودة فعلاً وقدم إجابة دقيقة بناءً على البيانات الحقيقية!
+                </div>
+            </div>
+
+            <div class="card chat">
+                <h2>إنشاء Chat Engine للتفاعل</h2>
+                <p>نقدر كمان نعمل instantiate لـ chat engine. يبقى chat engine هيخلينا نتفاعل مع الـ language model والـ vector index بطريقة conversational نوعاً ما.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Chat Engine</h3>
+                    <pre># إنشاء chat engine
+chat_engine = index.as_chat_engine(
+    llm=llm
+)
+
+# تشغيل chat interface
+chat_engine.chat_repl()</pre>
+                </div>
+                
+                <p>يبقى نشغل الـ cell ده، نعمل scroll up لفوق هنا. هتشوف إن عندنا text box نقدر ندخل فيه ونقدر نسأل سؤال بسيط. مثلاً، زي إيه الموضوعات اللي Rudyard Kipling بيكتب عنها في كتاب القصائد ده؟</p>
+                
+                <div class="info-box">
+                    <h4>💭 مميزات Chat Engine</h4>
+                    <p><strong>تفاعل مباشر:</strong> text box للكتابة المباشرة</p>
+                    <p><strong>أسئلة متتابعة:</strong> إمكانية طرح أسئلة للمتابعة</p>
+                    <p><strong>سياق محفوظ:</strong> يتذكر المحادثة السابقة</p>
+                    <p><strong>إجابات سريعة:</strong> استجابة فورية للاستفسارات</p>
+                </div>
+                
+                <p>وتقدر تشوف بعد شوية وقت إننا بنحصل على إجابة من الـ Cohere language model. أتخيل إنه هيكون أسرع لو استخدمنا OpenAI، بس في الأساس بيقول إن كتاب قصائد Rudyard Kipling فيه النوعيات دي من الموضوعات.</p>
+                
+                <div class="warning-box">
+                    <h3>⏱️ ملاحظة عن الأداء</h3>
+                    <p>الاستجابة ممكن تاخد وقت مع Cohere، ممكن تكون أسرع مع OpenAI. بس النتيجة هتكون موثوقة في الحالتين.</p>
+                </div>
+            </div>
+
+            <div class="card modes">
+                <h2>أنماط Chat المختلفة</h2>
+                <p>وبعدين ممكن نسأل سؤال للمتابعة لو عايزين. بس أنا مجرد هكتب exit لأن أعتقد إن ده بيوضح النقطة.</p>
+                
+                <div class="chat-modes">
+                    <div class="mode-card">
+                        <div class="mode-icon">💬</div>
+                        <div class="mode-name">Simple</div>
+                        <div class="mode-description">نمط الدردشة البسيط، مجرد استرجاع السياق والإجابة</div>
+                    </div>
+                    
+                    <div class="mode-card">
+                        <div class="mode-icon">🔄</div>
+                        <div class="mode-name">Condense Question</div>
+                        <div class="mode-description">تكثيف الأسئلة واسترجاع السياق المناسب</div>
+                    </div>
+                    
+                    <div class="mode-card">
+                        <div class="mode-icon">📝</div>
+                        <div class="mode-name">Condense + Context</div>
+                        <div class="mode-description">تكثيف المحادثة وتاريخ رسائل المستخدم في سؤال مستقل</div>
+                    </div>
+                    
+                    <div class="mode-card">
+                        <div class="mode-icon">🤖</div>
+                        <div class="mode-name">React</div>
+                        <div class="mode-description">نوع من السلوك الوكيل الذكي (agentic behavior)</div>
+                    </div>
+                    
+                    <div class="mode-card">
+                        <div class="mode-icon">⭐</div>
+                        <div class="mode-name">Best</div>
+                        <div class="mode-description">النمط الأمثل تلقائياً حسب السياق</div>
+                    </div>
+                </div>
+                
+                <p>حاجة نلفت النظر ليها هنا إن في أنماط chat مختلفة فعلاً، يعني طرق مختلفة ممكن تعمل بيها synthesize للإجابة دي.</p>
+                
+                <div class="warning-box">
+                    <h3>📖 للمطالعة</h3>
+                    <p>ربطت بالتوثيق هنا حيث ممكن تتعلم أكتر عن الـ chat modes المختلفة. يلا بص على ده لو مهتم وهنتكلم على ده شوية أكتر.</p>
+                </div>
+            </div>
+
+            <div class="card memory">
+                <h2>إعداد Memory للـ Chat Engine</h2>
+                <p>يبقى هنا تاني، أنا مجرد هعمل instantiate لـ chat engine باستخدام الـ context mode بس.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Chat Engine مع Memory</h3>
+                    <pre># إنشاء memory للمحادثة
+memory = ChatMemoryBuffer.from_defaults(token_limit=1500)
+
+# إنشاء chat engine مع memory
+chat_engine_with_memory = index.as_chat_engine(
+    llm=llm,
+    chat_mode="context",
+    memory=memory,
+    system_prompt="You are a chatbot able to have normal interactions as well as talk about this book of poems."
+)
+
+# بدء chat REPL
+chat_engine_with_memory.chat_repl()</pre>
+                </div>
+                
+                <div class="memory-showcase">
+                    <div class="memory-title">🧠 مكونات الذاكرة</div>
+                    <div class="memory-details">
+                        <p><strong>Token Limit:</strong> حفظ آخر 1500 token من التفاعل</p>
+                        <p><strong>Chat Mode:</strong> استخدام نمط "context" للمحادثة</p>
+                        <p><strong>System Prompt:</strong> تعليمات أساسية للـ chatbot</p>
+                        <p><strong>Memory Buffer:</strong> إدارة ذكية للذاكرة والسياق</p>
+                    </div>
+                </div>
+                
+                <p>هنا عندنا memory تم إنشاؤها. ده مجرد بيقول احتفظ في الذاكرة بآخر 1500 tokens من التفاعل. بعدين نقدر نعمل instantiate للـ chat engine بتاعنا مع الـ LLM بتاعنا باستخدام الـ context mode الـ memory اللي أنا بضيف system prompt إضافي هنا بيقول إنك chatbot قادر على التفاعلات العادية وكمان الكلام عن كتاب القصائد ده.</p>
+                
+                <div class="info-box">
+                    <h4>🔧 إعدادات الذاكرة</h4>
+                    <p><strong>Token Management:</strong> إدارة ذكية لحجم السياق</p>
+                    <p><strong>Context Preservation:</strong> حفظ السياق المهم للمحادثة</p>
+                    <p><strong>System Instructions:</strong> توجيهات واضحة للسلوك المطلوب</p>
+                </div>
+            </div>
+
+            <div class="card customization">
+                <h2>تخصيص Query بمستوى أعمق</h2>
+                <p>حاجة نلفت النظر ليها إن ممكن فعلاً تخصص الـ query بتاعك. يبقى ممكن تخصص retrieval، ممكن تضيف post-processing وممكن تضيف شوية similarity processing كمان.</p>
+                
+                <div class="customization-options">
+                    <div class="options-title">⚡ خيارات التخصيص المتقدمة</div>
+                    
+                    <div class="option-item">
+                        <div class="option-name">Custom Retrieval</div>
+                        <div class="option-description">تخصيص طريقة استرجاع البيانات وتحديد معايير البحث</div>
+                    </div>
+                    
+                    <div class="option-item">
+                        <div class="option-name">Post-processing</div>
+                        <div class="option-description">معالجة النتائج بعد الاسترجاع، زي إضافة حد أدنى للتشابه</div>
+                    </div>
+                    
+                    <div class="option-item">
+                        <div class="option-name">Similarity Processing</div>
+                        <div class="option-description">تحسين عملية حساب التشابه وفلترة النتائج</div>
+                    </div>
+                    
+                    <div class="option-item">
+                        <div class="option-name">Lower Level API</div>
+                        <div class="option-description">استخدام API مستوى أدنى للتحكم الكامل</div>
+                    </div>
+                </div>
+                
+                <p>يبقى في lower level API عند LlamaIndex، وهنا تقدر تعدل الـ top K. وده بيديك granularity أكتر على نتائج الـ query.</p>
+                
+                <div class="code-card">
+                    <h3>تخصيص Query بمستوى متقدم</h3>
+                    <pre># إنشاء retriever مخصص
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.postprocessor import SimilarityPostprocessor
+from llama_index.core.response_synthesizers import ResponseMode
+from llama_index.core.query_engine import RetrieverQueryEngine
+
+# تخصيص الـ retriever
+custom_retriever = VectorIndexRetriever(
+    index=index,
+    similarity_top_k=10  # استرجاع أعلى 10 نتائج
+)
+
+# إضافة post-processor للفلترة
+similarity_postprocessor = SimilarityPostprocessor(
+    similarity_cutoff=0.42  # حد أدنى للتشابه
+)
+
+# تكوين response synthesizer
+response_synthesizer = get_response_synthesizer(
+    response_mode=ResponseMode.COMPACT
+)
+
+# إنشاء query engine مخصص
+custom_query_engine = RetrieverQueryEngine(
+    retriever=custom_retriever,
+    response_synthesizer=response_synthesizer,
+    node_postprocessors=[similarity_postprocessor]
+)</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🎛️ المرونة في التحكم</h4>
+                    <p><strong>Top K:</strong> أعلى K nodes أو points الأكثر تشابهاً للاسترجاع من قاعدة البيانات</p>
+                    <p><strong>Post-processing:</strong> حد أدنى لدرجة التشابه أو أشياء متقدمة أكتر</p>
+                    <p><strong>Advanced Features:</strong> هنتكلم عنها أكتر في الـ advanced RAG module</p>
+                </div>
+            </div>
+
+            <div class="card advanced">
+                <h2>المثال المتقدم: Retriever Query Engine</h2>
+                <p>وفتكر، top K زي أعلى K أكثر nodes أو points متشابهة للاسترجاع من قاعدة البيانات. Post-processing ممكن يكون حاجة زي إضافة حد أدنى لدرجة التشابه أو عمل حاجات متقدمة أكتر هنتكلم عنها في module لاحق.</p>
+                
+                <p>وتاني، ممكن تعمل شوية similarity score processing كمان. وده إزاي تعمل ده.</p>
+                
+                <div class="code-card">
+                    <h3>المثال الكامل للتخصيص</h3>
+                    <pre># مثال متكامل على التخصيص
+# شفناه خلاص، الـ similarity top K
+# في الحالة دي بعمل instantiate لـ retriever 
+# باستخدام similarity top K يساوي 10
+
+custom_retriever = index.as_retriever(
+    similarity_top_k=10
+)
+
+# بضيف post processor بيقول
+# بس ادّيني كل الـ nodes اللي عندها similarity على الأقل 0.42
+similarity_processor = SimilarityPostprocessor(
+    similarity_cutoff=0.42
+)
+
+# بكوّن response synthesizer
+response_synthesizer = get_response_synthesizer()
+
+# بمرر كل ده للـ retriever query engine
+advanced_query_engine = RetrieverQueryEngine(
+    retriever=custom_retriever,
+    response_synthesizer=response_synthesizer,
+    node_postprocessors=[similarity_processor]
+)
+
+# دلوقتي عندنا تحكم كامل في العملية!</pre>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>🚀 للتعمق أكتر</h3>
+                    <p>هنتكلم عن الـ retriever query engine والـ pattern ده بتفصيل أكتر في الـ advanced RAG module، بس مجرد بتكلم عن ده دلوقتي عشان أديكم شوية motivation لللي جاي قدام.</p>
+                </div>
+            </div>
+
+            <div class="card summary">
+                <h2>ملخص الدرس: من الاستعلام للـ Agents</h2>
+                <p>يلا نقفل الـ client. هخليكم تشغلوا ده لوحدكم. وفي الـ module الجاي هنتكلم عن agents في LlamaIndex.</p>
+                
+                <div class="query-process">
+                    <div class="process-card">
+                        <div class="process-icon">🎯</div>
+                        <div class="process-title">Query Engine</div>
+                        <div class="process-description">أساس توليد الإجابات من البيانات المفهرسة</div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="process-icon">🧪</div>
+                        <div class="process-title">اختبار السلوك</div>
+                        <div class="process-description">تجنب الـ hallucination مع البيانات غير الموجودة</div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="process-icon">💭</div>
+                        <div class="process-title">Chat Engine</div>
+                        <div class="process-description">تفاعل conversational مع البيانات</div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="process-icon">⚡</div>
+                        <div class="process-title">التخصيص</div>
+                        <div class="process-description">تحكم متقدم في الاسترجاع والمعالجة</div>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الإنجازات:</strong> تعلمنا Query Engine للاستعلام الذكي، اختبرنا السلوك مع بيانات غير موجودة وموجودة، جربنا Chat Engine للتفاعل، واستكشفنا إمكانيات التخصيص المتقدمة.
+                </div>
+                
+                <div class="code-card">
+                    <h3>إغلاق الاتصال</h3>
+                    <pre># إغلاق الـ client
+client.close()
+
+# هنشوفكم في الدرس القادم عن الـ Agents! 🤖</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🚀 التالي: Agents في LlamaIndex</h4>
+                    <p>في الmodule الجاي، هنتعلم عن الـ agents وإزاي يقدروا يستخدموا أدوات مختلفة ويفكروا بطريقة أذكى لحل المشاكل المعقدة.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>❓ الاستعلام الذكي: من السؤال للإجابة المبنية على البيانات الحقيقية</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

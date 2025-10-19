@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مكونات نظام RAG - مقدمة شاملة لـ Retrieval-Augmented Generation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #0984e3 0%, #74b9ff 50%, #fd79a8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #0984e3;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "🏗️";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.overview h2::before {
+            content: "🔍";
+        }
+        
+        .card.roadmap h2::before {
+            content: "🗺️";
+        }
+        
+        .card.components h2::before {
+            content: "⚙️";
+        }
+        
+        .card.process h2::before {
+            content: "🔄";
+        }
+        
+        .card.pieces h2::before {
+            content: "🧩";
+        }
+        
+        .card.configurations h2::before {
+            content: "🎛️";
+        }
+        
+        .card.subsystems h2::before {
+            content: "🏭";
+        }
+        
+        .card.indexing h2::before {
+            content: "📚";
+        }
+        
+        .card.retrieval h2::before {
+            content: "🔍";
+        }
+        
+        .card.augment h2::before {
+            content: "✨";
+        }
+        
+        .card.integration h2::before {
+            content: "🔗";
+        }
+        
+        .card.summary h2::before {
+            content: "📋";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #81C784;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #0984e3;
+        }
+        
+        .info-box {
+            background: #eff6ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #0984e3;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .rag-process {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .process-step {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #0984e3;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .process-step:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(9, 132, 227, 0.2);
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #0984e3, #74b9ff);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 15px;
+            font-size: 1.2em;
+        }
+        
+        .step-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .step-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .rag-components {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .components-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .component-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .component-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .component-name {
+            font-size: 1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .component-description {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .roadmap-timeline {
+            background: #f1f2f6;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #0984e3;
+        }
+        
+        .timeline-title {
+            color: #2d3436;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .timeline-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #74b9ff;
+            position: relative;
+        }
+        
+        .timeline-number {
+            background: #74b9ff;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            position: absolute;
+            left: -12px;
+            top: 15px;
+        }
+        
+        .timeline-content {
+            margin-right: 20px;
+        }
+        
+        .timeline-stage {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-description {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .subsystem-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .subsystem-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #fd79a8;
+            transition: all 0.3s ease;
+        }
+        
+        .subsystem-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(253, 121, 168, 0.2);
+        }
+        
+        .subsystem-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .subsystem-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #fd79a8;
+        }
+        
+        .subsystem-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .subsystem-purpose {
+            color: #636e72;
+            font-size: 0.95em;
+            font-style: italic;
+        }
+        
+        .subsystem-steps {
+            margin-top: 20px;
+        }
+        
+        .subsystem-step {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-right: 3px solid #fd79a8;
+        }
+        
+        .step-label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+        
+        .orchestration-flow {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .flow-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .flow-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .benefits-showcase {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .benefits-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .benefit-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .benefit-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .benefit-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .benefit-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .next-steps {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 2px solid #74b9ff;
+            text-align: center;
+        }
+        
+        .next-title {
+            color: #0984e3;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .next-content {
+            color: #636e72;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .rag-process, .components-grid, .subsystem-showcase, .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>مكونات نظام RAG</h1>
+            <p>مقدمة شاملة لـ Retrieval-Augmented Generation وأنظمته الفرعية</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>مقدمة: الدخول لعالم RAG</h2>
+                <p>في الـ module ده، هناخد مقدمة عن retrieval-augmented generation. تحديداً، هعلمكم مفهوم الـ Naive RAG pipeline، بس عندنا شوية modules نمر عليها قبل ما نوصل هناك.</p>
+                
+                <div class="highlight">
+                    <strong>الهدف من الفصل:</strong> فهم شامل لمكونات نظام RAG وكيفية تجميعها في pipeline متكامل
+                </div>
+                
+                <div class="warning-box">
+                    <h3>🎯 ضبط التوقعات</h3>
+                    <p>يبقى أنا عايز أضبط النبرة للفصل ده هيكون إيه. هبدأ بإني أديكم high-level overview لمكونات نظام RAG.</p>
+                </div>
+            </div>
+
+            <div class="card roadmap">
+                <h2>خريطة الطريق للفصل</h2>
+                <p>بعدين، الفيديوهين اللي بعد كده، هتكلم عن ingestion pipeline وquery pipeline. الـ pipelines دي abstractions على اللي شفناه في الفصل اللي فات وفي الـ modules اللي فاتت.</p>
+                
+                <div class="roadmap-timeline">
+                    <div class="timeline-title">🗺️ خطة الفصل التفصيلية</div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-number">1</div>
+                        <div class="timeline-content">
+                            <div class="timeline-stage">مكونات نظام RAG</div>
+                            <div class="timeline-description">نظرة شاملة على الأجزاء الأساسية</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-number">2</div>
+                        <div class="timeline-content">
+                            <div class="timeline-stage">Ingestion Pipeline</div>
+                            <div class="timeline-description">كيفية إدخال ومعالجة البيانات</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-number">3</div>
+                        <div class="timeline-content">
+                            <div class="timeline-stage">Query Pipeline</div>
+                            <div class="timeline-description">معالجة الاستعلامات والبحث</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-number">4</div>
+                        <div class="timeline-content">
+                            <div class="timeline-stage">Prompt Engineering</div>
+                            <div class="timeline-description">تحسين التعليمات للـ RAG</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-number">5</div>
+                        <div class="timeline-content">
+                            <div class="timeline-stage">Data Preparation</div>
+                            <div class="timeline-description">إعداد البيانات للنظام</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-number">6</div>
+                        <div class="timeline-content">
+                            <div class="timeline-stage">Naive RAG Pipeline</div>
+                            <div class="timeline-description">تجميع كل شيء في نظام متكامل</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-number">7</div>
+                        <div class="timeline-content">
+                            <div class="timeline-stage">عيوب Naive RAG</div>
+                            <div class="timeline-description">فهم التحديات والحلول</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔧 أهمية الـ Low-level APIs</h4>
+                    <p>اللي شفناه قبل كده كان الـ low-level APIs. أعتقد إن ده مهم إنكم تفهموا الـ low-level APIs إزاي بتشتغل عشان الـ high-level stuff مايكونش مربك ليكم.</p>
+                </div>
+            </div>
+
+            <div class="card overview">
+                <h2>نظرة عامة: العملية الثلاثية</h2>
+                <p>يبقى على مستوى عالي، نظام RAG هو عملية من ثلاث خطوات. يبقى نبدأ بـ user query بيدخل. ناخد الـ user query ده، ندور في الـ knowledge base على سياق متعلق بالـ user query ده.</p>
+                
+                <div class="rag-process">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <div class="step-title">استقبال الاستعلام</div>
+                        <div class="step-description">المستخدم يدخل سؤال أو طلب</div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <div class="step-title">البحث في قاعدة المعرفة</div>
+                        <div class="step-description">العثور على السياق المناسب للسؤال</div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <div class="step-title">توليد الإجابة المعززة</div>
+                        <div class="step-description">دمج السياق مع الـ prompt وإرساله للـ LLM</div>
+                    </div>
+                </div>
+                
+                <p>بعدين هناخد الـ retrieved context ده، هنضيفه لـ prompt، وده بيتبعت للـ language model. الـ language model هيعمل اللي بيعمله. بياخد الـ prompt ده، الـ string of text ده، وبعدين هيولد output.</p>
+                
+                <div class="highlight">
+                    <strong>جوهر نظام RAG:</strong> تحويل استعلام المستخدم إلى إجابة غنية بالسياق ودقيقة من الـ LLM
+                </div>
+            </div>
+
+            <div class="card components">
+                <h2>المكونات المتعددة</h2>
+                <p>وأيه العملية الثلاثية دي عندها مكونات مختلفة كتير اتعرفنا عليها على مدار الـ modules اللي فاتت.</p>
+                
+                <div class="rag-components">
+                    <div class="components-title">⚙️ مكونات نظام RAG</div>
+                    <div class="components-grid">
+                        <div class="component-item">
+                            <div class="component-icon">🧠</div>
+                            <div class="component-name">Language Model</div>
+                            <div class="component-description">المولد الأساسي للإجابات</div>
+                        </div>
+                        
+                        <div class="component-item">
+                            <div class="component-icon">📝</div>
+                            <div class="component-name">Prompt</div>
+                            <div class="component-description">التعليمات والسياق</div>
+                        </div>
+                        
+                        <div class="component-item">
+                            <div class="component-icon">📁</div>
+                            <div class="component-name">Document Loaders</div>
+                            <div class="component-description">محملات الوثائق</div>
+                        </div>
+                        
+                        <div class="component-item">
+                            <div class="component-icon">✂️</div>
+                            <div class="component-name">Document Chunkers</div>
+                            <div class="component-description">مقسمات النصوص</div>
+                        </div>
+                        
+                        <div class="component-item">
+                            <div class="component-icon">🔢</div>
+                            <div class="component-name">Embedding Model</div>
+                            <div class="component-description">محول النصوص لأرقام</div>
+                        </div>
+                        
+                        <div class="component-item">
+                            <div class="component-icon">🗄️</div>
+                            <div class="component-name">Vector Store</div>
+                            <div class="component-description">قاعدة بيانات الـ vectors</div>
+                        </div>
+                        
+                        <div class="component-item">
+                            <div class="component-icon">🔍</div>
+                            <div class="component-name">Vector Store Retriever</div>
+                            <div class="component-description">مسترجع البيانات</div>
+                        </div>
+                        
+                        <div class="component-item">
+                            <div class="component-icon">👤</div>
+                            <div class="component-name">User Input</div>
+                            <div class="component-description">مدخلات المستخدم</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>يبقى في الـ language model، في الـ prompt، في document loaders، في document chunkers، أو node parsers، في الـ embedding model، الـ vector store، الـ vector store retriever، والـ user input.</p>
+            </div>
+
+            <div class="card pieces">
+                <h2>قطع متحركة كثيرة</h2>
+                <p>يبقى رغم إنها نوعاً ما عملية ثلاث خطوات، في قطع متحركة مختلفة كتير. احنا لمسنا كل دول في الفصل اللي فات.</p>
+                
+                <div class="info-box">
+                    <h4>🧩 التعقيد تحت البساطة</h4>
+                    <p>رغم إن المفهوم بسيط (3 خطوات)، لكن التنفيذ الفعلي معقد ومليان تفاصيل مهمة. كل مكون له إعدادات واختيارات مختلفة.</p>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>📚 أهمية الخبرة السابقة</h3>
+                    <p>اتكلمنا على كل دول في الفصل السابق. ده الأساس اللي بنبني عليه دلوقتي.</p>
+                </div>
+            </div>
+
+            <div class="card configurations">
+                <h2>تنوع الإعدادات</h2>
+                <p>وزي ما هنشوف على مدار الكورس، في تنوع واسع من configurations لكل واحد من الـ core components المختلفة دي لنظام RAG.</p>
+                
+                <div class="info-box">
+                    <h4>🎛️ مرونة النظام</h4>
+                    <p><strong>تنوع الاختيارات:</strong> كل مكون له إعدادات مختلفة</p>
+                    <p><strong>استراتيجيات متعددة:</strong> طرق مختلفة للاسترجاع</p>
+                    <p><strong>تخصيص حسب الحاجة:</strong> تكييف النظام لمتطلبات مختلفة</p>
+                </div>
+                
+                <p>وهنتعلم عن إزاي ممكن نتلاعب بالمكونات دي عشان نعرف أنواع مختلفة كتير من استراتيجيات الاسترجاع.</p>
+                
+                <div class="highlight">
+                    <strong>القوة في المرونة:</strong> إمكانية تخصيص كل مكون تسمح بإنشاء أنظمة متخصصة لاحتياجات مختلفة
+                </div>
+            </div>
+
+            <div class="card subsystems">
+                <h2>الأنظمة الفرعية المتناغمة</h2>
+                <p>يبقى دلوقتي بعد ما بقيتوا familiar مع الـ core concepts في LlamaIndex والمكونات اللي محتاجينها لنظام RAG، يلا نتكلم عن إزاي نجمع دول مع بعض في subsystems مختلفة.</p>
+                
+                <div class="orchestration-flow">
+                    <div class="flow-title">🎼 التناغم بين الأنظمة</div>
+                    <div class="flow-content">
+                        <p>الـ subsystems دي - الـ index وretrieval وaugment subsystems - بتشتغل مع بعض في orchestrated matter. احنا بنحول query المستخدم لـ contextually-rich وaccurate response من الـ LLM.</p>
+                    </div>
+                </div>
+                
+                <div class="subsystem-showcase">
+                    <div class="subsystem-card">
+                        <div class="subsystem-header">
+                            <div class="subsystem-icon">📚</div>
+                            <div class="subsystem-name">نظام الفهرسة</div>
+                            <div class="subsystem-purpose">إعداد وتنظيم البيانات للاسترجاع</div>
+                        </div>
+                        <div class="subsystem-steps">
+                            <div class="subsystem-step">
+                                <div class="step-label">تحميل الوثائق</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">تقسيم وتقطيع النصوص</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">إنشاء Embeddings</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">حفظ في Vector Database</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="subsystem-card">
+                        <div class="subsystem-header">
+                            <div class="subsystem-icon">🔍</div>
+                            <div class="subsystem-name">نظام الاسترجاع</div>
+                            <div class="subsystem-purpose">جلب المعلومات الأكثر صلة</div>
+                        </div>
+                        <div class="subsystem-steps">
+                            <div class="subsystem-step">
+                                <div class="step-label">تحويل الاستعلام لـ Embedding</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">البحث Vector في قاعدة البيانات</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">العثور على التطابقات</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">إرجاع أجزاء السياق</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="subsystem-card">
+                        <div class="subsystem-header">
+                            <div class="subsystem-icon">✨</div>
+                            <div class="subsystem-name">نظام التعزيز</div>
+                            <div class="subsystem-purpose">تحسين الـ Prompt بالسياق</div>
+                        </div>
+                        <div class="subsystem-steps">
+                            <div class="subsystem-step">
+                                <div class="step-label">إنشاء Prompt أولي</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">إضافة السياق المسترجع</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">إرسال للـ LLM</div>
+                            </div>
+                            <div class="subsystem-step">
+                                <div class="step-label">توليد الإجابة النهائية</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card indexing">
+                <h2>نظام الفهرسة بالتفصيل</h2>
+                <p>يلا نبدأ بمناقشة نظام الفهرسة. يبقى نظام الفهرسة هيحضر وينظم البيانات للاسترجاع. وفي خطوات مختلفة كتير بتحصل في نظام الفهرسة.</p>
+                
+                <div class="info-box">
+                    <h4>📚 مهام نظام الفهرسة</h4>
+                    <p><strong>التحضير:</strong> تجهيز البيانات للاستخدام</p>
+                    <p><strong>التنظيم:</strong> ترتيب المعلومات بطريقة قابلة للبحث</p>
+                    <p><strong>التحسين:</strong> ضمان كفاءة عمليات الاسترجاع</p>
+                </div>
+                
+                <p>يبقى أولاً، احنا بنحمل documents. الـ documents دي بعدين هتتقسم وتتقطع عشان يكون عندنا chunks أصغر وأسهل في الإدارة من الـ documents.</p>
+                
+                <p>الـ document chunks دي بتتبعت لـ embedding model، واللي بيعمل الـ embeddings ويدفع ده لـ vector database. وده هو المكان اللي بنحفظ فيه الـ embeddings بتاعتنا.</p>
+                
+                <div class="highlight">
+                    <strong>المراحل الأساسية:</strong> تحميل → تقسيم → تحويل لـ embeddings → حفظ في قاعدة البيانات
+                </div>
+            </div>
+
+            <div class="card retrieval">
+                <h2>نظام الاسترجاع بالتفصيل</h2>
+                <p>بعدين، عندنا نظام الاسترجاع. ونظام الاسترجاع ده اللي بيجيب أكثر معلومات وسياق relevant بناءً على query المستخدم.</p>
+                
+                <div class="info-box">
+                    <h4>🔍 آلية عمل نظام الاسترجاع</h4>
+                    <p><strong>نفس النموذج:</strong> استخدام نفس embedding model المستخدم في الفهرسة</p>
+                    <p><strong>Vector Search:</strong> البحث في مساحة الـ vectors</p>
+                    <p><strong>التطابق:</strong> العثور على embeddings قريبة من الاستعلام</p>
+                </div>
+                
+                <p>يبقى نبدأ بـ query المستخدم، بعدين، نعمل embed للـ user query ده باستخدام نفس الـ embedding model اللي استخدمناه لعمل embed للسياق والوثائق بتاعتنا من مرحلة الفهرسة.</p>
+                
+                <p>بعدين، بالـ embedding ده، نعمل vector search، وهندور على embeddings قريبة جداً من query المستخدم. وبعدين نجيب دول، دول بيرجعولنا.</p>
+                
+                <p>الـ returned snippets دي، الـ returned chunks of context دي، بعدين بتتبعت لنظام التعزيز عشان نقدر نولد إجابة.</p>
+                
+                <div class="highlight">
+                    <strong>التسلسل الحيوي:</strong> استعلام → embedding → بحث vector → إرجاع أجزاء السياق
+                </div>
+            </div>
+
+            <div class="card augment">
+                <h2>نظام التعزيز والتحسين</h2>
+                <p>يبقى نظام التعزيز هو فعلاً النصف التاني من الصورة هنا. ونظام التعزيز هيحسن ويعزز الـ prompt اللي بيتبعت للـ LLM بالـ retrieved context.</p>
+                
+                <div class="info-box">
+                    <h4>✨ وظائف نظام التعزيز</h4>
+                    <p><strong>التحسين:</strong> إثراء الـ prompt بالسياق المناسب</p>
+                    <p><strong>التكامل:</strong> دمج السؤال الأصلي مع المعلومات المسترجعة</p>
+                    <p><strong>التحضير:</strong> تجهيز input غني للـ LLM</p>
+                </div>
+                
+                <p>وده هيضمن إن الـ model بتاعنا عنده المعلومات الضرورية لتوليد إجابة.</p>
+                
+                <p>يبقى بنعمل initial prompt. ده هيبدأ بالسؤال أو الـ query الأصلي للمستخدم. وبنعزز الـ prompt ده بسياق إضافي استرجعناه من الـ vector store.</p>
+                
+                <p>دلوقتي، عندنا enriched input للـ LLM. ده بيتبعت للـ LLM. والـ LLM بيولد إجابة، اللي بعدين بتتبعت للمستخدم.</p>
+                
+                <div class="highlight">
+                    <strong>السحر في التفاصيل:</strong> تحويل سؤال بسيط لـ prompt غني بالمعلومات لإنتاج إجابة دقيقة
+                </div>
+            </div>
+
+            <div class="card integration">
+                <h2>التكامل والنتائج</h2>
+                <p>ويبقى الـ subsystems دي، أنظمة الفهرسة والاسترجاع والتعزيز، هم اللي بيكونوا نظام RAG كله.</p>
+                
+                <div class="benefits-showcase">
+                    <div class="benefits-title">🎯 فوائد النظام المتكامل</div>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🎯</div>
+                            <div class="benefit-name">دقة أكبر</div>
+                            <div class="benefit-description">إجابات مبنية على معلومات حقيقية</div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🔗</div>
+                            <div class="benefit-name">مصداقية</div>
+                            <div class="benefit-description">مصادر موثوقة للمعلومات</div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">📊</div>
+                            <div class="benefit-name">صلة بالسياق</div>
+                            <div class="benefit-description">إجابات مناسبة للسؤال المحدد</div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">⚡</div>
+                            <div class="benefit-name">كفاءة</div>
+                            <div class="benefit-description">استجابة سريعة ومفيدة</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>وده بيساعدنا نحصل على outputs أكثر دقة ومصداقية وصلة بالسياق من النظام بتاعنا.</p>
+                
+                <div class="info-box">
+                    <h4>🔄 التآزر بين الأنظمة</h4>
+                    <p>كل نظام فرعي بيكمل الآخر، والنتيجة أكبر من مجموع الأجزاء. التكامل ده هو اللي بيخلي RAG قوي جداً.</p>
+                </div>
+            </div>
+
+            <div class="card summary">
+                <h2>ملخص والانتقال للتطبيق</h2>
+                <p>دلوقتي، مع ده في البال، هنتكلم عن الـ higher-level abstractions في LlamaIndex، الـ ingestion pipeline والـ query pipeline.</p>
+                
+                <div class="next-steps">
+                    <div class="next-title">🚀 الخطوات القادمة</div>
+                    <div class="next-content">
+                        <p>هنشوف إزاي نقدر نبدأ نبني actual end-to-end RAG system. من النظرية للتطبيق العملي.</p>
+                    </div>
+                </div>
+                
+                <div class="rag-process">
+                    <div class="process-step">
+                        <div class="step-number">✅</div>
+                        <div class="step-title">فهم المكونات</div>
+                        <div class="step-description">تعرفنا على كل الأجزاء الأساسية</div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="step-number">✅</div>
+                        <div class="step-title">الأنظمة الفرعية</div>
+                        <div class="step-description">فهمنا كيفية عمل الفهرسة والاسترجاع والتعزيز</div>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="step-number">🔄</div>
+                        <div class="step-title">التطبيق العملي</div>
+                        <div class="step-description">القادم: بناء نظام RAG حقيقي</div>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الأساس مكتمل:</strong> دلوقتي عندنا فهم شامل لكل مكونات نظام RAG وجاهزين لبناء النظام الفعلي!
+                </div>
+                
+                <div class="warning-box">
+                    <h3>🎯 استعداد للمرحلة التالية</h3>
+                    <p>مع الفهم العميق للمكونات، نقدر دلوقتي نتعلم الـ abstractions الأعلى مستوى اللي هتسهل علينا بناء أنظمة RAG معقدة.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🏗️ مكونات نظام RAG: من الفهم النظري للتطبيق العملي</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

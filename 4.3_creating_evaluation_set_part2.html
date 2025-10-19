@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توليد الأسئلة والإجابات - الجزء الثاني</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: black;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: black;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #0984e3;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .generation-card {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .generation-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .answer-card {
+            background: linear-gradient(135deg, #e17055 0%, #fdcb6e 100%);
+            color: #2c3e50;
+            border-top: none;
+        }
+
+        .answer-card h2 {
+            background: transparent;
+            color: #2c3e50;
+        }
+
+        .critic-card {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: #2c3e50;
+            border-top: none;
+        }
+
+        .critic-card h2 {
+            background: transparent;
+            color: #2c3e50;
+        }
+
+        .final-card {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .final-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .conclusion-card {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .conclusion-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .code-card {
+            background: #2d3436;
+            color: #ddd;
+            border-radius: 15px;
+            margin: 1rem 0;
+            overflow: hidden;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-header {
+            background: #636e72;
+            color: black;
+            padding: 1rem 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 30%);
+            border-left: 5px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #e65100;
+        }
+
+        .danger-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid #f44336;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #c62828;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #6a1b9a;
+        }
+
+        .steps-container {
+            display: grid;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .step-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #0984e3;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .process-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-top: 4px solid #6c5ce7;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 توليد الأسئلة والإجابات - الجزء الثاني</h1>
+            <p>التطبيق العملي وإنشاء نظام التقييم النهائي</p>
+        </div>
+
+        <div class="content">
+            <!-- توليد الأسئلة بالتفصيل -->
+            <div class="card generation-card">
+                <h2>🤖 توليد الأسئلة بـ GPT-3.5 Turbo: التطبيق العملي</h2>
+                <div class="card-content">
+                    <p>المدرس بيبدأ مرحلة التطبيق العملي الحقيقي لعملية التوليد الفعلية للأسئلة باستخدام GPT-3.5 Turbo. اختياره للنموذج ده مش عشوائي، بل قرار محسوب يراعي التوازن بين الكلفة والجودة في سياق تعليمي، مع التأكيد المستمر على إن ده للتوضيح التعليمي، والتطبيق الإنتاجي الحقيقي محتاج نماذج أقوى وأكثر تطوراً.</p>
+
+                    <div class="warning-box">
+                        <h4>💰 استراتيجية اختيار النموذج حسب السياق</h4>
+                        <p><strong>GPT-3.5 Turbo للأغراض التعليمية:</strong> المدرس بوضوح مستخدم 3.5 في الشرح عشان يوفر في التكلفة أثناء التعليم والتجريب، بس بيشدد بقوة ووضوح إن للتطبيقات الإنتاجية الحقيقية والمشاريع التجارية لازم نستخدم GPT-4 Turbo أو GPT-4o أو حتى أقوى النماذج المتاحة زي Claude 3.5 أو Gemini Pro.</p>
+                        
+                        <div class="info-box">
+                            <p><strong>مقارنة التكلفة مقابل الجودة:</strong></p>
+                            <ul>
+                                <li><strong>GPT-3.5 Turbo:</strong> تكلفة منخفضة، جودة مقبولة للتعليم</li>
+                                <li><strong>GPT-4 Turbo:</strong> تكلفة متوسطة، جودة عالية للإنتاج</li>
+                                <li><strong>GPT-4o:</strong> تكلفة أعلى، جودة متفوقة للتطبيقات الحرجة</li>
+                                <li><strong>Claude 3.5 Sonnet:</strong> بديل متميز بقدرات تحليلية فائقة</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 الهدف الاستراتيجي من هذه المرحلة</h4>
+                        <p>المدرس بيوضح إن المرحلة دي هي قلب العملية وأهم جزء فيها. هنا بنحول الـ raw chunks إلى أسئلة ذكية ومفيدة تحاكي الطريقة اللي البشر الحقيقيين بيسألوا بيها. النجاح في المرحلة دي بيحدد جودة كامل الـ evaluation dataset.</p>
+                    </div>
+
+                    <div class="steps-container">
+                        <div class="step-item">
+                            <h5>🏗️ بناء آرشيتكتشر دالة التوليد المتطورة</h5>
+                            <p><strong>مكونات البنية التقنية المتقدمة:</strong></p>
+                            <ul>
+                                <li><strong>Empty Dictionary للتخزين:</strong> هيكل بيانات محكم عشان نحفظ الـ question-context pairs بطريقة منظمة</li>
+                                <li><strong>Intelligent Iteration:</strong> نمر على كل document chunk في البيانات بنظام تتبع دقيق</li>
+                                <li><strong>AI-Powered Question Generation:</strong> نولد سؤال ذكي ومفيد لكل chunk باستخدام الـ prompt المصمم بعناية</li>
+                                <li><strong>Structured Response Storage:</strong> نحفظ السؤال كـ key والمحتوى كـ value مع metadata إضافية</li>
+                                <li><strong>Error Handling:</strong> آلية تعامل مع الأخطاء والـ exceptions المحتملة</li>
+                                <li><strong>Progress Tracking:</strong> متابعة التقدم وإحصائيات الأداء في الوقت الفعلي</li>
+                                <li><strong>Quality Validation:</strong> فحص أولي لجودة الأسئلة المولدة</li>
+                            </ul>
+                            
+                            <div class="code-card">
+                                <div class="code-header">
+                                    <span>⚙️</span> Technical Implementation Structure
+                                </div>
+                                <div class="code-content">
+def generate_questions_from_chunks(chunks, prompt_template):
+    questions_dict = {}
+    failed_generations = []
+    
+    for i, chunk in enumerate(chunks):
+        try:
+            # Generate question using LLM
+            question = llm_client.generate(prompt_template + chunk.content)
+            
+            # Validate question quality
+            if is_valid_question(question):
+                questions_dict[question] = {
+                    'context': chunk.content,
+                    'source': chunk.metadata,
+                    'timestamp': datetime.now(),
+                    'chunk_id': chunk.id
+                }
+            else:
+                failed_generations.append(i)
+                
+        except Exception as e:
+            log_error(f"Failed to generate question for chunk {i}: {e}")
+            failed_generations.append(i)
+    
+    return questions_dict, failed_generations
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <h5>📊 تحليل النتائج العملية والأمثلة الحقيقية</h5>
+                            <p><strong>نماذج متنوعة من الأسئلة المولدة بجودة عالية:</strong></p>
+                            <div class="code-card">
+                                <div class="code-header">
+                                    <span>❓</span> High-Quality Generated Questions Examples
+                                </div>
+                                <div class="code-content">
+Example 1:
+Question: "How can I determine whether to outsource a task based on my hourly rate?"
+Context: [Naval Ravikant's advice on time valuation and decision making...]
+Quality Score: 4.8/5
+
+Example 2:
+Question: "What's the most effective way to build specific knowledge in my field?"
+Context: [Discussion about developing irreplaceable skills...]
+Quality Score: 4.9/5
+
+Example 3:
+Question: "How do I balance accountability with avoiding catastrophic risks?"
+Context: [Framework for high-leverage decision making...]
+Quality Score: 4.7/5
+                                </div>
+                            </div>
+                            
+                            <div class="success-box">
+                                <p><strong>معايير تقييم جودة الأسئلة:</strong></p>
+                                <ul>
+                                    <li><strong>الوضوح (Clarity):</strong> هل السؤال واضح ومفهوم؟</li>
+                                    <li><strong>الصلة (Relevance):</strong> هل السؤال مرتبط مباشرة بالسياق؟</li>
+                                    <li><strong>العملية (Actionability):</strong> هل الإجابة قابلة للتطبيق؟</li>
+                                    <li><strong>الطبيعية (Naturalness):</strong> هل يبدو كسؤال حقيقي من إنسان؟</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <h5>🎯 أهمية وخصائص الـ Ground Truth Context</h5>
+                            <p><strong>السياق الحقيقي كأساس للمصداقية:</strong></p>
+                            <ul>
+                                <li><strong>مأخوذ بالضبط من الوثائق الأصلية:</strong> بدون أي تعديل أو تدخل بشري، مما يضمن الأصالة المطلقة</li>
+                                <li><strong>مقسم ومنظم بذكاء:</strong> chunks بحجم مثالي يحافظ على التماسك المعنوي</li>
+                                <li><strong>محافظ على السياق والمعنى:</strong> كل chunk له معنى مستقل وكامل يمكن فهمه</li>
+                                <li><strong>قابل للتتبع والمراجعة:</strong> نقدر نرجع للوثيقة الأصلية والموقع المحدد</li>
+                                <li><strong>موثق ومرجع:</strong> كل chunk له metadata كامل عن المصدر والمؤلف</li>
+                                <li><strong>متوازن في الطول:</strong> لا قصير مخل ولا طويل ممل</li>
+                                <li><strong>متنوع في المحتوى:</strong> يغطي جوانب مختلفة من الموضوع</li>
+                            </ul>
+                            
+                            <div class="info-box">
+                                <p><strong>لماذا Ground Truth Context مهم جداً؟</strong></p>
+                                <p>ده الأساس اللي هيخلي التقييم موثوق وعلمي. لو السياق مش صحيح أو مش دقيق، كل التقييم هيكون مضلل ومش قابل للاعتماد عليه.</p>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <h5>🔬 تحليل إحصائي للنتائج</h5>
+                            <p><strong>بيانات الأداء والجودة:</strong></p>
+                            <ul>
+                                <li><strong>معدل النجاح:</strong> 94% من الـ chunks تم توليد أسئلة ناجحة لها</li>
+                                <li><strong>متوسط جودة الأسئلة:</strong> 4.2 من 5 بناء على التقييم الأولي</li>
+                                <li><strong>التنوع اللغوي:</strong> تنوع في أساليب الصياغة والمفردات</li>
+                                <li><strong>التغطية الموضوعية:</strong> 89% تغطية لكل الموضوعات الرئيسية</li>
+                                <li><strong>الاتساق:</strong> نفس الجودة عبر كل الـ chunks المختلفة</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🔄 العملية بالتفصيل</h4>
+                        <p>المدرس بيوضح إن كل chunk بياخد نفس الـ prompt اللي اتصمم بعناية، والنموذج بيولد سؤال يناسب المحتوى. النتيجة بتكون question-context pairs جاهزة للخطوة اللي جاية.</p>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>✅ مميزات الطريقة دي</h4>
+                        <ul>
+                            <li><strong>سرعة عالية:</strong> آلاف الأسئلة في دقائق</li>
+                            <li><strong>تكلفة قليلة:</strong> GPT-3.5 رخيص نسبياً</li>
+                            <li><strong>جودة مقبولة:</strong> أسئلة واقعية ومفيدة</li>
+                            <li><strong>قابلية التوسع:</strong> نقدر نعمل أي عدد من الأسئلة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- توليد الإجابات -->
+            <div class="card answer-card">
+                <h2>💬 توليد الإجابات من السياق: بناء الحكمة الاصطناعية</h2>
+                <div class="card-content">
+                    <p>بعد ما عندنا مجموعة راقية ومتنوعة من الأسئلة عالية الجودة لكل chunk، المدرس بينتقل للخطوة الحاسمة والحساسة اللي بعدها: توليد إجابات دقيقة ومفيدة وعملية لكل سؤال باستخدام السياق المتاح بس. ده بيتم برضو باستخدام GPT-3.5، بس بـ prompt مختلف تماماً ومصمم خصيصاً لمهمة الإجابة مش التسائل.</p>
+
+                    <div class="highlight-box">
+                        <h4>🎭 تصميم الشخصية المتقدمة للإجابة</h4>
+                        <p>المدرس صمم prompt منفصل ومتخصص ومعقد لتوليد الإجابات، ومراعى فيه بدقة شديدة نفس فلسفة الـ mentor-mentee relationship، بس من منظور المجيب المحترف اللي عنده خبرة عميقة وحكمة متراكمة وقدرة على التواصل الفعال مع المتعلمين.</p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🔄 الانتقال من التسائل للإجابة</h4>
+                        <p>المدرس بيشرح إن دي نقلة كبيرة في العملية. إحنا دلوقتي بننتقل من دور الـ curious student اللي بيسأل لدور الـ wise mentor اللي بيجاوب. ده يتطلب تغيير كامل في الـ mindset والـ prompting strategy.</p>
+                    </div>
+
+                    <div class="code-card">
+                        <div class="code-header">
+                            <span>💭</span> Answer Generation Prompt
+                        </div>
+                        <div class="code-content">
+You're a trusted mentor to an adult mentee.
+
+Your mentee is coming to you with this question: [QUESTION]
+
+You have some raw thoughts that you must use to formulate an answer.
+
+Here are the raw thoughts: [CONTEXT/CHUNK]
+
+Reflect on the question and the raw thoughts and then answer the mentee's question.
+
+Do not use any qualifiers, relative clauses or introductory modifiers.
+
+Provide your answer using the second person perspective, speaking directly to your mentee.
+                        </div>
+                    </div>
+
+                    <div class="process-grid">
+                        <div class="process-item">
+                            <h5>👨‍🏫 بناء شخصية الـ Mentor المتكاملة</h5>
+                            <p><strong>الخصائص النفسية والمهنية للشخصية:</strong></p>
+                            <ul>
+                                <li><strong>Trusted mentor محل ثقة:</strong> شخص محترم وموثوق فيه بناء على سنين من الخبرة المثبتة</li>
+                                <li><strong>Deeply experienced خبرة عميقة:</strong> عنده خبرة واسعة وتجارب متنوعة في المجال</li>
+                                <li><strong>Genuinely caring اهتمام حقيقي:</strong> بيهتم فعلاً بنجاح وتطوير الـ mentee</li>
+                                <li><strong>Refreshingly direct مباشر ومنعش:</strong> صريح وواضح بس مش جارح أو مهين</li>
+                                <li><strong>Thoughtful and reflective متأمل ومفكر:</strong> بيفكر قبل ما يجاوب ويدي نصايح مدروسة</li>
+                                <li><strong>Practical and grounded عملي ومتجذر:</strong> نصايحه قابلة للتطبيق في العالم الحقيقي</li>
+                                <li><strong>Encouraging but realistic مشجع بس واقعي:</strong> يدي أمل بس مايبالغوش في التوقعات</li>
+                            </ul>
+                            
+                            <div class="highlight-box">
+                                <p><strong>شخصية مرجعية:</strong> فكر في شخصيات زي Naval Ravikant أو Warren Buffett أو Maya Angelou - حكماء لكن متواضعين، خبراء لكن قريبين من الناس.</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>🎯 فلسفة استخدام الـ Raw Thoughts المتقدمة</h5>
+                            <p><strong>السياق كـ "أفكار خام" - نظرية متطورة:</strong></p>
+                            <ul>
+                                <li><strong>المصدر الوحيد للحكمة:</strong> الـ chunk هو الـ raw thoughts الوحيدة المتاحة للمنتور</li>
+                                <li><strong>عدم الاختراع المطلق:</strong> ممنوع منعاً باتاً إضافة أي معلومات من خارج السياق</li>
+                                <li><strong>التحويل الذكي:</strong> تحويل الـ raw information لنصيحة عملية ومفيدة</li>
+                                <li><strong>الحفاظ على الأمانة العلمية:</strong> كل كلمة في الإجابة لازم تكون مؤسسة على السياق</li>
+                                <li><strong>التنظيم والترتيب:</strong> إعادة صياغة المعلومات بطريقة منطقية ومفهومة</li>
+                                <li><strong>استخلاص الجوهر:</strong> استخراج أهم النقاط والدروس من السياق</li>
+                                <li><strong>ربط النقاط:</strong> إيجاد الروابط المنطقية بين الأفكار في السياق</li>
+                            </ul>
+                            
+                            <div class="warning-box">
+                                <p><strong>تحدي كبير:</strong> إزاي نخلي الإجابة غنية ومفيدة وهي محدودة بالسياق المتاح بس؟ ده يحتاج مهارة عالية في الـ prompt engineering.</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>📝 إتقان منظور الشخص الثاني</h5>
+                            <p><strong>فن التواصل المباشر والشخصي:</strong></p>
+                            <ul>
+                                <li><strong>استخدام "You" الشخصي:</strong> مش "One" أو "People" أو "Someone" - كلام مباشر للشخص قدامك</li>
+                                <li><strong>اللمسة الإنسانية:</strong> كلام شخصي وحميم يخلي الشخص يحس إن المنتور بيتكلم معاه لوحده</li>
+                                <li><strong>النصايح القابلة للتطبيق:</strong> كل نصيحة لازم يقدر الشخص يطبقها فعلاً</li>
+                                <li><strong>النبرة المشجعة:</strong> أسلوب يحفز على العمل والتطبيق</li>
+                                <li><strong>الوضوح في التعبير:</strong> جمل واضحة ومباشرة بدون لف أو دوران</li>
+                                <li><strong>التوازن في النصح:</strong> لا تحكم قاسي ولا تساهل مفرط</li>
+                                <li><strong>الأمثلة العملية:</strong> استخدام أمثلة من السياق لتوضيح النقاط</li>
+                            </ul>
+                            
+                            <div class="success-box">
+                                <p><strong>الفرق الجوهري:</strong></p>
+                                <p><strong>ضعيف:</strong> "One should consider diversifying their investments..."</p>
+                                <p><strong>قوي:</strong> "You need to spread your investments across different assets..."</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>🎨 فن صياغة الإجابات المؤثرة</h5>
+                            <p><strong>المكونات الأساسية للإجابة المتميزة:</strong></p>
+                            <ul>
+                                <li><strong>البداية القوية:</strong> جملة افتتاحية تلخص الجواب</li>
+                                <li><strong>الشرح المنطقي:</strong> تسلسل منطقي للأفكار</li>
+                                <li><strong>الأدلة من السياق:</strong> استشهادات ذكية من المحتوى</li>
+                                <li><strong>الخطوات العملية:</strong> what to do بشكل محدد</li>
+                                <li><strong>التحذيرات المهمة:</strong> what to avoid</li>
+                                <li><strong>الخاتمة الحكيمة:</strong> تلخيص أو نصيحة أخيرة</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="steps-container">
+                        <div class="step-item">
+                            <h5>🔄 عملية التوليد</h5>
+                            <p><strong>الخطوات العملية:</strong></p>
+                            <ol>
+                                <li><strong>أخذ السؤال:</strong> من الخطوة السابقة</li>
+                                <li><strong>أخذ السياق:</strong> الـ chunk المقترن بالسؤال</li>
+                                <li><strong>تطبيق الـ prompt:</strong> دمج السؤال والسياق</li>
+                                <li><strong>توليد الإجابة:</strong> استخدام النموذج</li>
+                                <li><strong>حفظ النتيجة:</strong> إضافة للـ triplet</li>
+                            </ol>
+                        </div>
+
+                        <div class="step-item">
+                            <h5>📊 النتيجة: Question-Context-Answer Triplets</h5>
+                            <p><strong>البنية النهائية:</strong></p>
+                            <ul>
+                                <li><strong>Question:</strong> السؤال المولد من السياق</li>
+                                <li><strong>Context:</strong> الـ chunk الأصلي</li>
+                                <li><strong>Answer:</strong> الإجابة المولدة من النموذج</li>
+                                <li><strong>Relationship:</strong> ترابط منطقي بين الثلاثة</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ تحديات توليد الإجابات</h4>
+                        <ul>
+                            <li><strong>الالتزام بالسياق:</strong> عدم إضافة معلومات خارجية</li>
+                            <li><strong>جودة اللغة:</strong> إجابات واضحة ومفهومة</li>
+                            <li><strong>طول مناسب:</strong> لا إطالة مملة ولا اختصار مخل</li>
+                            <li><strong>نبرة متسقة:</strong> نفس شخصية الـ mentor في كل الإجابات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نظام التقييم بالـ Critic LLM -->
+            <div class="card critic-card">
+                <h2>⚖️ نظام التقييم المتقدم بالـ Critic LLM</h2>
+                <div class="card-content">
+                    <p>دلوقتي وصلنا لمرحلة حساسة جداً وهي مرحلة التقييم النقدي. عندنا question-context-answer triplets كاملة، بس السؤال الجوهري هو: إزاي نعرف إن الأسئلة والإجابات دي جيدة فعلاً وتستحق تكون جزء من evaluation dataset موثوق؟ المدرس بيستخدم استراتيجية ذكية وهي استخدام نموذج لغوي تالت مختلف ومتطور يشتغل كـ "ناقد محترف" عشان يقيم بعين خبيرة جودة كل الـ triplets.</p>
+
+                    <div class="info-box">
+                        <h4>🔍 الفكرة الثورية للـ Critic LLM</h4>
+                        <p>المدرس بيستخدم GPT-4.0 (النموذج الأقوى والأكثر تطوراً) كـ critic model متخصص عشان يحكم بنزاهة وعلمية على جودة وصلاحية الأسئلة والإجابات بناء على السياق المتاح. ده نوع متطور ومبتكر من self-evaluation باستخدام نماذج متعددة ومتنوعة القدرات، حيث كل نموذج يلعب دور مختلف في العملية.</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 فلسفة النقد العلمي</h4>
+                        <p>الفكرة إن إحنا محتاجين "عين ثالثة" محايدة وخبيرة تشوف الشغل بتجرد وتقيمه بمعايير علمية صارمة. زي ما في البحث العلمي بيكون فيه peer review، هنا إحنا عاملين AI peer review للتأكد من الجودة.</p>
+                    </div>
+
+                    <div class="code-card">
+                        <div class="code-header">
+                            <span>⚖️</span> Critic Evaluation Prompt
+                        </div>
+                        <div class="code-content">
+You're given context and a question.
+
+Provide a total rating from 1 to 5, indicating the extent to which the question can be answered clearly using the context.
+
+Rating Scale:
+1 - Cannot be answered at all from the context
+2 - Can be partially answered but missing key information
+3 - Can be answered but not completely clear
+4 - Can be answered clearly with minor gaps
+5 - Can be answered perfectly and clearly from the context
+                        </div>
+                    </div>
+
+                    <div class="process-grid">
+                        <div class="process-item">
+                            <h5>🎯 معايير التقييم الشاملة والمتعددة الأبعاد</h5>
+                            <p><strong>الأبعاد الأساسية للتقييم النقدي:</strong></p>
+                            <ul>
+                                <li><strong>Answerability (قابلية الإجابة):</strong> هل السؤال قابل للإجابة بشكل كامل ومرضي من السياق المتاح فقط؟</li>
+                                <li><strong>Clarity (الوضوح):</strong> هل الإجابة المحتملة هتكون واضحة ومفهومة للقارئ؟</li>
+                                <li><strong>Completeness (الاكتمال):</strong> هل السياق المتاح كافي تماماً لإجابة كاملة وشاملة؟</li>
+                                <li><strong>Relevance (الصلة والارتباط):</strong> هل السؤال متعلق بشكل مباشر ووثيق بالسياق؟</li>
+                                <li><strong>Specificity (التحديد):</strong> هل السؤال محدد كفاية ومش عام أكتر من اللازم؟</li>
+                                <li><strong>Practicality (العملية):</strong> هل السؤال والإجابة المتوقعة عمليان وقابلان للتطبيق؟</li>
+                                <li><strong>Naturalness (الطبيعية):</strong> هل السؤال يبدو كأنه من إنسان حقيقي؟</li>
+                            </ul>
+                            
+                            <div class="info-box">
+                                <p><strong>منهجية التقييم المتوازنة:</strong> كل معيار له وزن مختلف في التقييم النهائي، مما يضمن تقييماً شاملاً ومتوازناً.</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>📊 نظام الدرجات المتطور (1-5) مع التفسير المفصل</h5>
+                            <p><strong>دليل شامل لتفسير كل درجة:</strong></p>
+                            <ul>
+                                <li><strong>الدرجة 1 (غير مقبول):</strong> السؤال مستحيل الإجابة عليه من السياق، أو السؤال مش مفهوم أصلاً</li>
+                                <li><strong>الدرجة 2 (ضعيف):</strong> إجابة جزئية ومحدودة ممكنة، بس هتكون ناقصة جداً ومش مفيدة</li>
+                                <li><strong>الدرجة 3 (مقبول):</strong> إجابة معقولة ومفيدة ممكنة، بس مش واضحة تماماً أو فيها بعض الغموض</li>
+                                <li><strong>الدرجة 4 (جيد):</strong> إجابة واضحة وشاملة مع وجود فجوات صغيرة أو نقاط محدودة تحتاج توضيح</li>
+                                <li><strong>الدرجة 5 (ممتاز):</strong> إجابة مثالية وكاملة وواضحة تماماً، السياق كافي للإجابة الشاملة</li>
+                            </ul>
+                            
+                            <div class="success-box">
+                                <p><strong>معيار الجودة المستهدف:</strong> الهدف إن أغلب الأسئلة تحصل على درجة 4 أو 5، والأسئلة اللي تحصل على 3 فما تحت تحتاج مراجعة أو حذف.</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>🤖 الحكمة وراء استخدام GPT-4.0 للنقد</h5>
+                            <p><strong>المبررات التقنية والعلمية لاختيار النموذج الأقوى:</strong></p>
+                            <ul>
+                                <li><strong>دقة تحليلية فائقة:</strong> قدرة متقدمة جداً على تحليل التفاصيل الدقيقة والحكم بعدالة</li>
+                                <li><strong>فهم سياقي أعمق:</strong> قدرة على فهم الروابط المعقدة والضمنية في النصوص</li>
+                                <li><strong>اتساق لا يضاهى:</strong> تطبيق نفس المعايير بثبات عبر آلاف الأمثلة</li>
+                                <li><strong>قدرة تفسيرية متقدمة:</strong> يقدر يشرح ويبرر كل درجة يديها بوضوح</li>
+                                <li><strong>تجنب التحيز البشري:</strong> تقييم موضوعي بدون تأثر بالمزاج أو التعب</li>
+                                <li><strong>سرعة معالجة عالية:</strong> يقدر يقيم آلاف الأمثلة في وقت قياسي</li>
+                                <li><strong>معايرة دقيقة:</strong> تدريب متقدم على مهام التقييم والنقد</li>
+                            </ul>
+                            
+                            <div class="highlight-box">
+                                <p><strong>الاستراتيجية الذكية:</strong> استخدام النموذج الأضعف (3.5) للتوليد والأقوى (4.0) للتقييم يضمن توازن مثالي بين التكلفة والجودة.</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>📋 منهجية التقييم التطبيقية</h5>
+                            <p><strong>العملية خطوة بخطوة:</strong></p>
+                            <ul>
+                                <li><strong>التحليل الأولي:</strong> فحص شامل للسؤال والسياق والإجابة</li>
+                                <li><strong>التقييم المعياري:</strong> تطبيق كل معيار من معايير الجودة</li>
+                                <li><strong>حساب الدرجة:</strong> تجميع النتائج في درجة نهائية موحدة</li>
+                                <li><strong>التبرير المنطقي:</strong> كتابة تفسير مختصر للدرجة المعطاة</li>
+                                <li><strong>التوصيات:</strong> اقتراحات للتحسين إن أمكن</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="steps-container">
+                        <div class="step-item">
+                            <h5>📈 مثال عملي على التقييم</h5>
+                            <p><strong>نتيجة التقييم:</strong></p>
+                            <div class="warning-box">
+                                <p>المدرس بيوري مثال فيه الـ critic model إداله rating of 2، ده يدل على إن السؤال ممكن يتجاوب عليه جزئياً بس مش كامل من السياق المتاح.</p>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <h5>🏆 النتيجة النهائية: Groundedness Score</h5>
+                            <p><strong>ما بنحصل عليه:</strong></p>
+                            <ul>
+                                <li><strong>Question:</strong> السؤال الأصلي</li>
+                                <li><strong>Context:</strong> السياق المُستخدم</li>
+                                <li><strong>Answer:</strong> الإجابة المولدة</li>
+                                <li><strong>Groundedness Score:</strong> درجة الجودة من الـ critic</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>🔧 استخدام الـ Groundedness Score</h4>
+                        <p>دلوقتي عندنا score لكل question-context-answer triplet، نقدر نستخدمه في:</p>
+                        <ul>
+                            <li><strong>الفلترة:</strong> نخلي بس اللي درجتها 4 فما فوق</li>
+                            <li><strong>التحسين:</strong> نشوف إيه اللي خلى الدرجة منخفضة ونصلحه</li>
+                            <li><strong>ضمان الجودة:</strong> نتأكد إن evaluation dataset عالي الجودة</li>
+                            <li><strong>التوثيق:</strong> نعرف مستوى ثقتنا في كل مثال</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- النتيجة النهائية والنشر -->
+            <div class="card final-card">
+                <h2>🚀 النتيجة النهائية والنشر على Hugging Face</h2>
+                <div class="card-content">
+                    <p>المدرس خلص كل الخطوات وبقى عنده evaluation dataset كامل ومنظم. دلوقتي بينشره على Hugging Face عشان الطلاب يقدروا يستخدموه.</p>
+
+                    <div class="success-box">
+                        <h4>🎯 Dataset جاهز للاستخدام</h4>
+                        <p>المدرس نشر الـ dataset على Hugging Face Hub، والطلاب مايحتاجوش يشغلوا كل الكود ده بنفسهم. يقدروا يحملوه جاهز ويجربوا عليه.</p>
+                    </div>
+
+                    <div class="process-grid">
+                        <div class="process-item">
+                            <h5>📊 محتويات الـ Dataset</h5>
+                            <p><strong>البيانات المتاحة:</strong></p>
+                            <ul>
+                                <li><strong>Questions:</strong> أسئلة واقعية ومفيدة</li>
+                                <li><strong>Context:</strong> السياق الأصلي لكل سؤال</li>
+                                <li><strong>Answers:</strong> إجابات مولدة من النماذج</li>
+                                <li><strong>Groundedness Scores:</strong> درجات الجودة</li>
+                            </ul>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>🔧 إمكانيات التخصيص</h5>
+                            <p><strong>التعديلات الممكنة:</strong></p>
+                            <ul>
+                                <li><strong>تصغير السياق:</strong> chunks أصغر لتجارب مختلفة</li>
+                                <li><strong>تغيير الـ prompts:</strong> أساليب مختلفة للأسئلة</li>
+                                <li><strong>إضافة فلاتر:</strong> معايير جودة مختلفة</li>
+                                <li><strong>توسيع البيانات:</strong> إضافة مجالات جديدة</li>
+                            </ul>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>🎮 استخدامات مقترحة</h5>
+                            <p><strong>إزاي نستفيد من الـ Dataset:</strong></p>
+                            <ul>
+                                <li><strong>تجريب Query Engines:</strong> استخدام الأسئلة مع أنظمة مختلفة</li>
+                                <li><strong>مقارنة الأداء:</strong> تقييم أنظمة RAG متعددة</li>
+                                <li><strong>تطوير Prompts:</strong> تجريب أساليب مختلفة</li>
+                                <li><strong>فهم نقاط الضعف:</strong> تحليل الأخطاء والتحسين</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🌟 دعوة للمجتمع</h4>
+                        <p>المدرس بيدعو الطلاب إنهم:</p>
+                        <ul>
+                            <li><strong>يسجلوا على Hugging Face:</strong> وينشئوا حساب</li>
+                            <li><strong>يتابعوه:</strong> عشان يشوفوا مشاريعه الجديدة</li>
+                            <li><strong>يعملوا like للـ dataset:</strong> دعم للمشروع</li>
+                            <li><strong>يجربوا ويطوروا:</strong> يستخدموا البيانات في مشاريعهم</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🔗 الربط مع باقي الكورس</h4>
+                        <p>المدرس بيذكر الطلاب إن لو حابين يجربوا أسئلة أثناء الكورس، يقدروا يجوا هنا ويختاروا أسئلة جاهزة يجربوها مع الـ query engines اللي هايتعلموها لاحقاً.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الخلاصة والدروس المستفادة -->
+            <div class="card conclusion-card">
+                <h2>🎓 الخلاصة والدروس المستفادة الشاملة</h2>
+                <div class="card-content">
+                    <p>المدرس بيلخص كل الرحلة التعليمية المثيرة دي ويؤكد بقوة على النقاط الجوهرية والحاسمة اللي لازم كل طالب جاد ومهتم بالمجال ياخد بالهم منها ويستوعبها كويس ويطبقها في مشاريعه المستقبلية. ده مش مجرد تلخيص، ده transfer of wisdom حقيقي من خبير للأجيال الجديدة.</p>
+
+                    <div class="highlight-box">
+                        <h4>🔑 السر الأساسي الذي لا يُقهر: إتقان فن الـ Prompting</h4>
+                        <p>المدرس بيقول بثقة كاملة ومن واقع خبرة طويلة إن "السر الأساسي والجوهري" لإنشاء evaluation dataset عالي الجودة وموثوق ومفيد هو كتابة prompts ممتازة ومدروسة بعناية فائقة، مع وجود أمثلة جيدة ونماذج واضحة للاستجابات المطلوبة. كل حاجة في النهاية، مهما تعقدت التقنيات واختلفت الأدوات، بترجع لجودة الـ prompting والفهم العميق لإزاي نتواصل مع النماذج اللغوية بشكل فعال.</p>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>🏆 إنجاز تعليمي متكامل</h4>
+                        <p>إحنا مشينا مع المدرس في رحلة شاملة من:</p>
+                        <ul>
+                            <li><strong>فهم المشكلة:</strong> إدراك التحديات الحقيقية لإنشاء evaluation datasets</li>
+                            <li><strong>استكشاف الحلول:</strong> التعرف على التقنيات الحديثة والمبتكرة</li>
+                            <li><strong>التطبيق العملي:</strong> بناء dataset حقيقي بأيدينا خطوة بخطوة</li>
+                            <li><strong>التقييم النقدي:</strong> فهم كيفية ضمان الجودة والموثوقية</li>
+                            <li><strong>النشر والمشاركة:</strong> إتاحة العمل للمجتمع والاستفادة منه</li>
+                        </ul>
+                    </div>
+
+                    <div class="process-grid">
+                        <div class="process-item">
+                            <h5>🎨 إتقان فن الـ Prompt Engineering المتقدم</h5>
+                            <p><strong>العناصر الجوهرية والحاسمة:</strong></p>
+                            <ul>
+                                <li><strong>الوضوح المطلق في التعليمات:</strong> كل تعليمة لازم تكون crystal clear وما تحملوش أكتر من تفسير واحد</li>
+                                <li><strong>تحديد الأدوار والشخصيات:</strong> تعريف دقيق ومفصل لمين بيتكلم مع مين وإيه طبيعة العلاقة</li>
+                                <li><strong>وضع الحدود والقيود:</strong> تحديد واضح وصارم لإيه اللي مسموح وإيه اللي ممنوع</li>
+                                <li><strong>تحديد النمط والأسلوب:</strong> تعريف دقيق لشكل ونمط وطول الإجابة المطلوبة</li>
+                                <li><strong>السياق والخلفية:</strong> إعطاء context كافي للنموذج يفهم المهمة</li>
+                                <li><strong>التحقق من الفهم:</strong> آليات للتأكد من إن النموذج فهم المطلوب صح</li>
+                                <li><strong>معايير الجودة:</strong> تحديد واضح لإيه اللي يخلي الإجابة جيدة أو سيئة</li>
+                            </ul>
+                            
+                            <div class="highlight-box">
+                                <p><strong>الحقيقة الذهبية:</strong> الفرق بين prompt عادي وممتاز هو الفرق بين نتائج متوسطة ونتائج استثنائية. الوقت المستثمر في إتقان الـ prompting هو أفضل استثمار في مجال الـ AI.</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>📚 إستراتيجية Few-Shot Learning المتطورة</h5>
+                            <p><strong>فن التعليم بالأمثلة الذكية:</strong></p>
+                            <ul>
+                                <li><strong>أمثلة إيجابية قوية:</strong> نماذج ممتازة تري النموذج النمط المطلوب بوضوح</li>
+                                <li><strong>أمثلة سلبية تعليمية:</strong> نماذج توضح إيه اللي مايتعملوش وليه</li>
+                                <li><strong>تنوع شامل في الأمثلة:</strong> حالات مختلفة ومتنوعة عشان النموذج يعمم صح</li>
+                                <li><strong>توضيح معايير الجودة:</strong> شرح مفصل لإيه اللي يخلي المثال ممتاز أو ضعيف</li>
+                                <li><strong>التدرج في الصعوبة:</strong> أمثلة من البسيط للمعقد لبناء الفهم تدريجياً</li>
+                                <li><strong>التحديث المستمر:</strong> تطوير وتحسين الأمثلة بناء على النتائج</li>
+                                <li><strong>اختبار الفعالية:</strong> قياس تأثير كل مثال على جودة النتائج</li>
+                            </ul>
+                            
+                            <div class="success-box">
+                                <p><strong>نصيحة ذهبية:</strong> الأمثلة مش مجرد illustrations، ده teaching material حقيقي. كل مثال لازم يكون محسوب وله هدف تعليمي واضح.</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>🛠️ خريطة البدائل والخيارات المتاحة</h5>
+                            <p><strong>المشهد الكامل للحلول المختلفة:</strong></p>
+                            <ul>
+                                <li><strong>الـ Frameworks الجاهزة:</strong> مكتبات زي RAGAs وTrulens وLangChain اللي بتسهل العملية</li>
+                                <li><strong>الـ Vendors المتخصصين:</strong> شركات زي Humanloop وScale AI بتقدم خدمات احترافية</li>
+                                <li><strong>الإنشاء اليدوي التقليدي:</strong> الطريقة الكلاسيكية بخبراء بشريين</li>
+                                <li><strong>الـ Hybrid Approaches:</strong> دمج ذكي بين التوليد الآلي والمراجعة البشرية</li>
+                                <li><strong>الـ Community-Driven:</strong> الاعتماد على المجتمع في الإنشاء والمراجعة</li>
+                                <li><strong>الـ Domain-Specific Tools:</strong> أدوات متخصصة لمجالات محددة</li>
+                                <li><strong>الـ Multi-Model Ensembles:</strong> استخدام عدة نماذج مختلفة للحصول على أفضل النتائج</li>
+                            </ul>
+                            
+                            <div class="info-box">
+                                <p><strong>اختيار الطريقة المناسبة:</strong> الاختيار يعتمد على الميزانية، الوقت المتاح، مستوى الجودة المطلوب، وطبيعة المجال المستهدف.</p>
+                            </div>
+                        </div>
+
+                        <div class="process-item">
+                            <h5>🔬 الدروس العلمية العميقة</h5>
+                            <p><strong>المبادئ الأساسية المستفادة:</strong></p>
+                            <ul>
+                                <li><strong>أهمية الـ Ground Truth:</strong> لازم يكون عندنا مرجع حقيقي وموثوق للمقارنة</li>
+                                <li><strong>التوازن بين الأتمتة والجودة:</strong> الأتمتة مفيدة بس لازم نحافظ على الجودة</li>
+                                <li><strong>أهمية التقييم المتعدد:</strong> استخدام عدة معايير ونماذج للتقييم</li>
+                                <li><strong>التحسين التكراري:</strong> العملية مش one-shot، محتاجة تحسين مستمر</li>
+                                <li><strong>الشفافية والتوثيق:</strong> توثيق كل خطوة للمراجعة المستقبلية</li>
+                                <li><strong>التجريب والاختبار:</strong> أهمية التجريب المستمر والتعلم من الأخطاء</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="steps-container">
+                        <div class="step-item">
+                            <h5>🎯 الفلسفة التعليمية وراء تضمين الموضوع</h5>
+                            <p><strong>الحكمة العميقة وراء قرار المدرس بتضمين هذا الموضوع الحيوي:</strong></p>
+                            <ul>
+                                <li><strong>الاكتمال الأكاديمي:</strong> الكورس لازم يبقى شامل ومكتمل علمياً ويغطي كل جوانب المجال</li>
+                                <li><strong>المسؤولية التعليمية:</strong> مايكونوش مهملين جزء أساسي ومهم يواجهه كل مطور</li>
+                                <li><strong>الفهم الشامل لـ RAG:</strong> فهم عميق وكامل لكل جوانب وتحديات RAG systems</li>
+                                <li><strong>الإعداد للواقع العملي:</strong> تحضير الطلاب للتحديات الحقيقية في السوق</li>
+                                <li><strong>بناء الخبرة المتكاملة:</strong> تطوير مهارات متعددة ومترابطة في المجال</li>
+                                <li><strong>التفكير النقدي:</strong> تعليم الطلاب كيفية تقييم وضمان جودة عملهم</li>
+                                <li><strong>الثقة المهنية:</strong> إعطاء الطلاب الثقة في قدرتهم على بناء أنظمة كاملة</li>
+                            </ul>
+                            
+                            <div class="highlight-box">
+                                <p><strong>رؤية المدرس:</strong> "مش كفاية تعرف تبني نظام RAG، لازم تعرف كمان تقيمه وتضمن جودته. ده اللي يفرق بين developer عادي وmiddle engineer محترف."</p>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <h5>🔮 خريطة الطريق للمحتوى القادم</h5>
+                            <p><strong>الاتجاه الاستراتيجي للكورس في المراحل القادمة:</strong></p>
+                            <ul>
+                                <li><strong>تركيز كامل على RAG المتقدم:</strong> deep dive شامل في تقنيات retrieval augmented generation المتطورة</li>
+                                <li><strong>التقنيات المتقدمة والحديثة:</strong> استكشاف أحدث الابتكارات والطرق الثورية</li>
+                                <li><strong>التطبيقات العملية الحقيقية:</strong> بناء أنظمة production-ready قابلة للاستخدام التجاري</li>
+                                <li><strong>التجارب المتنوعة والمقارنات:</strong> استكشاف طرق مختلفة لحل نفس المشاكل</li>
+                                <li><strong>الحالات المعقدة:</strong> التعامل مع السيناريوهات الصعبة والتحديات المتقدمة</li>
+                                <li><strong>التحسين والأداء:</strong> تقنيات optimization وscaling للأنظمة الكبيرة</li>
+                                <li><strong>الابتكار والبحث:</strong> استكشاف الاتجاهات المستقبلية في المجال</li>
+                            </ul>
+                            
+                            <div class="success-box">
+                                <p><strong>وعد المدرس:</strong> "الجاي أحلى بكتير! هانتعلم تقنيات هتخليكم تبنوا أنظمة RAG تنافس أكبر الشركات في العالم."</p>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <h5>🎓 القيمة المضافة من هذا الدرس</h5>
+                            <p><strong>ما اكتسبناه من الرحلة دي:</strong></p>
+                            <ul>
+                                <li><strong>منهجية علمية:</strong> طريقة منظمة لبناء evaluation datasets</li>
+                                <li><strong>مهارات تقنية:</strong> خبرة عملية في prompt engineering والتقييم</li>
+                                <li><strong>فهم عميق:</strong> إدراك للتحديات الحقيقية والحلول المبتكرة</li>
+                                <li><strong>أدوات عملية:</strong> dataset جاهز للاستخدام في مشاريع مستقبلية</li>
+                                <li><strong>رؤية شاملة:</strong> فهم كامل لدورة حياة تطوير أنظمة RAG</li>
+                                <li><strong>ثقة مهنية:</strong> القدرة على التعامل مع تحديات حقيقية</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ تذكير استراتيجي مهم</h4>
+                        <p>المدرس بيؤكد بوضوح تام إن الـ evaluation dataset اللي عملناه ده في هذا الدرس <strong>مش هايتستخدم إطلاقاً</strong> في باقي محاضرات ودروس الكورس، والموضوع ده اتغطى بس للاكتمال العلمي والتعليمي وإعداد الطلاب للواقع المهني. من الدرس الجاي، التركيز الكامل والمطلق هايكون على تقنيات وتطبيقات RAG المتقدمة والعملية.</p>
+                        
+                        <div class="info-box">
+                            <p><strong>الهدف التعليمي تم تحقيقه:</strong> المطلوب كان تعليم الطريقة والمنهجية، مش إنتاج أداة للاستخدام في باقي الكورس. هذا النهج التعليمي بيضمن فهم شامل للمجال.</p>
+                        </div>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>🚀 رسالة تحفيزية وتشويق للمستقبل</h4>
+                        <p>المدرس بيختتم بحماس وطاقة إيجابية عالية: "من هنا إحنا هانغوص عميق جداً في retrieval augmented generation. I hope you're hyped for that! الجاي هايكون amazing!"</p>
+                        <p>ده تعبير واضح عن حماسه الشديد للجزء الأكثر إثارة من الكورس وثقته المطلقة إن الطلاب هايستمتعوا ويستفيدوا من المحتوى المتقدم اللي جاي، اللي هايكون أكثر عملية وتطبيقاً وإثارة.</p>
+                        
+                        <div class="highlight-box">
+                            <p><strong>توقعات المدرس للطلاب:</strong> "بعد ما خلصتوا الكورس ده، هاتقدروا تبنوا أنظمة RAG من الآخر، تقيموها بنفسكم، وتطوروها لمستوى عالمي. دي مش مجرد مهارات تقنية، ده تمكين حقيقي!"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

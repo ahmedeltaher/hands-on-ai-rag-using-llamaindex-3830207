@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering for RAG - تخصيص قوالب المحادثة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #ff9a9e;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "💬";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.packages h2::before {
+            content: "📦";
+        }
+        
+        .card.setup h2::before {
+            content: "⚙️";
+        }
+        
+        .card.helpers h2::before {
+            content: "🛠️";
+        }
+        
+        .card.benefits h2::before {
+            content: "✨";
+        }
+        
+        .card.components h2::before {
+            content: "🧩";
+        }
+        
+        .card.query-engine h2::before {
+            content: "🔍";
+        }
+        
+        .card.prompts h2::before {
+            content: "💭";
+        }
+        
+        .card.customization h2::before {
+            content: "🎨";
+        }
+        
+        .card.pipeline h2::before {
+            content: "⛓️";
+        }
+        
+        .card.execution h2::before {
+            content: "▶️";
+        }
+        
+        .card.results h2::before {
+            content: "📊";
+        }
+        
+        .card.llm-comparison h2::before {
+            content: "⚖️";
+        }
+        
+        .card.response-synthesizers h2::before {
+            content: "🔧";
+        }
+        
+        .card.modes h2::before {
+            content: "🎛️";
+        }
+        
+        .card.detailed-modes h2::before {
+            content: "📋";
+        }
+        
+        .card.implementation h2::before {
+            content: "⚡";
+        }
+        
+        .card.testing h2::before {
+            content: "🧪";
+        }
+        
+        .card.summary h2::before {
+            content: "📝";
+        }
+        
+        .card.next h2::before {
+            content: "➡️";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #FF9AA2;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #ffe4e6 0%, #fbb6ce 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #ff9a9e;
+        }
+        
+        .info-box {
+            background: #fef7f7;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #ff9a9e;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .packages-showcase {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .packages-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .packages-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .package-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .package-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .package-purpose {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .helper-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .benefit-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #ff9a9e;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .benefit-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(255, 154, 158, 0.2);
+        }
+        
+        .benefit-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #ff9a9e;
+        }
+        
+        .benefit-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .benefit-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .query-modes {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .modes-title {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .mode-item {
+            background: rgba(255,255,255,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        
+        .mode-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .mode-description {
+            font-size: 0.9em;
+            color: #636e72;
+        }
+        
+        .prompt-customization {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .custom-title {
+            color: #2e7d32;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .custom-steps {
+            color: #2e7d32;
+            line-height: 1.6;
+        }
+        
+        .custom-step {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 8px;
+            border-right: 3px solid #4caf50;
+        }
+        
+        .response-modes {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .response-title {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .response-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .response-mode {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border-right: 4px solid rgba(255,255,255,0.3);
+        }
+        
+        .response-mode-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .response-mode-desc {
+            font-size: 0.95em;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .execution-results {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .results-title {
+            color: #8b4513;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .results-content {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .results-text {
+            font-style: italic;
+            color: #654321;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .comparison-showcase {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .comparison-title {
+            color: #2c3e50;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .comparison-content {
+            background: rgba(255,255,255,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            color: #2c3e50;
+        }
+        
+        .next-lesson {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .next-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .next-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .helper-benefits, .packages-grid, .modes-grid, .response-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Prompt Engineering for RAG</h1>
+            <p>تخصيص قوالب المحادثة لتحسين أداء تطبيقات RAG</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>مقدمة: تخصيص Prompt Templates</h2>
+                <p>في الفيديو ده، هوريكم إزاي تخصصوا الـ prompt template اللي مربوط بالـ query engine بتاعكم.</p>
+                
+                <div class="highlight">
+                    <strong>الهدف الأساسي:</strong> تعلم كيفية تخصيص وتطوير prompt templates لتحسين أداء query engines في تطبيقات RAG
+                </div>
+            </div>
+
+            <div class="card packages">
+                <h2>الحزم المطلوبة قبل البداية</h2>
+                <p>دلوقتي، قبل ما نكمل، المفروض تنصبوا الحزم دي في البيئة بتاعتكم. ده لأننا هنستورد شوية helper functions.</p>
+                
+                <div class="packages-showcase">
+                    <div class="packages-title">📦 الحزم المطلوبة</div>
+                    <div class="packages-content">
+                        <p>الـ helper functions دي محتاجة الحزم دي تكون منصبة عشان تشتغل صح.</p>
+                    </div>
+                    
+                    <div class="packages-grid">
+                        <div class="package-item">
+                            <div class="package-name">FastEmbed</div>
+                            <div class="package-purpose">خيار مجاني للـ embedding</div>
+                        </div>
+                        
+                        <div class="package-item">
+                            <div class="package-name">Mistral AI</div>
+                            <div class="package-purpose">نموذج لغوي بديل</div>
+                        </div>
+                        
+                        <div class="package-item">
+                            <div class="package-name">Helper Dependencies</div>
+                            <div class="package-purpose">مكتبات مساعدة للوظائف</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>تنصيب الحزم المطلوبة</h3>
+                    <pre># تنصيب الحزم المطلوبة
+pip install fastembed
+pip install mistralai
+pip install llama-index-embeddings-fastembed
+pip install llama-index-llms-mistralai
+
+# أو باستخدام ملف requirements
+pip install -r requirements.txt</pre>
+                </div>
+                
+                <p>تنويه إنني مش هستخدم FastEmbed أو Mistral AI على مدار الكورس، بس عملت الـ functions شاملة كفاية عشان لو اختارت تستخدم خيار مجاني زي FastEmbed للـ embedding model، أو لو عايز تجرب مع Mistral AI، هيكون سهل عليك تعمل كده.</p>
+                
+                <div class="warning-box">
+                    <h3>💡 خيارات مرنة</h3>
+                    <p>الحزم دي مش إجبارية للكورس، لكن متاحة كخيارات إضافية للتجريب والاستكشاف.</p>
+                </div>
+            </div>
+
+            <div class="card setup">
+                <h2>البداية والإعداد</h2>
+                <p>يلا نبدأ. يبقى نبدأ بعمل الـ imports بتاعتنا، والـ sys append ده مجرد بيخلينا نقدر نستورد الـ helper functions بتاعتنا.</p>
+                
+                <div class="code-card">
+                    <h3>الإعداد الأولي والImports</h3>
+                    <pre># الـ imports الأساسية
+import sys
+import os
+from dotenv import load_dotenv
+
+# إضافة مسار helper functions
+sys.path.append('./helpers')
+
+# استيراد helper functions
+from utils import (
+    setup_llm,
+    setup_embedding_model, 
+    setup_vector_store,
+    create_index,
+    create_query_engine
+)
+
+# تحميل متغيرات البيئة
+load_dotenv()
+
+# إعداد API keys
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+QDRANT_URL = os.getenv("QDRANT_URL") 
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")</pre>
+                </div>
+                
+                <p>نعمل instantiate للـ API keys بتاعتنا، ودلوقتي نقدر نبدأ نستخدم الـ helper functions بتاعتنا عشان نضبط الـ LLM، Embedding model، vector store ونعمل index.</p>
+            </div>
+
+            <div class="card helpers">
+                <h2>استخدام Helper Functions</h2>
+                <p>يبقى تقدر تشوف هنا إننا في النهاية بنوفر كام سطر كود لأن تعرف كل حاجة بقت مجردة في الـ helper files.</p>
+                
+                <div class="helper-benefits">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📝</div>
+                        <div class="benefit-title">أقل كود</div>
+                        <div class="benefit-description">توفير عدد كبير من أسطر الكود</div>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🔍</div>
+                        <div class="benefit-title">شفافية كاملة</div>
+                        <div class="benefit-description">إمكانية مراجعة الكود في helpers/utils</div>
+                    </div>
+                    
+                    <div benefit-card">
+                        <div class="benefit-icon">🚫</div>
+                        <div class="benefit-title">لا تكرار</div>
+                        <div class="benefit-description">تجنب الكود المتكرر في الـ notebooks</div>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📖</div>
+                        <div class="benefit-title">سهولة القراءة</div>
+                        <div class="benefit-description">تركيز على المفاهيم الأساسية</div>
+                    </div>
+                </div>
+                
+                <p>لو احتجت في أي وقت تفتكر إيه اللي بيحصل تحت الغطاء، تقدر تروح للـ helpers utils، وتقدر تشوف كل الكود.</p>
+                
+                <div class="info-box">
+                    <h4>💡 فلسفة Helper Functions</h4>
+                    <p>في الوقت ده في الكورس، احنا شفنا الأنماط دي كتير أوي لدرجة إنني أعتقد إننا نقدر نوفر على نفسنا عناء إن الـ notebooks تبقى مليانة كود متكرر.</p>
+                </div>
+            </div>
+
+            <div class="card benefits">
+                <h2>فوائد استخدام Helper Functions</h2>
+                <p>لاحظ إنك هتشوف الـ helper functions دي مراراً وتكراراً، بس بشكل عام أنا بوفر عليك عناء إنك تقرأ طن من الـ boilerplate code.</p>
+                
+                <div class="highlight">
+                    <strong>النتيجة المحققة:</strong> تركيز أكبر على المفاهيم الأساسية والتطبيق العملي بدلاً من الكود المتكرر
+                </div>
+            </div>
+
+            <div class="card components">
+                <h2>إعداد المكونات الأساسية</h2>
+                <p>يلا نروح ودلوقتي نضبط الـ LLM بتاعنا، نضبط الـ embedding model بتاعنا، نعمل الـ vector store بتاعنا، نعمل instantiate للـ storage context، ونبني الـ index بتاعنا.</p>
+                
+                <div class="code-card">
+                    <h3>بناء المكونات باستخدام Helper Functions</h3>
+                    <pre># إعداد LLM
+llm = setup_llm(provider="openai", model="gpt-3.5-turbo")
+
+# إعداد Embedding model  
+embed_model = setup_embedding_model(provider="openai")
+
+# إعداد Vector store
+vector_store = setup_vector_store(
+    provider="qdrant",
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY,
+    collection_name="poems_collection"
+)
+
+# بناء Index
+index = create_index(
+    vector_store=vector_store,
+    embed_model=embed_model
+)
+
+print("جميع المكونات تم إعدادها بنجاح!")</pre>
+                </div>
+            </div>
+
+            <div class="card query-engine">
+                <h2>Create Query Engine Helper Function</h2>
+                <p>يبقى أريد أروح دلوقتي وأستورد كام helper function تاني. واحدة من دي هي الـ Create Query Engine helper function.</p>
+                
+                <div class="code-card">
+                    <h3>استيراد Create Query Engine Helper</h3>
+                    <pre># استيراد helper function إضافي
+from utils import create_query_engine
+
+# يمكن فحص الكود المصدري في utils
+# CTRL + F للبحث عن "Create Query Engine"</pre>
+                </div>
+                
+                <p>لو تروح وتبص في الـ source code للـ utils وتعمل CTRL-F للـ Create Query Engine، هتشوف إن في كام mode مختلف تقدر تمررهم، chat، query، أو retrieve.</p>
+                
+                <div class="query-modes">
+                    <div class="modes-title">🎛️ أوضاع Query Engine المتاحة</div>
+                    <div class="modes-grid">
+                        <div class="mode-item">
+                            <div class="mode-name">Chat</div>
+                            <div class="mode-description">للمحادثات التفاعلية</div>
+                        </div>
+                        
+                        <div class="mode-item">
+                            <div class="mode-name">Query</div>
+                            <div class="mode-description">للاستعلامات المباشرة</div>
+                        </div>
+                        
+                        <div class="mode-item">
+                            <div class="mode-name">Retrieve</div>
+                            <div class="mode-description">لاسترجاع المعلومات فقط</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>ده مجرد بيخلي الأمر سهل علينا إننا نستخدم الـ abstractions المختلفة دي. على رأس الـ index. أنا هستخدم الـ query mode.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Query Engine</h3>
+                    <pre># إنشاء query engine باستخدام query mode
+query_engine = create_query_engine(
+    index=index,
+    mode="query",
+    llm=llm
+)
+
+print("Query Engine تم إنشاؤه بنجاح!")</pre>
+                </div>
+                
+                <p>يلا نروح ونعمل instantiate لده.</p>
+            </div>
+
+            <div class="card prompts">
+                <h2>Default Prompts في Query Engine</h2>
+                <p>وهتشوف إن الـ query engine فعلاً عنده شوية default prompts مربوطة بيه. ونقدر نحديث الـ default prompts دي بطريقة مباشرة إلى حد ما.</p>
+                
+                <div class="info-box">
+                    <h4>🔍 فهم Default Prompts</h4>
+                    <p>كل query engine بيجي بـ prompt templates افتراضية مصممة للاستخدام العام، لكن ممكن نخصصها حسب احتياجاتنا.</p>
+                </div>
+            </div>
+
+            <div class="card customization">
+                <h2>تخصيص Prompt Templates</h2>
+                <p>كل اللي عندنا نعمله هو إننا نعرف الـ custom prompt كـ string مع الـ variable names كـ placeholders، وبعدين نعمل prompt template.</p>
+                
+                <div class="prompt-customization">
+                    <div class="custom-title">🎨 خطوات التخصيص</div>
+                    
+                    <div class="custom-step">
+                        <strong>الخطوة 1:</strong> تعريف custom prompt كـ string مع placeholders
+                    </div>
+                    
+                    <div class="custom-step">
+                        <strong>الخطوة 2:</strong> إنشاء PromptTemplate object
+                    </div>
+                    
+                    <div class="custom-step">
+                        <strong>الخطوة 3:</strong> تحديث prompts في Query Engine
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>تخصيص Prompt Template</h3>
+                    <pre># تعريف custom prompt
+from llama_index.core.prompts import PromptTemplate
+
+custom_prompt_str = (
+    "Context information is below.\n"
+    "---------------------\n" 
+    "{context_str}\n"
+    "---------------------\n"
+    "Given this context, please remix the Rudyard Kipling poem 'If' "
+    "and create a short haiku version. Be creative and maintain the "
+    "essence of the original message.\n"
+    "Query: {query_str}\n"
+    "Answer: "
+)
+
+# إنشاء PromptTemplate
+custom_prompt = PromptTemplate(custom_prompt_str)
+
+# تحديث prompt في query engine
+query_engine.update_prompts({"response_synthesizer:text_qa_template": custom_prompt})
+
+print("Prompt تم تحديثه بنجاح!")</pre>
+                </div>
+                
+                <p>نقدر نعمل ده وبعدين نقدر نروح ونحديث الـ prompts زي كده، ونقدر دلوقتي نشوف إن الـ prompt بتاعنا اتحدث.</p>
+                
+                <p>رائع.</p>
+            </div>
+
+            <div class="card pipeline">
+                <h2>بناء Query Pipeline</h2>
+                <p>يبقى دلوقتي يلا نروح ونبني query pipeline. يبقى عندي الـ helper function ده اللي هو abstraction على الـ query pipeline.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Query Pipeline</h3>
+                    <pre># استيراد Query Pipeline helper
+from utils import create_query_pipeline
+from llama_index.core.query_pipeline import InputComponent
+
+# إنشاء input component
+input_component = InputComponent()
+
+# بناء Query Pipeline
+pipeline = create_query_pipeline(
+    chain=[input_component, query_engine],
+    verbose=True
+)
+
+print("Query Pipeline تم إنشاؤه بنجاح!")</pre>
+                </div>
+                
+                <p>محتاجين نعمل input component وبعدين نقدر نبني الـ chain بتاعنا بالشكل ده. عندنا input component والـ input ده هيتمرر للـ query engine.</p>
+                
+                <div class="info-box">
+                    <h4>❓ ليه مفيش LLM في Pipeline؟</h4>
+                    <p>ممكن تتساءل ليه ما مررتش LLM هنا. طيب، ده لأن تعرف، احنا بنستخدم settings.llm. يبقى الـ query engine نفسه عنده argument للـ LLM، بس لأننا بنستخدم settings.llm، هيتستخدم هناك ضمنياً.</p>
+                </div>
+            </div>
+
+            <div class="card execution">
+                <h2>تشغيل Pipeline واختبار النتائج</h2>
+                <p>يلا نروح ونبني الـ query engine بتاعنا. نقدر نشغل الـ pipeline، وهنا أنا مجرد بقول remix the Rudyard Kipling poem، "If," ونقدر نشوف الـ output.</p>
+                
+                <div class="code-card">
+                    <h3>تشغيل Pipeline الأول</h3>
+                    <pre># تشغيل Pipeline
+query = "Remix the Rudyard Kipling poem 'If'"
+response = pipeline.run(input=query)
+
+print("Pipeline Response:")
+print(response)</pre>
+                </div>
+                
+                <div class="execution-results">
+                    <div class="results-title">📊 نتيجة التشغيل الأول</div>
+                    <div class="results-content">
+                        <div class="results-text">
+                            "Terms so strict, yet Gutenberg's license<br>
+                            shines a path to knowledge."
+                        </div>
+                        <p style="margin-top: 15px; color: #8b4513;">مثيراً للاهتمام، النتيجة جاءت في شكل haiku قصير!</p>
+                    </div>
+                </div>
+                
+                <p>مثيراً للاهتمام، هو haiku قصير. "Terms so strict, yet Gutenberg's license shines a path to knowledge." ده مثير للاهتمام.</p>
+            </div>
+
+            <div class="card llm-comparison">
+                <h2>مقارنة تأثير LLM Settings</h2>
+                <p>دلوقتي أريد أشوف إيه اللي هيحصل لو عملنا ده، لو مررنا settings.llm، هل ده هيغير الـ response؟</p>
+                
+                <div class="code-card">
+                    <h3>تجربة مع LLM صريح</h3>
+                    <pre># تجربة إضافة LLM صراحة للـ pipeline
+from llama_index.core import Settings
+
+# إنشاء pipeline مع LLM صريح
+pipeline_with_llm = create_query_pipeline(
+    chain=[input_component, query_engine, Settings.llm],
+    verbose=True
+)
+
+# تشغيل نفس الاستعلام
+response_with_llm = pipeline_with_llm.run(input=query)
+
+print("Response with explicit LLM:")
+print(response_with_llm)</pre>
+                </div>
+                
+                <div class="comparison-showcase">
+                    <div class="comparison-title">⚖️ مقارنة النتائج</div>
+                    <div class="comparison-content">
+                        <p><strong>بدون LLM صريح:</strong> haiku مباشر من query engine</p>
+                        <p><strong>مع LLM صريح:</strong> الـ haiku يتمرر لـ LLM instance تاني</p>
+                        <p style="margin-top: 10px; font-style: italic;">النتيجة: تغيير في الاستجابة لأن الـ haiku بيتعالج مرة تانية!</p>
+                    </div>
+                </div>
+                
+                <p>صح، وتقدر تشوف إنه فعلاً بيغير الـ response لأننا بناخد الـ haiku وبنمرر الـ haiku ده تاني لـ LLM instance تاني، يبقى ده نوعاً ما بيغير الـ response اللي بنحصل عليه.</p>
+                
+                <p>يبقى مجرد أردت أشير لده، إننا نقدر نشيل ده وممكن حتى نجرب query تاني هنا، وممكن الـ query ده يكون حاجة على شاكلة، "If you could keep your head when all around you are losing their cool and blaming it on you," دي سطر من قصيدة Rudyard Kipling، "If," ويلا نشوف إيه اللي هيحصل.</p>
+                
+                <div class="code-card">
+                    <h3>تجربة استعلام جديد</h3>
+                    <pre># استعلام جديد مع سطر من القصيدة الأصلية
+new_query = (
+    "If you could keep your head when all around you "
+    "are losing their cool and blaming it on you"
+)
+
+# تحديث Pipeline (بدون LLM إضافي)
+pipeline_updated = create_query_pipeline(
+    chain=[input_component, query_engine],
+    verbose=True  
+)
+
+# تشغيل الاستعلام الجديد
+new_response = pipeline_updated.run(input=new_query)
+
+print("New Query Response:")
+print(new_response)</pre>
+                </div>
+            </div>
+
+            <div class="card response-synthesizers">
+                <h2>Response Synthesizers</h2>
+                <p>دلوقتي أريد أتكلم عن response synthesizers. يبقى في طن من التوثيق في LlamaIndex عن response synthesizers. ربطت ليها هنا.</p>
+                
+                <div class="warning-box">
+                    <h3>📚 مصادر التوثيق</h3>
+                    <p>ممكن تروح للـ component guide تحت Querying، وتحت Response Synthesis، تقدر تحصل على walkthrough تفصيلي عن الـ response synthesizers.</p>
+                </div>
+                
+                <p>تقدر تروح للـ component guide تحت Querying، وتحت Response Synthesis، تقدر تحصل على in-depth walkthrough detail للـ response synthesizers.</p>
+                
+                <p>يلا نروح ونشوف واحد عملياً بس. يبقى هستورد الـ response mode.</p>
+            </div>
+
+            <div class="card modes">
+                <h2>أوضاع Response المختلفة</h2>
+                <p>وتقدر تشوف هنا إن في كام response mode مختلف نقدر نستخدمهم. يبقى روحت فعلاً واتكلمت عنهم هنا ليكم.</p>
+                
+                <div class="code-card">
+                    <h3>استيراد Response Modes</h3>
+                    <pre># استيراد أوضاع Response المختلفة
+from llama_index.core.response_synthesizers import ResponseMode
+
+# عرض الأوضاع المتاحة
+available_modes = [
+    ResponseMode.ACCUMULATE,
+    ResponseMode.COMPACT, 
+    ResponseMode.COMPACT_ACCUMULATE,
+    ResponseMode.GENERATION,
+    ResponseMode.NO_TEXT,
+    ResponseMode.REFINE,
+    ResponseMode.SIMPLE_SUMMARIZE,
+    ResponseMode.TREE_SUMMARIZE
+]
+
+print("Available Response Modes:")
+for mode in available_modes:
+    print(f"- {mode}")
+</pre>
+                </div>
+                
+                <p>تقدر كمان تبص على notes مفصلة أكتر عن إيه هي الـ response modes في التوثيق.</p>
+            </div>
+
+            <div class="card detailed-modes">
+                <h2>شرح مفصل لـ Response Modes</h2>
+                <p>بس بإيجاز شديد، عندنا كام واحد مختلف هنتكلم عنهم هنا. Accumulate، compact، compact_accumulate، generation، no_text، refine، simple_summarize، وtree_summarize.</p>
+                
+                <div class="response-modes">
+                    <div class="response-title">🔧 أوضاع Response المتاحة</div>
+                    <div class="response-grid">
+                        <div class="response-mode">
+                            <div class="response-mode-name">Refine</div>
+                            <div class="response-mode-desc">طريقة تكرارية لتوليد response</div>
+                        </div>
+                        
+                        <div class="response-mode">
+                            <div class="response-mode-name">Compact</div>
+                            <div class="response-mode-desc">دمج text chunks لقطع أصغر</div>
+                        </div>
+                        
+                        <div class="response-mode">
+                            <div class="response-mode-name">Simple Summarize</div>
+                            <div class="response-mode-desc">تلخيص كل text chunks في واحد</div>
+                        </div>
+                        
+                        <div class="response-mode">
+                            <div class="response-mode-name">Tree Summarize</div>
+                            <div class="response-mode-desc">إنشاء candidate nodes بطريقة bottom-up</div>
+                        </div>
+                        
+                        <div class="response-mode">
+                            <div class="response-mode-name">Generation</div>
+                            <div class="response-mode-desc">تجاهل السياق وتوليد response مباشر</div>
+                        </div>
+                        
+                        <div class="response-mode">
+                            <div class="response-mode-name">No Text</div>
+                            <div class="response-mode-desc">عدم إرجاع نص في الاستجابة</div>
+                        </div>
+                        
+                        <div class="response-mode">
+                            <div class="response-mode-name">Accumulate</div>
+                            <div class="response-mode-desc">تجميع الاستجابات تدريجياً</div>
+                        </div>
+                        
+                        <div class="response-mode">
+                            <div class="response-mode-name">Compact Accumulate</div>
+                            <div class="response-mode-desc">دمج compact مع accumulate</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>أول حاجة، أريد أتكلم عن refine، وrefine هو مجرد iterative method لتوليد response. همر على دول بسرعة وأحترم وقتكم.</p>
+                
+                <p>تقدروا دايماً توقفوا الفيديوهات وتروحوا تبصوا على الـ notebook وتقروا ده بنفسكم. بس مجرد ألمس عليه شوية، يلا نبدأ بتعريف شوية من الـ response modes دي.</p>
+                
+                <div class="info-box">
+                    <h4>📖 قراءة إضافية</h4>
+                    <p>No text، accumulate، compact، accumulate - هسيبكم تقروا دول لوحدكم للتفصيل أكتر.</p>
+                </div>
+            </div>
+
+            <div class="card implementation">
+                <h2>تطبيق Response Synthesizer</h2>
+                <p>يلا نروح دلوقتي ونبني الـ response synthesizer بتاعنا. عملنا instantiate لده هنا. هنعمل الـ query engine بتاعنا ونروح ونشغل الـ cell ونحصل على response.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء وتشغيل Response Synthesizer</h3>
+                    <pre># إنشاء response synthesizer مع refine mode
+from llama_index.core.response_synthesizers import get_response_synthesizer
+
+response_synthesizer = get_response_synthesizer(
+    response_mode=ResponseMode.REFINE,
+    llm=llm
+)
+
+# إنشاء query engine مع custom synthesizer
+custom_query_engine = create_query_engine(
+    index=index,
+    mode="query", 
+    response_synthesizer=response_synthesizer,
+    llm=llm
+)
+
+# تجربة الاستعلام
+test_query = "What are the main themes about success and failure?"
+synthesized_response = custom_query_engine.query(test_query)
+
+print("Synthesized Response:")
+print(synthesized_response)</pre>
+                </div>
+            </div>
+
+            <div class="card testing">
+                <h2>اختبار النتائج</h2>
+                <p>يبقى تقدر تشوف هنا إنه بيشتغل بقوة، وهنحصل على response هنا.</p>
+                
+                <div class="execution-results">
+                    <div class="results-title">🧪 نتيجة Response Synthesizer</div>
+                    <div class="results-content">
+                        <div class="results-text">
+                            "Success and failure are relative concepts, and it's all about how we choose and perceive and interpret, so on and so forth."
+                        </div>
+                        <p style="margin-top: 15px; color: #8b4513;">النتيجة تُظهر فهماً عميقاً للمفاهيم النسبية للنجاح والفشل</p>
+                    </div>
+                </div>
+                
+                <p>يبقى success وfailure هم relative concepts، وكله عن إزاي نختار ونفهم ونفسر، وهكذا.</p>
+            </div>
+
+            <div class="card summary">
+                <h2>ملخص: لمحة عن Prompt Engineering</h2>
+                <p>وده مجرد لمحة لشوية من prompt engineering. فعلاً، هو مجرد تحديث الـ prompt templates للـ query engines.</p>
+                
+                <div class="highlight">
+                    <strong>الخلاصة الأساسية:</strong> Prompt Engineering في RAG يتمحور حول تخصيص prompt templates للحصول على استجابات أفضل وأكثر دقة
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔮 النظرة المستقبلية</h4>
+                    <p>هنشوف شوية أكتر عن prompt engineering وتلاعب prompts بعدين في الكورس لما نبص على advanced RAG وmodular RAG.</p>
+                </div>
+            </div>
+
+            <div class="card next">
+                <h2>الدرس القادم</h2>
+                <p>هشوفكم في الفيديو الجاي حيث احنا دلوقتي هنحضر الـ PDFs اللي حملناها من زمان أوي ونخليها جاهزة عشان تتدخل في Qdrant collection.</p>
+                
+                <div class="next-lesson">
+                    <div class="next-title">➡️ الموضوع القادم</div>
+                    <div class="next-content">
+                        <p>تحضير وإعداد ملفات PDF للإدخال في مجموعة Qdrant - خطوة مهمة نحو بناء تطبيق RAG متكامل مع بيانات حقيقية.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الإنجاز المحقق:</strong> تعلمنا تخصيص prompt templates وفهمنا أوضاع response synthesizers المختلفة لتحسين أداء تطبيقات RAG!
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>💬 Prompt Engineering: الفن والعلم وراء تخصيص المحادثة مع الذكاء الاصطناعي</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

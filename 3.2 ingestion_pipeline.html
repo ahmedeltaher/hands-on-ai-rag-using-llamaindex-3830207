@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خط إنتاج الإدخال (Ingestion Pipeline) - تبسيط معالجة البيانات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 50%, #74b9ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #00b894;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "🏭";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.setup h2::before {
+            content: "⚙️";
+        }
+        
+        .card.settings h2::before {
+            content: "🌐";
+        }
+        
+        .card.concept h2::before {
+            content: "🧠";
+        }
+        
+        .card.definition h2::before {
+            content: "📖";
+        }
+        
+        .card.caching h2::before {
+            content: "💾";
+        }
+        
+        .card.documentation h2::before {
+            content: "📚";
+        }
+        
+        .card.preparation h2::before {
+            content: "🔧";
+        }
+        
+        .card.qdrant h2::before {
+            content: "🗄️";
+        }
+        
+        .card.data h2::before {
+            content: "📁";
+        }
+        
+        .card.management h2::before {
+            content: "📋";
+        }
+        
+        .card.implementation h2::before {
+            content: "⚡";
+        }
+        
+        .card.transformations h2::before {
+            content: "🔄";
+        }
+        
+        .card.execution h2::before {
+            content: "🚀";
+        }
+        
+        .card.results h2::before {
+            content: "📊";
+        }
+        
+        .card.nodes h2::before {
+            content: "🔗";
+        }
+        
+        .card.indexing h2::before {
+            content: "📇";
+        }
+        
+        .card.persistence h2::before {
+            content: "💽";
+        }
+        
+        .card.helpers h2::before {
+            content: "🛠️";
+        }
+        
+        .card.summary h2::before {
+            content: "📋";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #81C784;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #d1f2eb 0%, #a3e9d0 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #00b894;
+        }
+        
+        .info-box {
+            background: #e8f8f5;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #00b894;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .pipeline-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #00b894;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(0, 184, 148, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #00b894;
+        }
+        
+        .feature-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .feature-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .settings-showcase {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .settings-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .settings-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .transformations-flow {
+            background: #f1f2f6;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #00b894;
+        }
+        
+        .flow-title {
+            color: #2d3436;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .flow-step {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #00cec9;
+            position: relative;
+        }
+        
+        .flow-number {
+            background: #00cec9;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            position: absolute;
+            left: -12px;
+            top: 15px;
+        }
+        
+        .flow-content {
+            margin-right: 20px;
+        }
+        
+        .flow-action {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .flow-description {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .caching-benefits {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .benefits-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .benefit-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .benefit-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .benefit-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .benefit-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .qdrant-operations {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 2px solid #74b9ff;
+        }
+        
+        .operations-title {
+            color: #0984e3;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .operation-step {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #74b9ff;
+        }
+        
+        .operation-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .operation-description {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .document-management {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .management-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-right: 4px solid #e17055;
+            text-align: center;
+        }
+        
+        .management-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #e17055;
+        }
+        
+        .management-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .management-description {
+            color: #636e72;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        .pipeline-results {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .results-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .results-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .helper-functions {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .helper-title {
+            color: #c53030;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .helper-content {
+            color: #636e72;
+            line-height: 1.6;
+        }
+        
+        .next-lesson {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .next-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .next-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .pipeline-features, .benefits-grid, .document-management {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>خط إنتاج الإدخال (Ingestion Pipeline)</h1>
+            <p>تبسيط وتحسين عملية معالجة البيانات في LlamaIndex</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>مقدمة: Ingestion Pipeline Abstraction</h2>
+                <p>في الفيديو ده، هنتكلم عن abstraction الـ ingestion pipeline. يلا نتصل بالـ kernel بتاعنا، نعمل الـ standard imports بتاعتنا، نضبط الـ API keys بتاعتنا، ونبدأ نبني ingestion pipeline.</p>
+                
+                <div class="highlight">
+                    <strong>الهدف الأساسي:</strong> تعلم استخدام Ingestion Pipeline كـ abstraction عالي المستوى لتبسيط عملية معالجة البيانات
+                </div>
+            </div>
+
+            <div class="card setup">
+                <h2>الإعداد الأولي</h2>
+                <p>يبقى، يلا نتصل بالـ kernel، نعمل الـ standard imports، نضبط الـ API keys، ونبدأ نبني ingestion pipeline.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد البيئة والاتصال</h3>
+                    <pre># الاتصال بالـ kernel والـ imports الأساسية
+from llama_index.core import Settings
+from llama_index.core.ingestion import IngestionPipeline
+from llama_index.core.node_parser import TokenTextSplitter
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.vector_stores.qdrant import QdrantVectorStore
+import qdrant_client
+import os
+from dotenv import load_dotenv
+
+# تحميل متغيرات البيئة
+load_dotenv()
+
+# ضبط API Keys
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")</pre>
+                </div>
+            </div>
+
+            <div class="card settings">
+                <h2>شيء مختلف: LlamaIndex Settings</h2>
+                <p>يبقى، أريدكم تلاحظوا إننا بنعمل حاجة مختلفة شوية هنا. احنا بنستخدم الـ settings من LlamaIndex.</p>
+                
+                <div class="settings-showcase">
+                    <div class="settings-title">🌐 إيه هي الـ Settings؟</div>
+                    <div class="settings-content">
+                        <p>الـ Settings هي في الأساس global configurations. يعني مجرد حاجة هنستخدمها كتير بعدين، بس هي طريقة لضبط الحاجات globally.</p>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>استخدام LlamaIndex Settings</h3>
+                    <pre># استخدام Settings لضبط الإعدادات عالمياً
+Settings.llm = llm_model
+Settings.embed_model = embedding_model
+Settings.chunk_size = 256
+Settings.chunk_overlap = 50
+
+# ده بيخلي الإعدادات دي متاحة في كل المشروع</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔧 فوائد الـ Settings</h4>
+                    <p><strong>Global Configuration:</strong> ضبط الإعدادات مرة واحدة لكل المشروع</p>
+                    <p><strong>Consistency:</strong> ضمان استخدام نفس الإعدادات في كل مكان</p>
+                    <p><strong>Simplicity:</strong> تبسيط الكود وتقليل التكرار</p>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>📚 للمزيد من التفاصيل</h3>
+                    <p>لو مهتم، ممكن تبص على توثيق LlamaIndex عن settings.</p>
+                </div>
+            </div>
+
+            <div class="card concept">
+                <h2>بناء Ingestion Pipeline</h2>
+                <p>بعدين، احنا هنبني دلوقتي الـ ingestion pipeline.</p>
+                
+                <div class="info-box">
+                    <h4>🧠 مفهوم الـ Pipeline</h4>
+                    <p>Pipeline هو سلسلة من العمليات المرتبة اللي بتتطبق على البيانات بالترتيب، كل عملية بتاخد output العملية اللي قبلها.</p>
+                </div>
+            </div>
+
+            <div class="card definition">
+                <h2>إيه هو الـ Ingestion Pipeline؟</h2>
+                <p>طيب، احنا بنستخدم transformations اللي هتتطبق على شوية input data. هنعدل الـ input data ده، نحوله لـ documents، نحلله لـ nodes، وبعدين هندخله في vector database.</p>
+                
+                <div class="transformations-flow">
+                    <div class="flow-title">🔄 سلسلة التحويلات</div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-number">1</div>
+                        <div class="flow-content">
+                            <div class="flow-action">Input Data</div>
+                            <div class="flow-description">البيانات الأولية (ملفات، نصوص، إلخ)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-number">2</div>
+                        <div class="flow-content">
+                            <div class="flow-action">Apply Transformations</div>
+                            <div class="flow-description">تطبيق سلسلة من التحويلات المحددة</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-number">3</div>
+                        <div class="flow-content">
+                            <div class="flow-action">Create Documents</div>
+                            <div class="flow-description">تحويل البيانات لـ document objects</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-number">4</div>
+                        <div class="flow-content">
+                            <div class="flow-action">Parse to Nodes</div>
+                            <div class="flow-description">تقسيم الوثائق لـ nodes أصغر</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-number">5</div>
+                        <div class="flow-content">
+                            <div class="flow-action">Insert to Vector DB</div>
+                            <div class="flow-description">حفظ النتائج في قاعدة البيانات</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card caching">
+                <h2>آلية الـ Caching</h2>
+                <p>مع ingestion pipeline، ممكن كمان تستخدم caching mechanism، عشان الـ nodes والـ transformations اللي بتتزاوج يتحفظوا في الـ cache.</p>
+                
+                <div class="caching-benefits">
+                    <div class="benefits-title">💾 فوائد الـ Caching</div>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">⚡</div>
+                            <div class="benefit-name">كفاءة</div>
+                            <div class="benefit-description">يخلي العمليات اللاحقة أكثر كفاءة</div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">💰</div>
+                            <div class="benefit-name">توفير</div>
+                            <div class="benefit-description">تقليل استدعاءات API والتكلفة</div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🔄</div>
+                            <div class="benefit-name">إعادة الاستخدام</div>
+                            <div class="benefit-description">استخدام النتائج المحفوظة مسبقاً</div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">⏱️</div>
+                            <div class="benefit-name">سرعة</div>
+                            <div class="benefit-description">تسريع العمليات المتكررة</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>يبقى ده مجرد بيخلي العمليات اللاحقة أكثر كفاءة.</p>
+                
+                <div class="highlight">
+                    <strong>فكرة الـ Caching:</strong> حفظ نتائج العمليات المكلفة (زي الـ embeddings) عشان نستخدمها تاني من غير إعادة حساب
+                </div>
+            </div>
+
+            <div class="card documentation">
+                <h2>التوثيق والمصادر</h2>
+                <p>لو عايز تتعلم أكتر عن الـ ingestion pipeline، ممكن تروح لتوثيق LlamaIndex.</p>
+                
+                <div class="info-box">
+                    <h4>📚 مصادر التعلم</h4>
+                    <p><strong>الموقع:</strong> docs.llamaindex.ai</p>
+                    <p><strong>المسار:</strong> Component Guides → Loading → Ingestion Pipeline</p>
+                    <p><strong>المحتوى:</strong> breakdown of usage pattern للـ ingestion pipeline</p>
+                </div>
+                
+                <p>يبقى تروح على docs.llamaindex.ai، تبص على Component Guides، وبعدين تحت Loading، تروح Ingestion Pipeline. وده هيديك breakdown للـ usage pattern للـ ingestion pipeline.</p>
+                
+                <p>يبقى، تفاصيل أكتر كتير هنا لو مهتم بده. بس أنا هغطي ده هنا على أي حال، يلا نشوفه في العمل.</p>
+                
+                <div class="warning-box">
+                    <h3>🎯 شمولية الشرح</h3>
+                    <p>هأغطي الموضوع ده هنا بالتفصيل، بس التوثيق الرسمي فيه تفاصيل إضافية مفيدة.</p>
+                </div>
+            </div>
+
+            <div class="card preparation">
+                <h2>الاستعداد للتطبيق</h2>
+                <p>يبقى، اللي هنعمله دلوقتي هو إننا نعمل instantiate لـ ingestion pipeline. هنبنيه ونبعت البيانات لـ Qdrant.</p>
+                
+                <div class="info-box">
+                    <h4>📁 البيانات المستخدمة</h4>
+                    <p><strong>نفس البيانات:</strong> كتاب القصائد من الـ module السابق</p>
+                    <p><strong>الكتاب:</strong> "It Can Be Done"</p>
+                    <p><strong>الهدف:</strong> إعادة بناء المجموعة باستخدام Pipeline</p>
+                </div>
+                
+                <p>يبقى، اللي هنعمله هو نستخدم نفس البيانات اللي استخدمناها في الـ module اللي فات، كتاب القصائد. هنستخدم نفس كتاب القصائد في الـ module اللي فات، "It can be done".</p>
+            </div>
+
+            <div class="card qdrant">
+                <h2>إعداد Qdrant من جديد</h2>
+                <p>واللي أريد أعمله دلوقتي فعلاً، احنا هنرجع لـ Qdrant، وأنا هاختار فعلاً المجموعة اللي عملناها خلاص.</p>
+                
+                <div class="qdrant-operations">
+                    <div class="operations-title">🗄️ خطوات إعادة تهيئة Qdrant</div>
+                    
+                    <div class="operation-step">
+                        <div class="operation-title">تسجيل الدخول</div>
+                        <div class="operation-description">الدخول لحساب Qdrant cloud</div>
+                    </div>
+                    
+                    <div class="operation-step">
+                        <div class="operation-title">الذهاب للـ Clusters</div>
+                        <div class="operation-description">اضغط على hamburger menu، ثم Clusters</div>
+                    </div>
+                    
+                    <div class="operation-step">
+                        <div class="operation-title">فتح Dashboard</div>
+                        <div class="operation-description">فتح cluster dashboard</div>
+                    </div>
+                    
+                    <div class="operation-step">
+                        <div class="operation-title">حذف المجموعة</div>
+                        <div class="operation-description">اضغط delete لحذف المجموعة الموجودة</div>
+                    </div>
+                </div>
+                
+                <p>يبقى، ممكن نسجل الدخول، نكليك على الـ hamburger menu هنا، نروح Clusters، نفتح الـ cluster dashboard، ونضغط delete بس.</p>
+                
+                <p>يبقى، هنحذف المجموعة دي وهنعيد بناءها المرة دي باستخدام الـ ingestion pipeline.</p>
+                
+                <div class="highlight">
+                    <strong>السبب في الحذف:</strong> عشان نشوف الفرق بين الطريقة التقليدية والـ Pipeline الجديد
+                </div>
+            </div>
+
+            <div class="card data">
+                <h2>تحميل البيانات</h2>
+                <p>يبقى، تاني، باستخدام الـ simple directory reader، لمسنا ده قبل كده ونقدر دلوقتي نبني الـ ingestion pipeline.</p>
+                
+                <div class="code-card">
+                    <h3>تحميل البيانات باستخدام SimpleDirectoryReader</h3>
+                    <pre># تحميل البيانات من كتاب القصائد
+from llama_index.core import SimpleDirectoryReader
+
+# تحميل الوثائق
+documents = SimpleDirectoryReader(
+    input_files=["data/it_can_be_done.txt"]
+).load_data()
+
+print(f"تم تحميل {len(documents)} وثيقة")</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>📁 مصدر البيانات</h4>
+                    <p>نفس البيانات اللي استخدمناها قبل كده - كتاب "It Can Be Done" - مجموعة قصائد ملهمة.</p>
+                </div>
+            </div>
+
+            <div class="card management">
+                <h2>Document Management</h2>
+                <p>تقدر تبني ingestion pipeline مع document management. الـ Document management حلوة، لأنك تقدر تعمل cache للـ embeddings بتاعتك.</p>
+                
+                <div class="document-management">
+                    <div class="management-card">
+                        <div class="management-icon">💾</div>
+                        <div class="management-name">Cache Embeddings</div>
+                        <div class="management-description">حفظ الـ embeddings لتسريع المعالجة</div>
+                    </div>
+                    
+                    <div class="management-card">
+                        <div class="management-icon">📂</div>
+                        <div class="management-name">Local Caching</div>
+                        <div class="management-description">حفظ الوثائق محلياً لسهولة الوصول</div>
+                    </div>
+                    
+                    <div class="management-card">
+                        <div class="management-icon">🏪</div>
+                        <div class="management-name">Doc Store</div>
+                        <div class="management-description">إضافة مخزن وثائق منظم</div>
+                    </div>
+                    
+                    <div class="management-card">
+                        <div class="management-icon">🔄</div>
+                        <div class="management-name">Duplicate Handling</div>
+                        <div class="management-description">إدارة البيانات المكررة</div>
+                    </div>
+                </div>
+                
+                <p>يبقى ده مجرد بيسرع المعالجة. تقدر تعمل cache محلياً لو حابب. تقدر تعمل cache للوثائق بتاعتك محلياً، تقدر تضيف doc store، تقدر تتعامل مع البيانات المكررة، وحاجات زي كده.</p>
+                
+                <div class="warning-box">
+                    <h3>📖 للقراءة الإضافية</h3>
+                    <p>بشجعك تقرأ أكتر عن ده. اتوقف براحتك، اقرأ أكتر. ممكن كمان تروح للتوثيق تاني. لو تروح لتوثيق LlamaIndex ingestion pipeline، تقدر تقرأ أكتر عن الـ caching هنا، الـ remote وlocal caching، document management، وكل الحاجات دي.</p>
+                </div>
+            </div>
+
+            <div class="card implementation">
+                <h2>إنشاء Qdrant Client والIngestion Cache</h2>
+                <p>يبقى، هروح دلوقتي وأعمل instantiate للـ Qdrant client بتاعنا والـ ingestion cache بتاعنا.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد Qdrant Client وIngestion Cache</h3>
+                    <pre># إنشاء Qdrant client
+client = qdrant_client.QdrantClient(
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY
+)
+
+# إنشاء vector store
+vector_store = QdrantVectorStore(
+    client=client,
+    collection_name="it_can_be_done_pipeline"
+)
+
+# إعداد ingestion cache (اختياري)
+from llama_index.core.ingestion.cache import IngestionCache
+
+cache = IngestionCache(
+    cache_dir="./ingestion_cache"
+)</pre>
+                </div>
+            </div>
+
+            <div class="card transformations">
+                <h2>بناء Ingestion Pipeline</h2>
+                <p>وبعدين، هبني الـ ingestion pipeline. يبقى، الـ ingestion pipeline هياخد transformations.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Pipeline مع Transformations</h3>
+                    <pre># إنشاء transformation components
+text_splitter = TokenTextSplitter(
+    chunk_size=256,
+    chunk_overlap=50
+)
+
+embedding_model = OpenAIEmbedding(
+    model="text-embedding-3-small"
+)
+
+# إنشاء ingestion pipeline
+pipeline = IngestionPipeline(
+    transformations=[
+        text_splitter,
+        embedding_model
+    ],
+    vector_store=vector_store,
+    cache=cache  # اختياري
+)</pre>
+                </div>
+                
+                <p>والـ transformations، هستخدم في الحالة دي token text splitter، وبعدين أمرر كمان الـ embedding model.</p>
+                
+                <div class="transformations-flow">
+                    <div class="flow-title">🔄 التحويلات في Pipeline</div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-number">1</div>
+                        <div class="flow-content">
+                            <div class="flow-action">Token Text Splitter</div>
+                            <div class="flow-description">تقسيم النص لقطع من 256 token</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-number">2</div>
+                        <div class="flow-content">
+                            <div class="flow-action">Embedding Model</div>
+                            <div class="flow-description">تحويل كل قطعة لـ vector embedding</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>يبقى، اللي بنقوله للـ ingestion pipeline هو قسم النص بتاعنا لـ chunks من 256 tokens، وبعدين اعمل embed لدول.</p>
+                
+                <div class="info-box">
+                    <h4>⚙️ مكونات Pipeline</h4>
+                    <p><strong>Text Splitter:</strong> تقسيم النصوص لقطع قابلة للإدارة</p>
+                    <p><strong>Embedding Model:</strong> تحويل النصوص لـ vectors رقمية</p>
+                    <p><strong>Vector Store:</strong> حفظ النتائج في Qdrant</p>
+                    <p><strong>Cache:</strong> حفظ النتائج المؤقتة لتسريع العمليات اللاحقة</p>
+                </div>
+            </div>
+
+            <div class="card execution">
+                <h2>تشغيل Pipeline</h2>
+                <p>وبعدين، هنا مجرد نوعاً ما لـ document management، مجرد لأوضح فعلاً إزاي بيشتغل. احنا مش هنستخدم دول كتير أوي.</p>
+                
+                <div class="code-card">
+                    <h3>تشغيل Pipeline على الوثائق</h3>
+                    <pre># تشغيل pipeline لإنشاء nodes
+nodes = pipeline.run(documents=documents)
+
+print(f"تم إنشاء {len(nodes)} node من الوثائق")
+
+# Pipeline بيعمل كل ده تلقائياً:
+# 1. تقسيم النصوص
+# 2. إنشاء embeddings  
+# 3. حفظ في vector store
+# 4. إرجاع nodes للاستخدام</pre>
+                </div>
+                
+                <p>ولما عملنا الـ pipeline، نشغله عشان نقدر نعمل الـ nodes بتاعتنا. يبقى، هنعمل nodes عن طريق إننا ناخد الـ pipeline بتاعنا ونشغله ضد الوثائق بتاعتنا.</p>
+                
+                <p>وده هياخد شوية وقت يشتغل هنا.</p>
+                
+                <div class="pipeline-results">
+                    <div class="results-title">🚀 نتائج تشغيل Pipeline</div>
+                    <div class="results-content">
+                        <p>Pipeline بيعمل كل العمليات دي تلقائياً في تسلسل منطقي، ويديك النتيجة النهائية في شكل nodes جاهزة للاستخدام.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card results">
+                <h2>فحص النتائج في Qdrant</h2>
+                <p>ودلوقتي، بعد ما اشتغل، ترجع لـ Qdrant UI، تضغط refresh، وتقول، أوه، رجعتلنا المجموعة بتاعتنا. صح.</p>
+                
+                <div class="info-box">
+                    <h4>✅ التحقق من النجاح</h4>
+                    <p><strong>Qdrant UI:</strong> العودة للواجهة والضغط على refresh</p>
+                    <p><strong>المجموعة:</strong> ظهور المجموعة الجديدة مع البيانات</p>
+                    <p><strong>النمط:</strong> نفس النتائج بطريقة أبسط</p>
+                </div>
+                
+                <p>يبقى، تشوف هنا، هو بيتبع نفس الأنماط اللي شفناها قبل كده. هو مجرد higher level abstraction. صح.</p>
+                
+                <p>يبقى، نشوف إن عندنا الـ nodes بتاعتنا، دخلناها في Qdrant.</p>
+                
+                <div class="highlight">
+                    <strong>النتيجة المهمة:</strong> نفس النتائج اللي حصلنا عليها قبل كده، بس بكود أقل وطريقة أبسط!
+                </div>
+            </div>
+
+            <div class="card nodes">
+                <h2>فحص Nodes المُنشأة</h2>
+                <p>ودلوقتي، لو احنا فضوليين نشوف واحد من الـ nodes يبدو إزاي، نقدر نعمل كده زي كده.</p>
+                
+                <div class="code-card">
+                    <h3>فحص محتوى Node</h3>
+                    <pre># فحص node من النتائج
+sample_node = nodes[0]
+
+# عرض metadata الخاص بالـ node
+print("Node metadata:")
+print(f"Node ID: {sample_node.node_id}")
+print(f"Document ID: {sample_node.ref_doc_id}")
+print(f"Text length: {len(sample_node.text)}")
+
+# عرض جزء من النص
+print("\nNode text preview:")
+print(sample_node.text[:200] + "...")
+
+# فحص embedding (إذا كان متاح)
+if hasattr(sample_node, 'embedding') and sample_node.embedding:
+    print(f"\nEmbedding dimensions: {len(sample_node.embedding)}")
+</pre>
+                </div>
+                
+                <p>يبقى، كل node عنده في الأساس كل الـ metadata اللي شفناه قبل كده.</p>
+                
+                <div class="info-box">
+                    <h4>🔗 مكونات Node</h4>
+                    <p><strong>Node ID:</strong> معرف فريد للـ node</p>
+                    <p><strong>Document ID:</strong> ربط بالوثيقة الأصلية</p>
+                    <p><strong>Text:</strong> النص الفعلي المحفوظ</p>
+                    <p><strong>Metadata:</strong> معلومات إضافية عن المصدر</p>
+                    <p><strong>Embedding:</strong> التمثيل الرقمي للنص</p>
+                </div>
+            </div>
+
+            <div class="card indexing">
+                <h2>إنشاء Index والاسترجاع</h2>
+                <p>نقدر دلوقتي نعمل instantiate لـ index، نعمل retriever، وبعدين نسترجع nodes.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Index واسترجاع البيانات</h3>
+                    <pre># إنشاء index من vector store
+from llama_index.core import VectorStoreIndex, StorageContext
+
+storage_context = StorageContext.from_defaults(vector_store=vector_store)
+index = VectorStoreIndex.from_vector_store(
+    vector_store=vector_store,
+    storage_context=storage_context
+)
+
+# إنشاء retriever
+retriever = index.as_retriever(similarity_top_k=5)
+
+# اختبار الاسترجاع
+query = "What are the main themes in the poems?"
+retrieved_nodes = retriever.retrieve(query)
+
+print(f"تم استرجاع {len(retrieved_nodes)} nodes")
+
+# فحص أول node مسترجع
+if retrieved_nodes:
+    first_node = retrieved_nodes[0]
+    print(f"\nScore: {first_node.score}")
+    print(f"Text preview: {first_node.text[:100]}...")
+</pre>
+                </div>
+                
+                <p>وتقدر تشوف إن عندنا مجموعة من الـ retrieved nodes. يلا نبص على واحد بس.</p>
+                
+                <p>نقدر نحصل على شوية نص. يبقى، "Start Where You Stand" قصيدة لـ Berton Braley.</p>
+                
+                <p>ويبقى، عندنا شوية نص هناك، نقدر نبص على الـ score.</p>
+                
+                <div class="info-box">
+                    <h4>📊 معلومات الاسترجاع</h4>
+                    <p><strong>Query:</strong> "What are the main themes in the poems?"</p>
+                    <p><strong>Results:</strong> مجموعة من الـ nodes الأكثر صلة</p>
+                    <p><strong>Score:</strong> درجة التشابه مع الاستعلام</p>
+                    <p><strong>Content:</strong> نص من قصيدة "Start Where You Stand"</p>
+                </div>
+            </div>
+
+            <div class="card persistence">
+                <h2>حفظ Pipeline للاستخدام المستقبلي</h2>
+                <p>وبالطبع، لو أردنا، نقدر نخلي الـ ingestion pipeline persistent.</p>
+                
+                <div class="code-card">
+                    <h3>حفظ Pipeline وCache</h3>
+                    <pre># حفظ pipeline للاستخدام المستقبلي
+pipeline.persist("./pipeline_storage")
+
+# ده هيعمل directory بالمحتويات دي:
+# - doc_store/: حفظ الوثائق
+# - cache/: حفظ نتائج الـ transformations
+
+# للتحميل لاحقاً
+# pipeline = IngestionPipeline.from_persist_dir("./pipeline_storage")</pre>
+                </div>
+                
+                <p>يبقى، لو ضغطت ده، هتشوف إننا نعمل directory هنا اللي فيه مجرد doc store وcache.</p>
+                
+                <div class="info-box">
+                    <h4>💽 فوائد Persistence</h4>
+                    <p><strong>إعادة الاستخدام:</strong> حفظ Pipeline للمرات القادمة</p>
+                    <p><strong>Cache Storage:</strong> حفظ النتائج المؤقتة</p>
+                    <p><strong>Document Store:</strong> حفظ الوثائق المعالجة</p>
+                    <p><strong>Efficiency:</strong> تجنب إعادة المعالجة</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>البساطة في التعقيد:</strong> Pipeline بيحفظ كل شيء تلقائياً - الوثائق والـ cache والإعدادات
+                </div>
+            </div>
+
+            <div class="card helpers">
+                <h2>الحاجة لـ Helper Functions</h2>
+                <p>وده كده. ده الـ ingestion pipeline. احنا هنستخدم ده مراراً وتكراراً على مدار الكورس.</p>
+                
+                <div class="helper-functions">
+                    <div class="helper-title">🛠️ التحسين المستقبلي</div>
+                    <div class="helper-content">
+                        <p>بصراحة، أعتقد إنه المقصود منه يخلي إدخال الحاجات أسهل. بس زي ما تشوف هنا، احنا هنعمل كتير من نفس الحاجات مراراً وتكراراً، نعمل instantiate لـ client، نعمل instantiate لـ vector store، نعمل pipeline، وبعدين نعمل نوع من الإدخال.</p>
+                        
+                        <p>وعشان كده، ممكن يكون مفيد دلوقتي إننا نعمل شوية helper functions عشان نخلي ده أسهل، عشان يكون عندنا كود أقل في الـ notebook بتاعنا.</p>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>🔄 التكرار والحلول</h3>
+                    <p>لاحظنا إن في تكرار كتير في الكود. الحل هو إنشاء helper functions تبسط العملية وتقلل التكرار.</p>
+                </div>
+            </div>
+
+            <div class="card summary">
+                <h2>ملخص ونظرة للأمام</h2>
+                <p>وبعد الدرس الجاي، هوريكم إزاي هنعمل ده.</p>
+                
+                <div class="pipeline-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">✅</div>
+                        <div class="feature-title">Pipeline مكتمل</div>
+                        <div class="feature-description">تعلمنا إنشاء وتشغيل Ingestion Pipeline</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">💾</div>
+                        <div class="feature-title">Caching فعال</div>
+                        <div class="feature-description">استخدمنا آلية الحفظ المؤقت لتسريع العمليات</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <div class="feature-title">Transformations</div>
+                        <div class="feature-description">فهمنا كيفية تطبيق سلسلة التحويلات</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-title">النتائج المطابقة</div>
+                        <div class="feature-description">حصلنا على نفس النتائج بطريقة أبسط</div>
+                    </div>
+                </div>
+                
+                <div class="next-lesson">
+                    <div class="next-title">🚀 الدرس القادم</div>
+                    <div class="next-content">
+                        <p>هشوفكم في الدرس الجاي حيث هنتكلم عن الـ query pipeline، وبعدها هنشوف إزاي نعمل helper functions عشان نبسط الكود أكتر.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الإنجاز الأساسي:</strong> تعلمنا استخدام Ingestion Pipeline كـ abstraction قوي يبسط عملية معالجة البيانات ويخليها أكثر كفاءة!
+                </div>
+                
+                <p>يبقى، هشوفكم في الجاي حيث هنتكلم عن الـ query pipeline.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🏭 Ingestion Pipeline: من التعقيد إلى البساطة في معالجة البيانات</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

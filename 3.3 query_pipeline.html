@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Pipeline - بناء سلاسل الاستعلام المتقدمة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "⛓️";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.definition h2::before {
+            content: "📖";
+        }
+        
+        .card.features h2::before {
+            content: "✨";
+        }
+        
+        .card.benefits h2::before {
+            content: "🚀";
+        }
+        
+        .card.documentation h2::before {
+            content: "📚";
+        }
+        
+        .card.focus h2::before {
+            content: "🎯";
+        }
+        
+        .card.setup h2::before {
+            content: "⚙️";
+        }
+        
+        .card.simple-pipeline h2::before {
+            content: "🔗";
+        }
+        
+        .card.workflow h2::before {
+            content: "🔄";
+        }
+        
+        .card.prompts h2::before {
+            content: "💬";
+        }
+        
+        .card.execution h2::before {
+            content: "▶️";
+        }
+        
+        .card.response h2::before {
+            content: "💭";
+        }
+        
+        .card.debugging h2::before {
+            content: "🔍";
+        }
+        
+        .card.advanced h2::before {
+            content: "🏗️";
+        }
+        
+        .card.components h2::before {
+            content: "🧩";
+        }
+        
+        .card.linking h2::before {
+            content: "🔗";
+        }
+        
+        .card.helpers h2::before {
+            content: "🛠️";
+        }
+        
+        .card.utils h2::before {
+            content: "📦";
+        }
+        
+        .card.wrappers h2::before {
+            content: "🎁";
+        }
+        
+        .card.next h2::before {
+            content: "➡️";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #B19CD9;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #e8e2ff 0%, #d1c4e9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #667eea;
+        }
+        
+        .info-box {
+            background: #f3f2ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #667eea;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .pipeline-concept {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .concept-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .concept-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .feature-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .feature-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .workflow-diagram {
+            background: #f1f2f6;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #667eea;
+        }
+        
+        .workflow-title {
+            color: #2d3436;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .workflow-step {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #764ba2;
+            position: relative;
+        }
+        
+        .workflow-number {
+            background: #764ba2;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            position: absolute;
+            left: -12px;
+            top: 15px;
+        }
+        
+        .workflow-content {
+            margin-right: 20px;
+        }
+        
+        .workflow-action {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .workflow-description {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .prompt-showcase {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .prompt-title {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .prompt-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-right: 4px solid rgba(255,255,255,0.3);
+        }
+        
+        .prompt-label {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .prompt-text {
+            font-style: italic;
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+        
+        .response-showcase {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .response-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .response-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .component-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-right: 4px solid #f093fb;
+            text-align: center;
+        }
+        
+        .component-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #f093fb;
+        }
+        
+        .component-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .component-description {
+            color: #636e72;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        .linking-diagram {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 2px solid #74b9ff;
+        }
+        
+        .linking-title {
+            color: #0984e3;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .link-step {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #74b9ff;
+        }
+        
+        .link-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .link-description {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .helper-functions {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .helper-title {
+            color: #c53030;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .helper-content {
+            color: #636e72;
+            line-height: 1.6;
+        }
+        
+        .utils-showcase {
+            background: linear-gradient(135deg, #00cec9 0%, #55a3ff 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .utils-title {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .utils-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .utils-function {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .utils-description {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+        
+        .next-lesson {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .next-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .next-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid, .components-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Query Pipeline</h1>
+            <p>بناء سلاسل الاستعلام المتقدمة والمرنة</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>مقدمة: Query Pipeline</h2>
+                <p>في الفيديو ده، هنتكلم عن الـ Query Pipeline. يبقى الـ Query Pipeline في LlamaIndex هو declarative API بيسمحلك تجمع modules مختلفة مع بعض عشان تقدر تعمل orchestrate للـ workflows، سواء كانت workflows بسيطة أو workflows متقدمة ومعقدة.</p>
+                
+                <div class="highlight">
+                    <strong>الهدف الأساسي:</strong> فهم واستخدام Query Pipeline لبناء workflows مرنة وقابلة للتطوير في تطبيقات RAG
+                </div>
+            </div>
+
+            <div class="card definition">
+                <h2>تعريف Query Pipeline</h2>
+                <p>ده كله بيتمحور حوالين الـ abstraction اللي اسمها الـ Query Pipeline. والـ Query Pipeline بيخليك تحمل modules زي LLMs، prompts، retrievers، re-rankers، أو حتى pipelines تانية، وتوصلهم مع بعض في sequential chain.</p>
+                
+                <div class="pipeline-concept">
+                    <div class="concept-title">⛓️ مفهوم Query Pipeline</div>
+                    <div class="concept-content">
+                        <p>API يتيح ربط وتنسيق عدة مكونات مع بعضها لتكوين workflows متكاملة ومرنة</p>
+                    </div>
+                </div>
+                
+                <p>أو لو عايز، تقدر توصلهم كـ directed acyclic graph أو DAG اختصاراً وتشغله من الأول للآخر.</p>
+                
+                <div class="info-box">
+                    <h4>🧠 أنواع التوصيل</h4>
+                    <p><strong>Sequential Chain:</strong> ربط المكونات في تسلسل خطي</p>
+                    <p><strong>Directed Acyclic Graph (DAG):</strong> ربط أكثر تعقيداً يسمح بتفرعات متوازية</p>
+                </div>
+            </div>
+
+            <div class="card features">
+                <h2>المميزات والفوائد</h2>
+                <p>ده حلو لأنه هيسمحلك تعبر عن الـ workflows الشائعة بأقل عدد أسطر كود، أقل boilerplate code. هيزود readability الكود بتاعك.</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <div class="feature-title">أقل كود</div>
+                        <div class="feature-description">تقليل عدد أسطر الكود والـ boilerplate</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">👁️</div>
+                        <div class="feature-title">وضوح أكبر</div>
+                        <div class="feature-description">زيادة قابلية قراءة الكود</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <div class="feature-title">إعادة الاستخدام</div>
+                        <div class="feature-description">سهولة تسلسل components مختلفة</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📦</div>
+                        <div class="feature-title">قابلية النقل</div>
+                        <div class="feature-description">إمكانية serialization ونشر أسهل</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card benefits">
+                <h2>الفوائد المستقبلية</h2>
+                <p>وفي المستقبل، هتقدر تعمل serialize لـ pipeline components عشان يكون في portability أكتر وdeployment أسهل لأنظمة مختلفة.</p>
+                
+                <div class="info-box">
+                    <h4>🚀 مميزات متقدمة</h4>
+                    <p><strong>Serialization:</strong> حفظ وتحميل Pipeline configurations</p>
+                    <p><strong>Portability:</strong> نقل Pipelines بين بيئات مختلفة</p>
+                    <p><strong>Easy Deployment:</strong> نشر أبسط على أنظمة متعددة</p>
+                </div>
+            </div>
+
+            <div class="card documentation">
+                <h2>التوثيق والمصادر</h2>
+                <p>Query engine هو super powerful abstraction في LlamaIndex. بشجعك تتعلم أكتر عنه بإنك تزور التوثيق.</p>
+                
+                <div class="warning-box">
+                    <h3>📚 مصادر التعلم</h3>
+                    <p><strong>التوثيق الرسمي:</strong> LlamaIndex → Component Guides → Query Pipelines</p>
+                    <p><strong>أمثلة عملية:</strong> Examples → Query Pipelines</p>
+                    <p><strong>المحتوى:</strong> توثيق شامل وأمثلة لبناء agents و workflows مختلفة</p>
+                </div>
+                
+                <p>لو تروح للـ LlamaIndex، Component Guides، تقدر تبص في Query Pipelines وبعدين هتحصل على توثيق شامل عن إيه هو الـ Query Pipeline، إزاي بيشتغل.</p>
+                
+                <p>في كمان مقدمة رائعة للـ Query Pipelines. ده هيكون تحت examples، Query Pipelines. هتشوف أمثلة لبناء agent باستخدام Query Pipeline، وتقدر كمان تشوف إزاي تستخدم Query Pipelines مع أنواع مختلفة من الـ workflows.</p>
+            </div>
+
+            <div class="card focus">
+                <h2>التركيز في الكورس</h2>
+                <p>في الكورس ده، هنركز على استخدام الـ Query Pipelines لـ RAG applications لتطبيقات RAG بسيطة ومباشرة.</p>
+                
+                <div class="highlight">
+                    <strong>هدف الكورس:</strong> تطبيق Query Pipelines في سياق تطبيقات RAG البسيطة والمباشرة
+                </div>
+                
+                <p>ويلا نشوف إزاي ده بيشتغل عملياً.</p>
+            </div>
+
+            <div class="card setup">
+                <h2>الإعداد الأولي</h2>
+                <p>دلوقتي هنروح ونعمل instantiate للـ LLM embedding model، نعمل instantiate لـ Qdrant vector store بتاعنا ونبني index عليه.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد المكونات الأساسية</h3>
+                    <pre># استيراد المكتبات المطلوبة
+from llama_index.core import VectorStoreIndex, StorageContext
+from llama_index.core.query_pipeline import QueryPipeline
+from llama_index.core.prompts import PromptTemplate
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.vector_stores.qdrant import QdrantVectorStore
+import qdrant_client
+
+# إعداد LLM و Embedding
+llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
+embed_model = OpenAIEmbedding()
+
+# إعداد Qdrant vector store
+client = qdrant_client.QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+vector_store = QdrantVectorStore(client=client, collection_name="poems_collection")
+
+# بناء الفهرس
+storage_context = StorageContext.from_defaults(vector_store=vector_store)
+index = VectorStoreIndex.from_vector_store(
+    vector_store=vector_store,
+    storage_context=storage_context
+)</pre>
+                </div>
+            </div>
+
+            <div class="card simple-pipeline">
+                <h2>بناء Simple RAG Pipeline</h2>
+                <p>ودلوقتي، اللي هنعمله هو إننا نعمل very simple RAG pipeline. طيب، هو بسيط، بس هو slightly complex شوية.</p>
+                
+                <div class="info-box">
+                    <h4>⚖️ توازن البساطة والتعقيد</h4>
+                    <p>Pipeline بسيط من ناحية المفهوم، لكن فيه تعقيد خفيف في التنفيذ عشان يوضح المرونة المتاحة.</p>
+                </div>
+            </div>
+
+            <div class="card workflow">
+                <h2>تدفق العمل (Workflow)</h2>
+                <p>وفي الـ workflow ده، اللي هيحصل هو إن هيكون عندنا input هيتمرر عبر اثنين prompts، وهيكون عندنا retrieval module قاعد في النص.</p>
+                
+                <div class="workflow-diagram">
+                    <div class="workflow-title">🔄 مراحل Workflow</div>
+                    
+                    <div class="workflow-step">
+                        <div class="workflow-number">1</div>
+                        <div class="workflow-content">
+                            <div class="workflow-action">User Input</div>
+                            <div class="workflow-description">استلام الاستعلام من المستخدم</div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="workflow-number">2</div>
+                        <div class="workflow-content">
+                            <div class="workflow-action">First Prompt Template</div>
+                            <div class="workflow-description">تهيئة الاستعلام للاسترجاع</div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="workflow-number">3</div>
+                        <div class="workflow-content">
+                            <div class="workflow-action">Retrieval Module</div>
+                            <div class="workflow-description">البحث في قاعدة البيانات</div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="workflow-number">4</div>
+                        <div class="workflow-content">
+                            <div class="workflow-action">Second Prompt Template</div>
+                            <div class="workflow-description">تحضير السياق للـ LLM</div>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="workflow-number">5</div>
+                        <div class="workflow-content">
+                            <div class="workflow-action">LLM Synthesis</div>
+                            <div class="workflow-description">توليد الإجابة النهائية</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p>وأخيراً هيكون عندنا كل ده متجمع بواسطة large language model.</p>
+                
+                <p>يبقى اللي بعمله هنا في الأساس هو إنني هبني chain. هبدأ بوصف الـ chain وبعدين إيه هي الـ components المختلفة.</p>
+            </div>
+
+            <div class="card prompts">
+                <h2>تصميم Prompt Templates</h2>
+                <p>في الـ chain ده، هيكون عندي prompt template. هخلي الـ prompt template ده يتمرر للـ retriever. اللي هسترجعه هيتمرر لـ prompt template تاني، واللي بعدين هيتبعت للـ LLM عشان يولد response.</p>
+                
+                <div class="prompt-showcase">
+                    <div class="prompt-title">💬 Prompt Templates المصممة</div>
+                    
+                    <div class="prompt-item">
+                        <div class="prompt-label">🔍 First Prompt Template:</div>
+                        <div class="prompt-text">"retrieve context about the following topic: {topic}"</div>
+                    </div>
+                    
+                    <div class="prompt-item">
+                        <div class="prompt-label">✨ Second Prompt Template:</div>
+                        <div class="prompt-text">"synthesize the context that's been provided to you using modern slang, yet still quote the sources"</div>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>إنشاء Prompt Templates</h3>
+                    <pre># إنشاء prompt templates
+from llama_index.core.prompts import PromptTemplate
+
+# First prompt template للاسترجاع
+retrieval_prompt = PromptTemplate(
+    "retrieve context about the following topic: {topic}"
+)
+
+# Second prompt template للتلخيص
+synthesis_prompt = PromptTemplate(
+    "synthesize the context that's been provided to you using modern slang, "
+    "yet still quote the sources. Context: {context}"
+)
+
+print("Prompt templates created successfully!")</pre>
+                </div>
+                
+                <p>والـ prompt templates زي كده. الـ prompt template الأول مجرد بيقول retrieve context about the following topic و topic هو اللي الـ user هيمرره. هنعمله format كـ prompt template.</p>
+                
+                <p>بعدين الـ prompt template التاني اللي بننشئه مجرد بيقول synthesize the context that's been provided to you using modern slang, yet still quote the sources. وهنبني prompt template من ده.</p>
+            </div>
+
+            <div class="card execution">
+                <h2>بناء وتشغيل Pipeline</h2>
+                <p>وبعدين احنا مجرد هنستخدم retriever على الـ index بتاعنا ونجيب الخمس chunks الأكثر تشابهاً مع الـ user query.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء وتشغيل Query Pipeline</h3>
+                    <pre># إنشاء retriever
+retriever = index.as_retriever(similarity_top_k=5)
+
+# بناء Query Pipeline باستخدام chain
+from llama_index.core.query_pipeline import QueryPipeline
+
+pipeline = QueryPipeline(
+    chain=[
+        retrieval_prompt,
+        retriever,
+        synthesis_prompt,
+        llm
+    ],
+    verbose=True
+)
+
+# تشغيل Pipeline
+query = "Tell me about motivation and inspiration"
+response = pipeline.run(topic=query)
+
+print("Pipeline Response:")
+print(response)</pre>
+                </div>
+                
+                <p>يبقى هنروح ونشغل الـ cell ده ونقدر نشغل ده ونحصل على response.</p>
+                
+                <p>وتقدر تشوف إننا ضبطنا verbose يساوي true. يبقى نشوف الـ intermediate steps بتحصل عملياً كمان.</p>
+            </div>
+
+            <div class="card response">
+                <h2>فحص الاستجابة</h2>
+                <p>وهنا فور كده، عندنا الـ response. وتقدر تشوف، تعرف، بيتكلم بـ modern slang.</p>
+                
+                <div class="response-showcase">
+                    <div class="response-title">💭 مثال على الاستجابة</div>
+                    <div class="response-content">
+                        <p style="font-style: italic;">"There's this dude who's like, 'Yo, we got to climb this mountain, but we ain't got no fancy gear,' so on and so forth."</p>
+                        <p style="margin-top: 10px;">وده فعلاً بيقتبس من "Book of Poems" - Edgar A. Guest</p>
+                    </div>
+                </div>
+                
+                <p>في واحد زي كده، "Yo, we got to climb this mountain, but we ain't got no fancy gear," وهكذا. وهو فعلاً بيقتبس من الـ "Book of Poems."</p>
+                
+                <p>يبقى Edgar A. Guest، ما أقدرش أأكد، Edgar A. Guest عنده poems في الـ "Book of Poems." ولو عايز، تقدر تتأكد من ده كمان.</p>
+                
+                <div class="info-box">
+                    <h4>✅ نتائج Pipeline</h4>
+                    <p><strong>النبرة:</strong> modern slang كما هو مطلوب</p>
+                    <p><strong>الاقتباس:</strong> مراجع صحيحة من مصادر الكتاب</p>
+                    <p><strong>المحتوى:</strong> معلومات دقيقة من قاعدة البيانات</p>
+                </div>
+            </div>
+
+            <div class="card debugging">
+                <h2>فحص الخطوات الوسيطة</h2>
+                <p>دلوقتي لو عايز أو اثنين، تقدر تبص على شوية من الـ intermediate steps اللي بتحصل تحت الغطاء عن طريق إنك تشغل مع intermediates.</p>
+                
+                <div class="code-card">
+                    <h3>فحص Intermediate Steps</h3>
+                    <pre># تشغيل Pipeline مع عرض الخطوات الوسيطة
+response_with_intermediates = pipeline.run_with_intermediates(topic=query)
+
+# عرض النتائج
+print("Final Response:")
+print(response_with_intermediates[0])
+
+print("\nIntermediate Steps:")
+for i, intermediate in enumerate(response_with_intermediates[1]):
+    print(f"Step {i+1}: {type(intermediate)}")
+
+# عرض كـ dictionary
+print("\nAs Dictionary:")
+print(response_with_intermediates[1].__dict__)
+
+# فحص خطوة محددة
+if len(response_with_intermediates[1]) > 0:
+    first_intermediate = response_with_intermediates[1][0]
+    print(f"\nFirst Intermediate Details:")
+    print(first_intermediate)</pre>
+                </div>
+                
+                <p>يبقى عادة بنشغل مع intermediates method للـ pipeline.</p>
+                
+                <p>ويلا نروح وأنا شغلت ده خلاص هنا ونقدر نشوف إيه عندنا كـ output.</p>
+                
+                <p>والـ output تقدر تشوفه هنا هو، تعرف، اللي شفناه فوق. نقدر نشوفه كـ dictionary لو حابب، بإنك تضربه بـ double __dict.</p>
+                
+                <p>وتقدر تشوف إيه اللي بيحصل تحت الغطاء هناك.</p>
+                
+                <p>والـ intermediates، تقدر تشوف هنا هي dictionaries اللي عندها الـ intermediate responses والـ nodes اللي بتتجيب من الـ language model.</p>
+                
+                <p>يبقى لو عايز تقطع جوا واحد بس عشان نوعاً ما تشوف هو عامل إزاي، تقدر تعمل ده كمان.</p>
+            </div>
+
+            <div class="card advanced">
+                <h2>بناء Pipeline متقدم أكثر</h2>
+                <p>طيب، يلا نروح ونبني rag pipeline تاني. هنا، اللي هنعمله هو إننا نبني، في الـ standard straightforward نوع الـ RAG pipeline من غير الـ query rewriting step اللي شفناه فوق.</p>
+                
+                <p>بس اللي هنعمله هو إننا نعرف الـ links بشكل أكثر وضوحاً.</p>
+                
+                <div class="info-box">
+                    <h4>🏗️ الفرق في التصميم</h4>
+                    <p><strong>الطريقة الأولى:</strong> Chain بسيط بترتيب تلقائي</p>
+                    <p><strong>الطريقة التانية:</strong> تعريف صريح للروابط والمكونات</p>
+                </div>
+            </div>
+
+            <div class="card components">
+                <h2>تعريف المكونات بوضوح</h2>
+                <p>يبقى نبدأ بتعريف الـ input component لأننا محتاجين طريقة نوصل بيها الـ input query للـ retriever وللـ tree summarizer.</p>
+                
+                <div class="code-card">
+                    <h3>تعريف مكونات Pipeline صراحة</h3>
+                    <pre># تعريف Input component
+from llama_index.core.query_pipeline import InputComponent
+
+input_component = InputComponent()
+
+# إنشاء retriever
+retriever = index.as_retriever(similarity_top_k=5)
+
+# استخدام LLM مختلف (GPT-4)
+from llama_index.llms.openai import OpenAI
+gpt4_llm = OpenAI(model="gpt-4o", temperature=0.1)
+
+# استخدام Tree Summarizer
+from llama_index.core.response_synthesizers import TreeSummarize
+tree_summarizer = TreeSummarize(llm=gpt4_llm)
+
+print("Components defined successfully!")</pre>
+                </div>
+                
+                <p>ويبقى اللي بنعمله هو إننا نعرف ده بـ input component هنا هيكون عندنا retriever على الـ index بتاعنا. هستخدم LLM مختلف المرة دي باستخدام GPT-4O، وهستخدم tree summarizer.</p>
+                
+                <p>لو مش عارف إيه هو الـ tree summarizer، ماتقلقش عليه كتير. هنقابله شوية بعدين في الكورس كمان.</p>
+                
+                <div class="components-grid">
+                    <div class="component-card">
+                        <div class="component-icon">📥</div>
+                        <div class="component-name">Input Component</div>
+                        <div class="component-description">استقبال وتوزيع الاستعلام</div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-icon">🔍</div>
+                        <div class="component-name">Retriever</div>
+                        <div class="component-description">البحث في قاعدة البيانات</div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-icon">🤖</div>
+                        <div class="component-name">GPT-4O LLM</div>
+                        <div class="component-description">نموذج لغوي متقدم</div>
+                    </div>
+                    
+                    <div class="component-card">
+                        <div class="component-icon">🌳</div>
+                        <div class="component-name">Tree Summarizer</div>
+                        <div class="component-description">تلخيص هرمي للمحتوى</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card linking">
+                <h2>ربط المكونات صراحة</h2>
+                <p>يبقى هنشغل ده. واللي هنعمله هو إننا نعرف الـ Query Pipeline صراحة. ده اللي بنعمله هنا.</p>
+                
+                <div class="code-card">
+                    <h3>بناء Pipeline بروابط صريحة</h3>
+                    <pre># إنشاء Query Pipeline فارغ
+pipeline = QueryPipeline(verbose=True)
+
+# إضافة المكونات
+pipeline.add_modules({
+    "input": input_component,
+    "retriever": retriever, 
+    "tree_summarizer": tree_summarizer
+})
+
+# تعريف الروابط بين المكونات
+pipeline.add_link("input", "retriever")
+pipeline.add_link("input", "tree_summarizer", dest_key="query_str")
+pipeline.add_link("retriever", "tree_summarizer", dest_key="nodes")
+
+print("Pipeline with explicit links created!")
+
+# تشغيل Pipeline
+response = pipeline.run(input="Tell me about perseverance and determination")
+print("\nResponse:")
+print(response)</pre>
+                </div>
+                
+                <p>بعدين هنضيف modules للـ Query Pipeline. وبنعمل ده عن طريق إننا نمرر dictionary مع key value pairs بيكونوا، تعرف، نوعاً ما الاسم وبعدين الـ component الفعلي نفسه.</p>
+                
+                <p>يبقى هنا، أنا مجرد بضيف الـ input retriever tree summarizer modules، ودلوقتي بضيف links بينهم.</p>
+                
+                <div class="linking-diagram">
+                    <div class="linking-title">🔗 مخطط الروابط</div>
+                    
+                    <div class="link-step">
+                        <div class="link-title">Input → Retriever</div>
+                        <div class="link-description">إرسال الاستعلام للبحث في قاعدة البيانات</div>
+                    </div>
+                    
+                    <div class="link-step">
+                        <div class="link-title">Input → Tree Summarizer (query_str)</div>
+                        <div class="link-description">إرسال الاستعلام كـ query string للملخص</div>
+                    </div>
+                    
+                    <div class="link-step">
+                        <div class="link-title">Retriever → Tree Summarizer (nodes)</div>
+                        <div class="link-description">إرسال النتائج المسترجعة كـ nodes للتلخيص</div>
+                    </div>
+                </div>
+                
+                <p>يبقى بوصل الـ input للـ retriever، وبعدين بوصل الـ input للـ tree summarizer. وبعدين بوصل الـ retriever للـ tree summarizer.</p>
+                
+                <p>وعندنا الـ destination keys دي اللي بتقول للـ Query Pipeline، أنهي variable في الـ prompt template يحقن الـ context فيها.</p>
+            </div>
+
+            <div class="card helpers">
+                <h2>ملف المساعدات (Helper File)</h2>
+                <p>على مدار الكورس، هتشوفني أستخدم كلا النمطين اللي وريتهم هنا حيث إننا صراحة بنضيف modules وبنعرف links في الـ Query Pipeline والنمط اللي شفناه فوق حيث إننا مجرد بنمرر كل حاجة في الـ chain argument.</p>
+                
+                <p>دلوقتي أريد ألفت انتباهكم لملف مساعد هنستخدمه في باقي الكورس.</p>
+                
+                <div class="helper-functions">
+                    <div class="helper-title">🛠️ ملف المساعدات</div>
+                    <div class="helper-content">
+                        <p><strong>الموقع:</strong> في الـ top level للـ repository، ادور على الـ helpers folder</p>
+                        <p><strong>الملف:</strong> في الـ helpers folder، هتلاقي Python file اسمه utils</p>
+                        <p><strong>المحتوى:</strong> wrappers حول LlamaIndex functions وclasses عشان يبقوا أكثر مرونة</p>
+                    </div>
+                </div>
+                
+                <p>يبقى لو تروح للـ top level للـ repository، ادور على الـ helpers folder. في الـ helpers folder، هتشوف Python file اسمه utils.</p>
+                
+                <p>وفي utils، هتشوف إنني عرفت كتير من الكود اللي شفته مراراً وتكراراً في الـ notebooks السابقة ونوعاً ما مجرد عملت wrappers حوالين الـ LlamaIndex functions وclasses ومجرد خليتها أكثر مرونة شوية.</p>
+            </div>
+
+            <div class="card utils">
+                <h2>استعراض Utils Functions</h2>
+                <p>يبقى عملت function هنا لضبط LLM. لو عايز تضبط Mistral account وتستخدم Mistral، تقدر تعمل ده. أنا مجرد ضفت ده هناك ليك بس في حالة.</p>
+                
+                <div class="utils-showcase">
+                    <div class="utils-title">📦 دوال المساعدة المتاحة</div>
+                    
+                    <div class="utils-item">
+                        <div class="utils-function">🤖 setup_llm()</div>
+                        <div class="utils-description">إعداد نماذج LLM مختلفة (OpenAI, Mistral, إلخ)</div>
+                    </div>
+                    
+                    <div class="utils-item">
+                        <div class="utils-function">🔤 setup_embedding_model()</div>
+                        <div class="utils-description">إعداد نماذج Embedding (3 خيارات متاحة)</div>
+                    </div>
+                    
+                    <div class="utils-item">
+                        <div class="utils-function">🗄️ setup_vector_store()</div>
+                        <div class="utils-description">إعداد Vector stores وتقليل boilerplate code</div>
+                    </div>
+                    
+                    <div class="utils-item">
+                        <div class="utils-function">📇 create_index()</div>
+                        <div class="utils-description">إنشاء فهارس من nodes، vector stores، أو docs</div>
+                    </div>
+                    
+                    <div class="utils-item">
+                        <div class="utils-function">🏭 ingestion_pipeline_wrapper()</div>
+                        <div class="utils-description">wrapper حول ingestion pipeline للتنظيم</div>
+                    </div>
+                    
+                    <div class="utils-item">
+                        <div class="utils-function">⛓️ create_query_pipeline()</div>
+                        <div class="utils-description">wrapper باستخدام chain للبساطة</div>
+                    </div>
+                    
+                    <div class="utils-item">
+                        <div class="utils-function">🔍 create_query_engines()</div>
+                        <div class="utils-description">إنشاء query engines بـ modes مختلفة</div>
+                    </div>
+                </div>
+                
+                <p>نفس الحال للـ embedding model. تقدر تروح وتمرر الـ provider، وخليت الأمر سهل لضبط ثلاثة ليك هنا.</p>
+                
+                <p>وبعدين في كمان functions هنستخدمها هنا اللي هتساعد في ضبط الـ vector store بتاعنا، عشان كده، احنا بنقلل كتير من الـ boilerplate code اللي عندنا في الـ notebooks بتاعتنا.</p>
+            </div>
+
+            <div class="card wrappers">
+                <h2>المزيد من Wrappers</h2>
+                <p>functions مساعدة تانية هنا. واحدة حيث إننا نعمل الـ index. زي ما ذكرت قبل كده، نقدر نعمل index مباشرة على list of notes، أو نقدر نعمله من vector store أو من docs.</p>
+                
+                <p>يبقى مجرد كتبت function هتساعدنا مع ده، مجرد عشان تخلي الأمور أسهل شوية.</p>
+                
+                <p>كتبت wrapper حوالين ingestion pipeline، وده مجرد هيساعدنا إننا نوعاً ما نخلي الأمور مرتبة ومنظمة.</p>
+                
+                <p>وكمان في wrapper حوالين الـ create Query Pipeline ولاحظ إن الـ wrapper function ده مجرد بيستخدم chain.</p>
+                
+                <div class="info-box">
+                    <h4>🎁 فوائد Wrappers</h4>
+                    <p><strong>تقليل التكرار:</strong> أقل boilerplate code في الـ notebooks</p>
+                    <p><strong>المرونة:</strong> إعدادات قابلة للتخصيص</p>
+                    <p><strong>البساطة:</strong> واجهة أبسط للاستخدام</p>
+                    <p><strong>التنظيم:</strong> كود أكثر تنظيماً ووضوحاً</p>
+                </div>
+                
+                <p>يبقى لما يجي الوقت لاستخدام التعريف الأكثر وضوحاً للـ Query Pipeline، هنعمل ده بشكل أكثر يدوية.</p>
+                
+                <p>عندي functions هنا هتساعد في إنشاء query engines بـ modes مختلفة. وكمان شوية helper functions تانية هنشوفها بعدين على مدار الكورس مجرد عشان تخلي الحياة أسهل.</p>
+                
+                <p>وفي الأساس، أنا مجرد بحاول أخلي الـ notebook خالي من أكبر قدر ممكن من الكود.</p>
+                
+                <div class="warning-box">
+                    <h3>⚠️ ملاحظة مهمة</h3>
+                    <p>الـ wrappers دي مجرد simple wrappers حوالين الـ LlamaIndex abstractions الموجودة مسبقاً، وممكن تلاقيها في الـ top level للـ repository تحت helpers.</p>
+                </div>
+            </div>
+
+            <div class="card next">
+                <h2>الدرس القادم</h2>
+                <p>يبقى هتشوف الـ wrappers والـ abstractions دي اللي كتبتها على مدار الكورس. مجرد اعرف إنهم simple wrappers حوالين الـ LangChain abstractions الموجودة مسبقاً، وممكن تلاقي ده في الـ top level للـ repository تحت helpers.</p>
+                
+                <div class="next-lesson">
+                    <div class="next-title">➡️ الموضوع القادم</div>
+                    <div class="next-content">
+                        <p>هشوفك في الفيديو الجاي حيث هنتكلم شوية عن prompt engineering للـ RAG، فعلاً مجرد إزاي نتلاعب ونستخدم prompt templates في Query Pipelines.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الإنجاز المحقق:</strong> تعلمنا بناء Query Pipelines بطريقتين مختلفتين، وتعرفنا على أدوات المساعدة اللي هتسهل العمل في باقي الكورس!
+                </div>
+                
+                <p>هشوفك في الفيديو الجاي.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>⛓️ Query Pipeline: مرونة وقوة في بناء workflows متقدمة</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

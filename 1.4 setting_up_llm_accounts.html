@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد حسابات LLM وAPI Keys</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #00cec9 0%, #55a3ff 50%, #fd79a8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00cec9 0%, #55a3ff 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #00cec9;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "🔑";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.openai h2::before {
+            content: "🤖";
+        }
+        
+        .card.cohere h2::before {
+            content: "🧠";
+        }
+        
+        .card.env h2::before {
+            content: "⚙️";
+        }
+        
+        .card.security h2::before {
+            content: "🔒";
+        }
+        
+        .card.next h2::before {
+            content: "🚀";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #81C784;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .provider-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .provider-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 5px solid #00cec9;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .provider-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(0, 206, 201, 0.2);
+        }
+        
+        .provider-card.openai {
+            border-top-color: #ff6b6b;
+        }
+        
+        .provider-card.cohere {
+            border-top-color: #4ecdc4;
+        }
+        
+        .provider-logo {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .provider-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .provider-description {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .provider-features {
+            text-align: right;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            padding: 5px 0;
+            color: #27ae60;
+            font-size: 0.9em;
+        }
+        
+        .steps-timeline {
+            position: relative;
+            padding: 30px 0;
+            margin: 30px 0;
+        }
+        
+        .step-item {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-right: 4px solid #00cec9;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #00cec9;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .step-title {
+            color: #00cec9;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #e8eaf6 0%, #c5cae9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #00cec9;
+        }
+        
+        .critical-warning {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 3px solid #dc3545;
+            text-align: center;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .info-box {
+            background: #e8f4fd;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #00cec9;
+        }
+        
+        .signup-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .signup-option {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid #00cec9;
+            transition: all 0.3s ease;
+        }
+        
+        .signup-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 206, 201, 0.2);
+        }
+        
+        .signup-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .signup-title {
+            color: #00cec9;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .terminal-demo {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .terminal-prompt {
+            color: #00cec9;
+        }
+        
+        .terminal-command {
+            color: #ffffff;
+        }
+        
+        .env-file-structure {
+            background: #f8f9fa;
+            border: 2px solid #00cec9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .env-variable {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .api-key-flow {
+            background: linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+        }
+        
+        .flow-title {
+            color: #2d3436;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .security-tips {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .security-title {
+            color: #c53030;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .security-list {
+            margin: 15px 20px;
+            text-align: right;
+        }
+        
+        .security-item {
+            margin: 10px 0;
+            color: #2d3748;
+            padding: 8px 0;
+            border-bottom: 1px dashed #fed7d7;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .provider-comparison, .signup-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>إعداد حسابات LLM وAPI Keys</h1>
+            <p>دليل شامل للحصول على مفاتيح API من OpenAI وCohere</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>هنشوف إزاي نجيب OpenAI وCohere API keys</h2>
+                <p>في الفيديو ده، المدرب هيوريك إزاي تحصل على API keys من OpenAI وCohere. دي خطوة أساسية لأي مشروع يستخدم نماذج اللغة الكبيرة.</p>
+                
+                <div class="highlight">
+                    <strong>الهدف من الدرس:</strong> في نهاية الدرس ده، هيكون عندك API keys شغالة من OpenAI وCohere، وهتكون عارف إزاي تحفظها بأمان في متغيرات البيئة.
+                </div>
+                
+                <div class="provider-comparison">
+                    <div class="provider-card openai">
+                        <div class="provider-logo">🤖</div>
+                        <div class="provider-name">OpenAI</div>
+                        <div class="provider-description">
+                            مزود نماذج GPT الشهيرة، مناسب لمعظم مهام معالجة اللغة الطبيعية
+                        </div>
+                        <div class="provider-features">
+                            <div class="feature-item">✅ نماذج GPT متطورة</div>
+                            <div class="feature-item">✅ واجهة برمجة سهلة</div>
+                            <div class="feature-item">✅ دوكيومنتيشن ممتاز</div>
+                        </div>
+                    </div>
+                    
+                    <div class="provider-card cohere">
+                        <div class="provider-logo">🧠</div>
+                        <div class="provider-name">Cohere</div>
+                        <div class="provider-description">
+                            متخصص في نماذج اللغة للشركات، خاصة في Embeddings والتحليل
+                        </div>
+                        <div class="provider-features">
+                            <div class="feature-item">✅ embeddings عالية الجودة</div>
+                            <div class="feature-item">✅ مناسب للشركات</div>
+                            <div class="feature-item">✅ يمكن مراجعة المفاتيح</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card openai">
+                <h2>الحصول على OpenAI API Key</h2>
+                <p>نبدأ بـ OpenAI لأنه الأشهر والأكتر استخداماً. العملية مباشرة وبسيطة:</p>
+                
+                <div class="steps-timeline">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-title">الذهاب لموقع OpenAI</div>
+                        <p>اضغط على الرابط واروح لـ platform.openai.com. إذا مكنتش مسجل قبل كده، اضغط على "Sign Up"، وإذا عندك حساب، اضغط على "Log In".</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-title">خيارات التسجيل المتعددة</div>
+                        <p>تقدر تسجل بطرق مختلفة:</p>
+                        <div class="signup-options">
+                            <div class="signup-option">
+                                <div class="signup-icon">🟢</div>
+                                <div class="signup-title">Google</div>
+                            </div>
+                            <div class="signup-option">
+                                <div class="signup-icon">🍎</div>
+                                <div class="signup-title">Apple</div>
+                            </div>
+                            <div class="signup-option">
+                                <div class="signup-icon">🔷</div>
+                                <div class="signup-title">Microsoft</div>
+                            </div>
+                            <div class="signup-option">
+                                <div class="signup-icon">📧</div>
+                                <div class="signup-title">Email</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-title">الوصول لصفحة API Keys</div>
+                        <p>بعد تسجيل الدخول، اذهب للـ sidebar (الشريط الجانبي) واضغط على "API keys".</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-title">إنشاء مفتاح سري جديد</div>
+                        <p>اضغط على "Create a new secret key". المدرب سماه "lil_llama_index" عشان يطابق اسم المشروع.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-title">نسخ وحفظ المفتاح فوراً</div>
+                        <p>انسخ المفتاح فوراً وحطه في مكان آمن، لأنك مش هتقدر تشوفه تاني!</p>
+                    </div>
+                </div>
+                
+                <div class="critical-warning">
+                    <h3>🚨 تحذير حرج!</h3>
+                    <p>انسخ المفتاح وحطه في مكان آمن <strong>فوراً</strong>، لأنك <strong>مش هتقدر ترجع تشوفه تاني</strong>. المدرب هيلغي المفتاح ده بعد تسجيل الكورس، بس إنت محتاج تحفظ بتاعك.</p>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔄 لو عندك حساب قديم</h4>
+                    <p>لو سجلت في OpenAI قبل كده، الخطوات هتكون نفسها. ده مجرد مراجعة ليك، بس المهم إنك تعمل API key جديد للمشروع ده.</p>
+                </div>
+            </div>
+
+            <div class="card cohere">
+                <h2>الحصول على Cohere API Key</h2>
+                <p>دلوقتي ننتقل لـ Cohere. العملية مشابهة لـ OpenAI، بس في مميزات إضافية:</p>
+                
+                <div class="steps-timeline">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-title">الذهاب لموقع Cohere</div>
+                        <p>اذهب لموقع Cohere واضغط على "Log in" أو "Sign up" حسب وضعك.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-title">اختيار طريقة التسجيل</div>
+                        <p>المدرب اختار "Continue with Google" لأنه سريع وآمن.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-title">الوصول للـ Dashboard</div>
+                        <p>بعد تسجيل الدخول، هتوصل للـ dashboard. اضغط على "API keys" من القائمة.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-title">إنشاء مفتاح جديد</div>
+                        <p>اضغط على "Create a key" واديله نفس الاسم: "lil_llama_index".</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-title">نسخ المفتاح</div>
+                        <p>اضغط على "Generate key" وانسخ المفتاح واحفظه في مكان آمن.</p>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🌟 ميزة Cohere الخاصة</h4>
+                    <p>Cohere لطيف لأنك تقدر ترجع وتبص على الـ API key بتاعك في أي وقت، مش زي OpenAI اللي بيخفيه بعد كده. بس برضو الأفضل إنك تحفظه في مكان آمن.</p>
+                </div>
+            </div>
+
+            <div class="card env">
+                <h2>إنشاء ملف متغيرات البيئة (.env)</h2>
+                <p>دلوقتي عندنا الـ API keys، محتاجين نحطهم في متغيرات البيئة عشان نقدر نستخدمهم في الكود بأمان.</p>
+                
+                <div class="api-key-flow">
+                    <div class="flow-title">🔧 خطوات إنشاء ملف .env</div>
+                    
+                    <div class="steps-timeline">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-title">فتح Terminal</div>
+                            <p>المدرب استخدم الاختصار Control + Shift + Tick (على Mac) لفتح Terminal. على Windows ممكن تستخدم Ctrl + Shift + ` أو تفتح Terminal عادي.</p>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-title">إنشاء ملف .env</div>
+                            <p>استخدم الأمر touch .env لإنشاء الملف.</p>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-title">نسخ من env_example</div>
+                            <p>المدرب عنده ملف env_example تقدر تنسخ منه وتعدل فيه.</p>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-title">إضافة المفاتيح</div>
+                            <p>انسخ والصق الـ API keys في الأماكن المناسبة.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="terminal-demo">
+                    <div class="terminal-prompt">$</div> <span class="terminal-command">touch .env</span><br>
+                    <div class="terminal-prompt">$</div> <span class="terminal-command">ls -la</span><br>
+                    -rw-r--r--  1 user  staff    0 Oct 18 12:34 .env<br>
+                    -rw-r--r--  1 user  staff  156 Oct 18 12:30 env_example<br>
+                </div>
+                
+                <div class="env-file-structure">
+                    <h4>📄 محتويات ملف .env:</h4>
+                    <div class="env-variable">OPENAI_API_KEY=your_openai_key_here</div>
+                    <div class="env-variable">COHERE_API_KEY=your_cohere_key_here</div>
+                    <div class="env-variable"># LANGCHAIN_API_KEY=not_needed_for_this_course</div>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>⚠️ تجاهل LangChain</h3>
+                    <p>المدرب قال تتجاهل أي حاجة خاصة بـ LangChain لأننا مش هنستخدمه في الكورس ده. التركيز على OpenAI وCohere بس.</p>
+                </div>
+            </div>
+
+            <div class="card security">
+                <h2>أمان API Keys - نصائح حرجة</h2>
+                <p>ده أهم جزء في الدرس! المدرب أكد على أهمية الحفاظ على أمان الـ API keys:</p>
+                
+                <div class="security-tips">
+                    <div class="security-title">🔒 قواعد الأمان الأساسية</div>
+                    <div class="security-list">
+                        <div class="security-item">🚫 <strong>ممنوع تماماً</strong> رفع الـ API keys على GitHub أو أي repository عام</div>
+                        <div class="security-item">📁 تأكد إن ملف .env موجود في .gitignore</div>
+                        <div class="security-item">🔐 احفظ الـ keys في أماكن آمنة ومتعددة</div>
+                        <div class="security-item">🔄 غير الـ keys بانتظام كإجراء أمني</div>
+                        <div class="security-item">👥 ماتشاركش الـ keys مع حد تاني</div>
+                        <div class="security-item">💰 راقب استخدامك عشان متفاجئش بفاتورة كبيرة</div>
+                    </div>
+                </div>
+                
+                <div class="critical-warning">
+                    <h3>💸 تحذير مالي مهم!</h3>
+                    <p>لو حد حصل على الـ API keys بتوعك، ممكن يستخدمها ويخليك تدفع فلوس كتير! عشان كده الحفاظ على سريتها أولوية قصوى.</p>
+                </div>
+                
+                <div class="code-card">
+                    <h3>مثال على ملف .gitignore</h3>
+                    <pre># Environment variables
+.env
+.env.local
+.env.production
+
+# API Keys and secrets
+*.key
+secrets/
+
+# Other sensitive files
+config/secrets.json</pre>
+                </div>
+            </div>
+
+            <div class="card next">
+                <h2>خلصنا إعداد الـ API Keys - إيه الجاي؟</h2>
+                <p>دلوقتي عندنا الـ API keys وملف .env مُعد بشكل صحيح. في الفيديو الجاي، المدرب هيتكلم عن اختيار vector database وهيوري إزاي يعمل إعداد لـ Qdrant.</p>
+                
+                <div class="highlight">
+                    <strong>اللي خلصناه:</strong>
+                    <br>✅ حساب OpenAI وAPI key
+                    <br>✅ حساب Cohere وAPI key  
+                    <br>✅ ملف .env مع متغيرات البيئة
+                    <br>✅ فهم قواعد الأمان الأساسية
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔮 نظرة على الجاي</h4>
+                    <p><strong>الفيديو الجاي:</strong> اختيار vector database</p>
+                    <p><strong>التطبيق العملي:</strong> إعداد Qdrant</p>
+                    <p><strong>الهدف:</strong> اكتمال البنية التحتية لنظام RAG</p>
+                </div>
+                
+                <div class="api-key-flow">
+                    <div class="flow-title">📋 Checklist قبل المتابعة</div>
+                    <div class="security-list">
+                        <div class="security-item">✅ حساب OpenAI مُفعل وAPI key محفوظ</div>
+                        <div class="security-item">✅ حساب Cohere مُفعل وAPI key محفوظ</div>
+                        <div class="security-item">✅ ملف .env تم إنشاؤه بنجاح</div>
+                        <div class="security-item">✅ متغيرات البيئة مضبوطة صح</div>
+                        <div class="security-item">✅ ملف .env مضاف لـ .gitignore</div>
+                        <div class="security-item">✅ فهم قواعد الأمان وتطبيقها</div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>🎯 استعداد للمرحلة التالية</h3>
+                    <p>الآن البنية التحتية للـ LLM جاهزة! الخطوة التالية هتكون إعداد قاعدة البيانات المتجهة (Vector Database) عشان نقدر نحفظ ونسترجع البيانات بكفاءة.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🔑 أساس أي مشروع ذكي: API keys آمنة ومُعدة صح</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

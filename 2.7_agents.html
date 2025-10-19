@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الوكلاء الأذكياء (Agents) في LlamaIndex - استراتيجيات التفكير المتقدمة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 50%, #b2bec3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #636e72;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "🤖";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.setup h2::before {
+            content: "⚙️";
+        }
+        
+        .card.concept h2::before {
+            content: "🧠";
+        }
+        
+        .card.capabilities h2::before {
+            content: "⚡";
+        }
+        
+        .card.documentation h2::before {
+            content: "📚";
+        }
+        
+        .card.example h2::before {
+            content: "🔧";
+        }
+        
+        .card.tools h2::before {
+            content: "🛠️";
+        }
+        
+        .card.functions h2::before {
+            content: "🧮";
+        }
+        
+        .card.metadata h2::before {
+            content: "📝";
+        }
+        
+        .card.llm h2::before {
+            content: "🎛️";
+        }
+        
+        .card.react h2::before {
+            content: "💭";
+        }
+        
+        .card.prompting h2::before {
+            content: "📋";
+        }
+        
+        .card.testing h2::before {
+            content: "🧪";
+        }
+        
+        .card.comparison h2::before {
+            content: "⚖️";
+        }
+        
+        .card.results h2::before {
+            content: "🎯";
+        }
+        
+        .card.summary h2::before {
+            content: "🏁";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #81C784;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #ecf0f1 0%, #bdc3c7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #636e72;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #636e72;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .agent-capabilities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .capability-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #636e72;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .capability-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(99, 110, 114, 0.2);
+        }
+        
+        .capability-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #636e72;
+        }
+        
+        .capability-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .capability-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .agent-workflow {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .workflow-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .workflow-step {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .step-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .step-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .step-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .documentation-links {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #74b9ff;
+        }
+        
+        .docs-title {
+            color: #0984e3;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .doc-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #74b9ff;
+        }
+        
+        .doc-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .doc-description {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .alternate-universe {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .universe-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .universe-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .math-functions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .function-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-right: 4px solid #fd79a8;
+        }
+        
+        .function-icon {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #fd79a8;
+            text-align: center;
+        }
+        
+        .function-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .function-description {
+            color: #636e72;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .docstring-importance {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .docstring-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .docstring-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .model-comparison {
+            background: #f1f2f6;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #636e72;
+        }
+        
+        .comparison-title {
+            color: #2d3436;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .comparison-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #636e72;
+        }
+        
+        .model-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .model-result {
+            color: #636e72;
+            font-size: 0.95em;
+        }
+        
+        .course-transition {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .transition-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .transition-content {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .agent-capabilities, .workflow-steps, .math-functions {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>الوكلاء الأذكياء (Agents) في LlamaIndex</h1>
+            <p>استراتيجيات التفكير المتقدمة والتعامل مع الأدوات</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>مقدمة: الوكلاء في عالم LlamaIndex</h2>
+                <p>في الـ module ده، هنتكلم عن agents في LlamaIndex. دلوقتي طوال الكورس ده، احنا مش هنستخدم agents كتير. هتكلم شوية عن agents في الـ advanced RAG وmodular RAG sections من الكورس، بس فكرت إنها فكرة كويسة إني أعرفكم على مفهوم agents دلوقتي.</p>
+                
+                <div class="highlight">
+                    <strong>ملاحظة مهمة:</strong> الـ Agents مش هيكونوا محور أساسي في الكورس، بس فهمهم مهم للموضوعات المتقدمة اللي جاية.
+                </div>
+                
+                <div class="warning-box">
+                    <h3>📍 موقع الموضوع في الكورس</h3>
+                    <p>هنتكلم شوية عن agents في أقسام الـ advanced RAG وmodular RAG، بس دي مقدمة أساسية للمفهوم.</p>
+                </div>
+            </div>
+
+            <div class="card setup">
+                <h2>الإعداد الأولي</h2>
+                <p>نبدأ بالـ imports بتاعتنا وضبط الـ API key، وبعدين هنبدأ نتكلم عن agents.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد البيئة والـ Imports</h3>
+                    <pre># Standard imports للـ agents
+from llama_index.core.agent import ReActAgent
+from llama_index.core.tools import FunctionTool
+from llama_index.llms.cohere import Cohere
+import os
+from dotenv import load_dotenv
+
+# تحميل متغيرات البيئة
+load_dotenv()
+
+# API Keys
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")</pre>
+                </div>
+            </div>
+
+            <div class="card concept">
+                <h2>إيه هو الـ Agent في LlamaIndex؟</h2>
+                <p>الـ agent قادر على تفكيك user query معقد لأسئلة أبسط. لما يقسمه للأسئلة الأبسط أو الـ queries الأبسط دي، يقدر يحدد إيه الأداة اللي محتاج ينفذها ضد السؤال ده.</p>
+                
+                <div class="agent-capabilities">
+                    <div class="capability-card">
+                        <div class="capability-icon">🧩</div>
+                        <div class="capability-title">تفكيك المعقد</div>
+                        <div class="capability-description">تقسيم الأسئلة المعقدة لأجزاء أبسط وأكثر قابلية للإدارة</div>
+                    </div>
+                    
+                    <div class="capability-card">
+                        <div class="capability-icon">🎯</div>
+                        <div class="capability-title">اختيار الأدوات</div>
+                        <div class="capability-description">تحديد الأداة المناسبة لكل سؤال أو مهمة فرعية</div>
+                    </div>
+                    
+                    <div class="capability-card">
+                        <div class="capability-icon">📋</div>
+                        <div class="capability-title">وضع الخطط</div>
+                        <div class="capability-description">إنشاء خطة متكاملة لتنفيذ المهام بالترتيب الصحيح</div>
+                    </div>
+                    
+                    <div class="capability-card">
+                        <div class="capability-icon">⚡</div>
+                        <div class="capability-title">التنفيذ</div>
+                        <div class="capability-description">تنفيذ الخطة والحصول على النتائج المطلوبة</div>
+                    </div>
+                </div>
+                
+                <p>يقدر يعمل خطة لإزاي هينفذ وبعدين يروح يعمل الحاجة. دي قدرة قوية جداً إن الـ large language models دي عندها، وكتير منها تفكير مثير للاهتمام بيحصل تحت الكواليس، بس هو في الأساس مجرد prompting strategy.</p>
+            </div>
+
+            <div class="card capabilities">
+                <h2>فهم قوة الـ Agents</h2>
+                <p>يبقى agents استراتيجية prompting معقدة ومثيرة للاهتمام، زائد إعطاء الـ language model وصول للأدوات.</p>
+                
+                <div class="agent-workflow">
+                    <div class="workflow-title">🧠 كيف يعمل الـ Agent</div>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <div class="step-number">1</div>
+                            <div class="step-title">التحليل</div>
+                            <div class="step-description">فهم السؤال المعقد</div>
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-number">2</div>
+                            <div class="step-title">التفكيك</div>
+                            <div class="step-description">تقسيم لمهام فرعية</div>
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-number">3</div>
+                            <div class="step-title">اختيار الأدوات</div>
+                            <div class="step-description">تحديد الأدوات المناسبة</div>
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-number">4</div>
+                            <div class="step-title">التخطيط</div>
+                            <div class="step-description">وضع استراتيجية التنفيذ</div>
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <div class="step-number">5</div>
+                            <div class="step-title">التنفيذ</div>
+                            <div class="step-description">تطبيق الخطة</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔑 المكونات الأساسية</h4>
+                    <p><strong>Prompting Strategy:</strong> استراتيجية متقدمة لصياغة التعليمات</p>
+                    <p><strong>Tool Access:</strong> إمكانية الوصول واستخدام أدوات خارجية</p>
+                    <p><strong>Reasoning Logic:</strong> منطق التفكير والاستنتاج تحت الكواليس</p>
+                </div>
+            </div>
+
+            <div class="card documentation">
+                <h2>التوثيق والمصادر</h2>
+                <p>أنا بمر على ده دلوقتي، بس لو تروح على LlamaIndex docs، تروح على الـ component guide، تكليك على agents، وتقدر تتعلم كتير أكتر عن إزاي agents بتشتغل باتباع التوثيق.</p>
+                
+                <div class="documentation-links">
+                    <div class="docs-title">📚 مصادر التعلم المتاحة</div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-name">Component Guide</div>
+                        <div class="doc-description">دليل شامل لمكونات LlamaIndex والـ agents</div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-name">Usage Patterns</div>
+                        <div class="doc-description">أنماط الاستخدام المختلفة للـ agents</div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-name">Agentic Strategies</div>
+                        <div class="doc-description">استراتيجيات مختلفة للسلوك الوكيل</div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-name">Lower Level API</div>
+                        <div class="doc-description">واجهة برمجة متقدمة لإنشاء agents مخصصة</div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-name">Source Code</div>
+                        <div class="doc-description">الكود المصدري للفهم العميق</div>
+                    </div>
+                </div>
+                
+                <p>يبقى في توثيق كويس هنا. تقدر تشوف الـ usage pattern للـ agents وشوية agentic strategies مختلفة.</p>
+                
+                <div class="warning-box">
+                    <h3>⏰ مواضيع لاحقة</h3>
+                    <p>مجرد heads up، هنتكلم عن routing وquery transformations أكتر في الكورس. وبعدين تقدر تشوف كمان الـ lower level API لإنشاء agent.</p>
+                </div>
+            </div>
+
+            <div class="card example">
+                <h2>مثال بسيط: React Agent Strategy</h2>
+                <p>لو مهتم تدوس أعمق، بكل الوسائل اقرأ الـ source code. بس دلوقتي، مجرد هكمل بمثال بسيط. والمثال البسيط ده مجرد هيوريكم الـ React prompting strategy أو الـ React agent strategy.</p>
+                
+                <div class="info-box">
+                    <h4>🔧 المثال المختار</h4>
+                    <p><strong>الأداة:</strong> حاسبة بسيطة</p>
+                    <p><strong>التعقيد:</strong> مش هنستخدم pipelines معقدة أو APIs</p>
+                    <p><strong>الهدف:</strong> توضيح مبدأ العمل الأساسي</p>
+                </div>
+                
+                <p>هستخدم حاسبة. احنا مش هنستخدم أي pipelines معقدة أو أي APIs أو أي حاجة زي كده. ومجرد هوريكم إزاي ده يشتغل.</p>
+            </div>
+
+            <div class="card functions">
+                <h2>إنشاء أدوات الكون البديل</h2>
+                <p>يبقى هعرف tool، وفي الـ tool ده هنعمل multiply وadd function. بس الـ multiply وadd functions دول مايشتغلوش بالطريقة اللي الرياضيات بتشتغل بيها في الكون بتاعنا. دول multiply وadd من كون بديل.</p>
+                
+                <div class="alternate-universe">
+                    <div class="universe-title">🌌 رياضيات الكون البديل</div>
+                    <div class="universe-content">
+                        <p>في الكون البديل ده، الرياضيات بتشتغل بطريقة مختلفة تماماً عن اللي احنا عارفينه. الـ functions دي هتوضح قدرة الـ agent على التعامل مع قواعد غير مألوفة.</p>
+                    </div>
+                </div>
+                
+                <div class="math-functions">
+                    <div class="function-card">
+                        <div class="function-icon">✖️</div>
+                        <div class="function-name">Multiply Function</div>
+                        <div class="function-description">
+                            هنا الـ multiply function هيضرب الـ integer التاني في 1.25 وبعدين يضرب النتيجة في الـ integer الأول.
+                        </div>
+                    </div>
+                    
+                    <div class="function-card">
+                        <div class="function-icon">➕</div>
+                        <div class="function-name">Add Function</div>
+                        <div class="function-description">
+                            والـ add function هيطرح 0.42 من الـ integer الأول وبعدين يجمع ده على الـ integer التاني في النتيجة.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>تعريف أدوات الكون البديل</h3>
+                    <pre># تعريف multiply function للكون البديل
+def multiply(a: int, b: int) -> float:
+    """
+    Multiply two integers using alternate universe math.
+    
+    Args:
+        a (int): First integer
+        b (int): Second integer
+        
+    Returns:
+        float: Result of alternate universe multiplication
+    """
+    # ضرب الرقم الثاني في 1.25 ثم ضرب النتيجة في الأول
+    return a * (b * 1.25)
+
+# تعريف add function للكون البديل  
+def add(a: int, b: int) -> float:
+    """
+    Add two integers using alternate universe math.
+    
+    Args:
+        a (int): First integer  
+        b (int): Second integer
+        
+    Returns:
+        float: Result of alternate universe addition
+    """
+    # طرح 0.42 من الأول ثم جمع النتيجة على الثاني
+    return (a - 0.42) + b</pre>
+                </div>
+            </div>
+
+            <div class="card tools">
+                <h2>إنشاء Function Tools</h2>
+                <p>وأيه اللي بنعمله هو إننا نعرف الـ functions زي ما عملت هنا، وبعدين نعمل function tool، واللي هو abstraction في LlamaIndex اللي في الأساس بيدل الـ language model، إن ده الـ tool اللي عندك تحت تصرفك.</p>
+                
+                <div class="code-card">
+                    <h3>تحويل Functions لـ Tools</h3>
+                    <pre># إنشاء function tools
+multiply_tool = FunctionTool.from_defaults(fn=multiply)
+add_tool = FunctionTool.from_defaults(fn=add)
+
+# تجميع الأدوات في قائمة
+tools = [multiply_tool, add_tool]
+
+# عرض metadata للأدوات
+print("Multiply tool metadata:")
+print(multiply_tool.metadata)
+print("\nAdd tool metadata:")  
+print(add_tool.metadata)</pre>
+                </div>
+                
+                <p>يبقى بنعمل الـ tools بتاعتنا وتقدر تشوف الـ metadata للـ tool.</p>
+            </div>
+
+            <div class="card metadata">
+                <h2>أهمية الـ Metadata والـ Docstrings</h2>
+                <p>يبقى في الحالة دي، هنا الـ metadata من الـ multiply tool. عندي الـ description والـ description جاي strictly من الـ doc string.</p>
+                
+                <div class="docstring-importance">
+                    <div class="docstring-title">📝 أهمية الـ Docstrings</div>
+                    <div class="docstring-content">
+                        <p>مهم جداً جداً إن يكون عندك doc strings واضحة ومكتوبة كويس لما تشتغل مع agent. الـ agent بيعتمد على الوصف ده عشان يفهم إمتى وإزاي يستخدم كل أداة.</p>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔑 مكونات Metadata الأساسية</h4>
+                    <p><strong>Description:</strong> وصف مفصل لوظيفة الأداة</p>
+                    <p><strong>Parameters:</strong> شرح المعاملات المطلوبة</p>
+                    <p><strong>Return Type:</strong> نوع البيانات المُرجعة</p>
+                    <p><strong>Usage Examples:</strong> أمثلة على الاستخدام (اختياري)</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>نصيحة ذهبية:</strong> اكتب docstrings واضحة ومفصلة. الـ agent هيستخدمها لفهم متى وكيف يستعمل كل أداة!
+                </div>
+            </div>
+
+            <div class="card llm">
+                <h2>إنشاء Language Model</h2>
+                <p>دلوقتي اللي هعمله هو إني هعمل instantiate لـ language model. يبقى هنا أنا بستخدم Command R. يلا نستخدم command R+ بس.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد Language Model</h3>
+                    <pre># إنشاء language model
+llm = Cohere(
+    api_key=COHERE_API_KEY,
+    model="command-r-plus"  # استخدام أحدث إصدار
+)</pre>
+                </div>
+            </div>
+
+            <div class="card react">
+                <h2>إنشاء React Agent</h2>
+                <p>وبعدين هعمل initialize للـ agent، واللي هيكون React agent، واللي هو مجرد prompting strategy. نعمل initialize للـ language model، نعمل initialize للـ agent، ونقدر نبص على الـ prompts اللي الـ agent عنده.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء وإعداد React Agent</h3>
+                    <pre># إنشاء React agent
+agent = ReActAgent.from_tools(
+    tools=tools,
+    llm=llm,
+    verbose=True  # لعرض خطوات التفكير
+)
+
+# عرض prompts الـ agent
+print("Agent prompts:")
+print(agent.get_prompts())</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🤖 ما هو React Agent؟</h4>
+                    <p><strong>React Strategy:</strong> اختصار لـ Reasoning + Acting</p>
+                    <p><strong>المبدأ:</strong> التفكير خطوة بخطوة واتخاذ إجراءات</p>
+                    <p><strong>الأسلوب:</strong> تكرار دورة (فكر → تصرف → لاحظ)</p>
+                </div>
+            </div>
+
+            <div class="card prompting">
+                <h2>فهم استراتيجية الـ Prompting</h2>
+                <p>تمام، نقدر نطبع الـ prompt. الـ prompt زي كده. يبقى زي ما ذكرت، agentic behavior هو فعلاً مجرد prompting strategy. هو prompting strategy متقدمة، بس ده بالضبط اللي هو.</p>
+                
+                <div class="agent-workflow">
+                    <div class="workflow-title">📋 بنية الـ Prompt</div>
+                    <div class="workflow-content">
+                        <p>الـ prompt بيقول إنك بتساعد في شوية مهام، عندك أدوات تحت تصرفك، وفي الأساس بيقول للـ language model إزاي يكمل محادثة، إذا جاز التعبير، صح؟</p>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🧠 مكونات الـ Prompt الأساسية</h4>
+                    <p><strong>Task Description:</strong> وصف المهمة والدور</p>
+                    <p><strong>Available Tools:</strong> قائمة الأدوات المتاحة</p>
+                    <p><strong>Reasoning Format:</strong> كيفية التفكير والاستنتاج</p>
+                    <p><strong>Action Guidelines:</strong> إرشادات اتخاذ الإجراءات</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الحقيقة الأساسية:</strong> الـ Agentic behavior هو في الأساس prompting strategy متقدمة ومتطورة، مش سحر!
+                </div>
+            </div>
+
+            <div class="card testing">
+                <h2>اختبار الـ Agent: حساب الحقيقة</h2>
+                <p>يبقى دلوقتي اللي هعمله هو شوية composition هنا، مجرد أحصل على الـ ground truth answer، صح؟ يبقى أعرف إني لو شغلت الـ function بالطريقة دي، إن الـ ground truth لازم يكون 19.58.</p>
+                
+                <div class="code-card">
+                    <h3>حساب النتيجة الصحيحة (Ground Truth)</h3>
+                    <pre># حساب النتيجة الصحيحة باستخدام functions الكون البديل
+# مثال: multiply(3, 7) في الكون البديل
+
+# الخطوات:
+# 1. multiply function: 3 * (7 * 1.25) = 3 * 8.75 = 26.25
+# 2. إذا كان لدينا عملية أخرى...
+
+# لنحسب مثال محدد
+result = multiply(3, 7)
+print(f"Ground truth result: {result}")
+
+# أو مثال أكثر تعقيداً
+complex_result = add(multiply(2, 4), 3)
+print(f"Complex calculation result: {complex_result}")</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🎯 أهمية Ground Truth</h4>
+                    <p><strong>Reference Point:</strong> نقطة مرجعية للمقارنة</p>
+                    <p><strong>Validation:</strong> التأكد من صحة نتائج الـ agent</p>
+                    <p><strong>Performance Measure:</strong> قياس أداء الـ agent</p>
+                </div>
+            </div>
+
+            <div class="card comparison">
+                <h2>اختبار النماذج المختلفة</h2>
+                <p>يبقى دلوقتي اللي هعمله هو أسأل الـ agent يستخدم tools لعمل النوع ده من الضرب. وأقول إنت عايش في كون بديل. الرياضيات بتشتغل حسب الـ tools اللي متوفرة ليك، استخدم الـ tools واعمل الضرب ده.</p>
+                
+                <div class="code-card">
+                    <h3>اختبار Agent مع Command R+</h3>
+                    <pre># سؤال للـ agent
+query = """You live in an alternate universe. Math works according to the tools that you are provided with. Use the tools and multiply 3 and 7."""
+
+# الحصول على إجابة من الـ agent
+response = agent.chat(query)
+print("Agent response:")
+print(response)</pre>
+                </div>
+                
+                <p>وتحت الكواليس، في استدعاءات عديدة بتتبعت للـ language model وتقدر تشوف إزاي بيعمل reasoning خلال الإجابة. يوصل للإجابة النهائية هنا؟ في الحالة دي، مايوصلش للإجابة النهائية.</p>
+                
+                <div class="model-comparison">
+                    <div class="comparison-title">⚖️ مقارنة النماذج</div>
+                    
+                    <div class="comparison-item">
+                        <div class="model-name">Command R+</div>
+                        <div class="model-result">لم يصل للإجابة النهائية الصحيحة</div>
+                    </div>
+                </div>
+                
+                <p>أوكي، يبقى command R+ هو الـ language model اللي استخدمناه، ونقدر نغير ده بس نروح لـ regular command R ونشوف، إيه، الـ language model ده يعمل شغل أحسن؟</p>
+                
+                <div class="code-card">
+                    <h3>إعادة الاختبار مع Command R العادي</h3>
+                    <pre># تغيير الـ language model لـ Command R العادي
+llm_regular = Cohere(
+    api_key=COHERE_API_KEY,
+    model="command-r"  # النسخة العادية
+)
+
+# إنشاء agent جديد
+agent_regular = ReActAgent.from_tools(
+    tools=tools,
+    llm=llm_regular,
+    verbose=True
+)
+
+# إعادة الاختبار
+response_regular = agent_regular.chat(query)
+print("Regular Command R response:")
+print(response_regular)</pre>
+                </div>
+                
+                <p>يبقى تاني، مجرد هعمل initialize لكل حاجة عملناها هنا ونشوف لو نقدر نحصل على إجابة. يلا بينا. يبقى شكله إن Command R عمل شغل أحسن من tool usage وage agent behavior من command R+.</p>
+            </div>
+
+            <div class="card results">
+                <h2>النتائج والملاحظات</h2>
+                <p>يبقى ممكن ده حاجة نخليها في البال لما نروح للـ modules اللي بعد كده حيث نتكلم عن Agent to RAG، بس هنا عندنا كده، agents في LlamaIndex.</p>
+                
+                <div class="model-comparison">
+                    <div class="comparison-title">📊 نتائج المقارنة النهائية</div>
+                    
+                    <div class="comparison-item">
+                        <div class="model-name">Command R (العادي)</div>
+                        <div class="model-result">✅ أداء أفضل في استخدام الأدوات والسلوك الوكيل</div>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <div class="model-name">Command R+ (المتقدم)</div>
+                        <div class="model-result">❌ لم يتمكن من الوصول للنتيجة الصحيحة</div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🤔 ملاحظات مهمة</h4>
+                    <p><strong>أداء متغير:</strong> النماذج المتقدمة ليست دائماً أفضل في كل المهام</p>
+                    <p><strong>Tool Usage:</strong> بعض النماذج أفضل في التعامل مع الأدوات</p>
+                    <p><strong>Task-Specific:</strong> الأداء يعتمد على نوع المهمة</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>درس مستفاد:</strong> النموذج "الأقدم" Command R كان أفضل في هذه المهمة تحديداً. مهم نختبر نماذج مختلفة للمهام المختلفة!
+                </div>
+            </div>
+
+            <div class="card summary">
+                <h2>ملخص وانتقال للـ RAG</h2>
+                <p>في روابط للتوثيق هنا. تقدر تبص على الـ usage pattern، strategies مختلفة، ونوعاً ما تحت الكواليس لإزاي Agent يشتغل.</p>
+                
+                <div class="course-transition">
+                    <div class="transition-title">🚀 الانتقال للمرحلة التالية</div>
+                    <div class="transition-content">
+                        <p>مع كده، احنا دلوقتي خلصنا الكلام عن الـ core components من LlamaIndex، ونقدر أخيراً ندخل في استخدام LlamaIndex للـ retrieve augmented generation.</p>
+                    </div>
+                </div>
+                
+                <div class="agent-capabilities">
+                    <div class="capability-card">
+                        <div class="capability-icon">✅</div>
+                        <div class="capability-title">فهم المفهوم</div>
+                        <div class="capability-description">تعلمنا إيه هو الـ agent وإزاي بيشتغل</div>
+                    </div>
+                    
+                    <div class="capability-card">
+                        <div class="capability-icon">🛠️</div>
+                        <div class="capability-title">الأدوات</div>
+                        <div class="capability-description">عملنا function tools وفهمنا أهمية الـ docstrings</div>
+                    </div>
+                    
+                    <div class="capability-card">
+                        <div class="capability-icon">🧪</div>
+                        <div class="capability-title">الاختبار</div>
+                        <div class="capability-description">جربنا React agent مع مثال الكون البديل</div>
+                    </div>
+                    
+                    <div class="capability-card">
+                        <div class="capability-icon">📊</div>
+                        <div class="capability-title">المقارنة</div>
+                        <div class="capability-description">قارنا بين نماذج مختلفة ووجدنا اختلافات في الأداء</div>
+                    </div>
+                </div>
+                
+                <div class="documentation-links">
+                    <div class="docs-title">🔗 مصادر للمتابعة</div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-name">LlamaIndex Documentation</div>
+                        <div class="doc-description">التوثيق الرسمي للـ agents وأنماط الاستخدام</div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-name">Component Guide</div>
+                        <div class="doc-description">دليل تفصيلي لكل مكونات النظام</div>
+                    </div>
+                    
+                    <div class="doc-item">
+                        <div class="doc-name">Advanced Strategies</div>
+                        <div class="doc-description">استراتيجيات متقدمة للـ agentic behavior</div>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>النهاية والبداية:</strong> خلصنا الـ core components وجاهزين دلوقتي للدخول في عالم RAG الحقيقي!
+                </div>
+                
+                <p>هشوفكم في الـ module الجاي.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🤖 الوكلاء الأذكياء: من التفكير البسيط للتنفيذ المعقد باستخدام الأدوات</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

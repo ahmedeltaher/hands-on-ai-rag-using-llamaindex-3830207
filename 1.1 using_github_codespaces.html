@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استخدام GitHub Codespaces للتطوير السحابي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #24292e 0%, #586069 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #24292e;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "☁️";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.benefits h2::before {
+            content: "✨";
+        }
+        
+        .card.steps h2::before {
+            content: "📋";
+        }
+        
+        .card.setup h2::before {
+            content: "⚙️";
+        }
+        
+        .card.alternatives h2::before {
+            content: "🔄";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #1976d2;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .benefit-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            border-right: 4px solid #4caf50;
+            text-align: center;
+        }
+        
+        .benefit-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .benefit-title {
+            color: #2c3e50;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .steps-timeline {
+            position: relative;
+            padding: 30px 0;
+            margin: 30px 0;
+        }
+        
+        .step-item {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-right: 4px solid #ff9800;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #ff9800;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .step-title {
+            color: #ff9800;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .machine-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .spec-card {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .default-spec {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+        }
+        
+        .upgraded-spec {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+        }
+        
+        .spec-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .default-spec .spec-title {
+            color: #f57c00;
+        }
+        
+        .upgraded-spec .spec-title {
+            color: #388e3c;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #ff9800;
+            text-align: center;
+        }
+        
+        .info-box {
+            background: #f0f8ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #2196f3;
+        }
+        
+        .alternatives-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .alternative-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-right: 4px solid #9c27b0;
+        }
+        
+        .alternative-title {
+            color: #7b1fa2;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .github-button-demo {
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: monospace;
+        }
+        
+        .code-button {
+            background: #2da44e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .benefits-grid, .alternatives-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .machine-specs {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>استخدام GitHub Codespaces للتطوير السحابي</h1>
+            <p>بيئة تطوير سحابية متكاملة من غير تعقيدات الإعداد المحلي</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>إيه هو GitHub Codespaces وليه هنستخدمه؟</h2>
+                <p>في الكورس ده، هنستخدم GitHub Codespaces، وده عبارة عن بيئة تطوير سحابية بتسمحلك تكتب كود مباشرة من متصفح الويب أو IDE متصل من غير ما تحتاج إعداد معقد على جهازك المحلي.</p>
+                
+                <div class="highlight">
+                    <strong>الفكرة الأساسية:</strong> بدلاً من إنك تضيع وقت في إعداد بيئة التطوير على جهازك، كل حاجة بتشتغل فوراً في السحابة، وده بيوفر عليك وقت ومجهود كبير.
+                </div>
+                
+                <div class="info-box">
+                    <h4>🎯 ليه Codespaces مهم للكورس ده؟</h4>
+                    <p>لأن احنا هنشتغل مع مكتبات وأدوات كتيرة في مجال الـ RAG وLlamaIndex، والإعداد المحلي ممكن يكون معقد ويختلف من جهاز للتاني. Codespaces بيضمن إن كلنا نشتغل في نفس البيئة بالظبط.</p>
+                </div>
+            </div>
+
+            <div class="card benefits">
+                <h2>المميزات الرهيبة لـ GitHub Codespaces</h2>
+                <p>Codespaces مش مجرد أداة تطوير، ده حل شامل بيقدم مميزات كتيرة بتخلي شغلك أسهل وأكتر كفاءة:</p>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">⚡</div>
+                        <div class="benefit-title">توفير الوقت</div>
+                        <p>مش محتاج تقلق من إعداد البيئة المحلية. كل حاجة بتشتغل فوراً من غير تعقيدات.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🤝</div>
+                        <div class="benefit-title">تحسين التعاون</div>
+                        <p>بيئة ثابتة وقابلة للوصول لكل أعضاء الفريق. كله بيشتغل في نفس البيئة بالظبط.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🔐</div>
+                        <div class="benefit-title">الأمان والامتثال</div>
+                        <p>بيئات معزولة ومحكومة بتضمن أمان بياناتك ومشاريعك.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🔄</div>
+                        <div class="benefit-title">التنقل السلس</div>
+                        <p>تقدر تنتقل بسهولة بين المشاريع والأجهزة المختلفة من غير مشاكل.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📈</div>
+                        <div class="benefit-title">سير عمل محسّن</div>
+                        <p>إمكانيات متقدمة زي مراجعة الكود والـ onboarding بطريقة سهلة ومنظمة.</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🧰</div>
+                        <div class="benefit-title">تكامل مع GitHub</div>
+                        <p>متكامل بشكل محكم مع GitHub، بيخلي عملية التطوير أكتر سلاسة.</p>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>🌟 النتيجة النهائية</h3>
+                    <p>أداة رائعة بتبسط التطوير، بتحسن التعاون، وبتزود الإنتاجية عن طريق توفير بيئة تطوير سحابية قابلة للتخصيص وآمنة.</p>
+                </div>
+            </div>
+
+            <div class="card steps">
+                <h2>إزاي تفتح وتستخدم Codespace خطوة بخطوة</h2>
+                <p>هتحصل على رابط لمستودع GitHub الخاص بالكورس. دلوقتي، عشان تفتح codespace، اتبع الخطوات دي:</p>
+                
+                <div class="steps-timeline">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-title">🔗 الوصول للمستودع</div>
+                        <p>افتح رابط مستودع GitHub الخاص بالكورس اللي هيتبعتلك.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-title">🟢 اضغط على الزر الأخضر</div>
+                        <div class="github-button-demo">
+                            <p>هتلاقي زر أخضر مكتوب عليه:</p>
+                            <button class="code-button">📝 Code</button>
+                        </div>
+                        <p>اضغط على الزر الأخضر ده اللي مكتوب عليه "Code".</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-title">📂 اختار تبويب Codespaces</div>
+                        <p>هتشوف تبويبين: واحد للـ Local وواحد للـ Codespaces. اختار تبويب Codespaces.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-title">🚀 إنشاء Codespace جديد</div>
+                        <p>اضغط على "Create codespace" أو لو كان عندك واحد شغال، هتشوف "Open codespace".</p>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>💡 نصائح مهمة أثناء الإعداد:</h4>
+                    <ul style="margin-right: 20px; margin-top: 10px;">
+                        <li>ممكن توقف الـ codespace لما تخلص شغل</li>
+                        <li>تقدر تغير نوع الماكينة حسب احتياجك</li>
+                        <li>في خيارات كتيرة متاحة للتحكم في الإعدادات</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card setup">
+                <h2>إعدادات الماكينة والمواصفات</h2>
+                <p>نوع الماكينة الافتراضي هو 2-core مع 8 جيجابايت رام. المدرب بيقترح إنك ترفعها لماكينة أقوى عشان تشتغل بكفاءة أكبر:</p>
+                
+                <div class="machine-specs">
+                    <div class="spec-card default-spec">
+                        <div class="spec-title">⚙️ المواصفات الافتراضية</div>
+                        <p><strong>2-core CPU</strong></p>
+                        <p><strong>8 GB RAM</strong></p>
+                        <p>مناسبة للمشاريع البسيطة</p>
+                    </div>
+                    
+                    <div class="spec-card upgraded-spec">
+                        <div class="spec-title">🚀 المواصفات المحسّنة</div>
+                        <p><strong>4-core CPU</strong></p>
+                        <p><strong>16 GB RAM</strong></p>
+                        <p>أفضل لمشاريع الـ AI والـ RAG</p>
+                    </div>
+                </div>
+                
+                <div class="steps-timeline">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-title">🔧 تغيير نوع الماكينة</div>
+                        <p>من إعدادات الـ codespace، اختار "Change machine type" وغير المواصفات للنوع الأقوى.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-title">💾 تحديث الـ Codespace</div>
+                        <p>اضغط على "Update codespace" عشان التغييرات تتطبق.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-title">🔄 إعادة تشغيل</div>
+                        <p>أوقف الـ codespace الأول ("Stop codespace") وبعدين اعمل إعادة تشغيل عشان المواصفات الجديدة تشتغل.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-title">✨ إنشاء Codespace جديد</div>
+                        <p>اضغط على "Create codespace on main" وهياخد دقيقة أو اثنين للبناء.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>النتيجة النهائية:</strong> هتحصل على بيئة VS Code بتشتغل في السحابة، فيها كل ملفات الكورس، وكل الـ notebooks، وكل حاجة جاهزة للاستخدام مجاناً!
+                </div>
+            </div>
+
+            <div class="card alternatives">
+                <h2>البدائل المتاحة لو مش عايز تستخدم Codespaces</h2>
+                <p>رغم إن المدرب هيستخدم GitHub Codespaces في الكورس، لكن في خيارات تانية متاحة لو حابب تجرب حاجة مختلفة:</p>
+                
+                <div class="alternatives-list">
+                    <div class="alternative-card">
+                        <div class="alternative-title">💻 التشغيل المحلي</div>
+                        <p>تقدر تنسخ المستودع وتشغله على جهازك الشخصي. بس كده هتحتاج تعمل كل الإعدادات بنفسك.</p>
+                        <div style="background: #fff3e0; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                            <strong>⚠️ تحدي:</strong> محتاج خبرة في إعداد البيئات المحلية
+                        </div>
+                    </div>
+                    
+                    <div class="alternative-card">
+                        <div class="alternative-title">📓 Google Colab</div>
+                        <p>تقدر تشغل الـ notebooks في Google Colab. خيار كويس لو عايز تستخدم GPUs مجانية.</p>
+                        <div style="background: #e8f5e8; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                            <strong>✅ ميزة:</strong> سهل الاستخدام ومتكامل مع Google Drive
+                        </div>
+                    </div>
+                    
+                    <div class="alternative-card">
+                        <div class="alternative-title">🎛️ خيارات أخرى</div>
+                        <p>في خيارات كتيرة متاحة حسب تفضيلك الشخصي وإمكانيات جهازك.</p>
+                        <div style="background: #f0f8ff; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                            <strong>💡 نصيحة:</strong> Codespaces الأسهل للمبتدئين
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>🎯 اختيار المدرب</h3>
+                    <p>رغم توفر الخيارات دي كلها، المدرب هيستخدم GitHub Codespaces في الكورس لأنه الأبسط والأكتر استقراراً، وبيضمن إن كل الطلاب يشتغلوا في نفس البيئة بالظبط.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>الخطوة الجاية: إعداد البيئة</h2>
+                <p>دلوقتي عندك بيئة VS Code شغالة في السحابة مع كل ملفات الكورس جاهزة للاستخدام. في الفيديو الجاي، هنعمل إعداد للبيئة عشان نبدأ نكتب كود فعلي.</p>
+                
+                <div class="info-box">
+                    <h4>🚀 ايه اللي جاي؟</h4>
+                    <p>هنشوف إزاي نجهز بيئة التطوير بكل المكتبات والأدوات اللي محتاجينها لبناء أنظمة RAG باستخدام LlamaIndex، وهنبدأ نكتب أول كود في المشروع.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>🎉 تهانينا!</strong> دلوقتي عندك بيئة تطوير سحابية محترفة جاهزة للعمل. الخطوة دي مهمة جداً لأنها بتوفر عليك وقت كبير وبتضمن إن كل حاجة تشتغل معاك من أول مرة!
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>💡 نصيحة: خد وقتك في فهم إزاي Codespaces بيشتغل، لأنه هيكون الأساس لكل شغلنا في الكورس</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحميل البيانات في LlamaIndex - من الملفات إلى Document Objects</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 50%, #74b9ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #00b894;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "📊";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.setup h2::before {
+            content: "⚙️";
+        }
+        
+        .card.pipeline h2::before {
+            content: "🔄";
+        }
+        
+        .card.reader h2::before {
+            content: "📖";
+        }
+        
+        .card.directory h2::before {
+            content: "📁";
+        }
+        
+        .card.document h2::before {
+            content: "📄";
+        }
+        
+        .card.manual h2::before {
+            content: "✋";
+        }
+        
+        .card.metadata h2::before {
+            content: "🏷️";
+        }
+        
+        .card.transform h2::before {
+            content: "🔀";
+        }
+        
+        .card.nodes h2::before {
+            content: "🔗";
+        }
+        
+        .card.parsers h2::before {
+            content: "🔧";
+        }
+        
+        .card.splitting h2::before {
+            content: "✂️";
+        }
+        
+        .card.relationships h2::before {
+            content: "🌐";
+        }
+        
+        .card.summary h2::before {
+            content: "📋";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #81C784;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #e8eaf6 0%, #c5cae9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #00b894;
+        }
+        
+        .info-box {
+            background: #e8f4fd;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #00b894;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #f39c12;
+            text-align: center;
+        }
+        
+        .pipeline-stages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .stage-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #00b894;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .stage-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px rgba(0, 184, 148, 0.2);
+        }
+        
+        .stage-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #00b894;
+        }
+        
+        .stage-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .stage-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .formats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .format-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid #00cec9;
+            transition: all 0.3s ease;
+        }
+        
+        .format-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 206, 201, 0.2);
+        }
+        
+        .format-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #00cec9;
+        }
+        
+        .format-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+        
+        .document-structure {
+            background: #f1f2f6;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #00b894;
+        }
+        
+        .structure-title {
+            color: #2d3436;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .structure-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 4px solid #00cec9;
+        }
+        
+        .structure-key {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .structure-desc {
+            color: #636e72;
+            font-size: 0.9em;
+        }
+        
+        .numbers-showcase {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .numbers-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .number-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .number-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .number-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .transformation-flow {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            border: 2px solid #74b9ff;
+        }
+        
+        .flow-title {
+            color: #0984e3;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .flow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .flow-step {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid #74b9ff;
+        }
+        
+        .step-icon {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #74b9ff;
+        }
+        
+        .step-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .step-desc {
+            color: #74b9ff;
+            font-size: 0.85em;
+        }
+        
+        .node-parsers-showcase {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .parsers-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .parsers-features {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .relationship-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .relationship-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-right: 4px solid #e17055;
+        }
+        
+        .relationship-icon {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #e17055;
+            text-align: center;
+        }
+        
+        .relationship-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .relationship-usage {
+            color: #636e72;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .pipeline-stages, .formats-grid, .numbers-grid, .flow-steps, .relationship-types {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>تحميل البيانات في LlamaIndex</h1>
+            <p>من الملفات الخام إلى Document Objects جاهزة للمعالجة</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>مقدمة: ضرورة تحميل البيانات الخارجية</h2>
+                <p>احنا عارفين إننا مش نقدر نبني نظام RAG من غير بيانات خارجية، بس عشان نستخدم البيانات الخارجية دي، لازم نحملها الأول. وده اللي هنتعلم إزاي نعمله في الوحدة دي.</p>
+                
+                <div class="highlight">
+                    <strong>نقطة مهمة:</strong> الوحدة دي بتستخدم html2text. تقدر تشغل الخلية دي وتنصبها، أو تنصبها من command line زي ما المدرب عمل.
+                </div>
+                
+                <div class="warning-box">
+                    <h3>⚠️ متطلبات الإعداد</h3>
+                    <p>تأكد إنك متصل بالبيئة، ودلوقتي نقدر نبدأ نشتغل مباشرة.</p>
+                </div>
+            </div>
+
+            <div class="card setup">
+                <h2>إعداد البيئة وتنصيب html2text</h2>
+                <p>قبل ما نبدأ، محتاجين نتأكد إن كل المكتبات المطلوبة منصبة صح:</p>
+                
+                <div class="code-card">
+                    <h3>تنصيب html2text</h3>
+                    <pre># من داخل الـ notebook
+!pip install html2text
+
+# أو من command line
+pip install html2text</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔧 التحقق من الاتصال</h4>
+                    <p>تأكد إنك متصل بالبيئة اللي عملنا إعدادها قبل كده، ودلوقتي نقدر نبدأ نشتغل مباشرة.</p>
+                </div>
+            </div>
+
+            <div class="card pipeline">
+                <h2>Ingestion Pipeline: تحضير البيانات للـ LLM</h2>
+                <p>تحضير البيانات للـ LLM بيتضمن إنشاء نوع من ingestion pipeline. وده شبيه للـ traditional ML، حيث عندنا data cleaning أو عملية ETL.</p>
+                
+                <div class="pipeline-stages">
+                    <div class="stage-card">
+                        <div class="stage-icon">📥</div>
+                        <div class="stage-title">Loading البيانات</div>
+                        <div class="stage-description">قراءة البيانات من مصادرها الأصلية وتحويلها لصيغة قابلة للمعالجة</div>
+                    </div>
+                    
+                    <div class="stage-card">
+                        <div class="stage-icon">🔄</div>
+                        <div class="stage-title">Transforming البيانات</div>
+                        <div class="stage-description">معالجة وتنظيف البيانات وتقسيمها لأجزاء صغيرة</div>
+                    </div>
+                    
+                    <div class="stage-card">
+                        <div class="stage-icon">💾</div>
+                        <div class="stage-title">Indexing وStoring</div>
+                        <div class="stage-description">فهرسة البيانات وحفظها في قاعدة البيانات المتجهة</div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔄 تشابه مع Traditional ML</h4>
+                    <p>العملية دي شبيهة جداً بالـ traditional machine learning حيث بيكون عندنا data cleaning أو عملية ETL (Extract, Transform, Load).</p>
+                </div>
+            </div>
+
+            <div class="card reader">
+                <h2>Data Connectors والـ Readers</h2>
+                <p>عشان نستخدم البيانات مع LLM، بنحملها باستخدام data connector، واللي معروف باسم reader في LlamaIndex.</p>
+                
+                <div class="highlight">
+                    <strong>دور الـ Reader:</strong> الـ Reader هيعمل format للبيانات، في الحالة دي text document، لـ LlamaIndex document object اللي هيحتوي على البيانات والـ metadata.
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔌 مفهوم Data Connector</h4>
+                    <p>الـ data connector ده زي الجسر اللي بيربط بين البيانات الخام (ملفات PDF، Word، إلخ) وبين الـ LlamaIndex document objects اللي النظام يقدر يشتغل معاها.</p>
+                </div>
+            </div>
+
+            <div class="card directory">
+                <h2>Simple Directory Reader: الأداة الأساسية</h2>
+                <p>هنستخدم Simple Directory Reader، وده أبسط reader وloader عند LlamaIndex. Simple Directory Reader يقدر يقرا بيانات بصيغ مختلفة.</p>
+                
+                <div class="formats-grid">
+                    <div class="format-item">
+                        <div class="format-icon">📝</div>
+                        <div class="format-name">Markdown</div>
+                    </div>
+                    
+                    <div class="format-item">
+                        <div class="format-icon">📄</div>
+                        <div class="format-name">PDF</div>
+                    </div>
+                    
+                    <div class="format-item">
+                        <div class="format-icon">📘</div>
+                        <div class="format-name">Word</div>
+                    </div>
+                    
+                    <div class="format-item">
+                        <div class="format-icon">📊</div>
+                        <div class="format-name">PowerPoint</div>
+                    </div>
+                    
+                    <div class="format-item">
+                        <div class="format-icon">🖼️</div>
+                        <div class="format-name">Images</div>
+                    </div>
+                    
+                    <div class="format-item">
+                        <div class="format-icon">🔊</div>
+                        <div class="format-name">Audio</div>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>استخدام Simple Directory Reader</h3>
+                    <pre># استيراد SimpleDirectoryReader
+from llama_index.core import SimpleDirectoryReader
+
+# قراءة ملف واحد (Naval Almanac)
+documents = SimpleDirectoryReader(
+    input_files=["./data/naval_almanac.pdf"]
+).load_data()
+
+print(f"Number of documents: {len(documents)}")</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>📁 خيارات المدخلات</h4>
+                    <p><strong>input_directory:</strong> يقرا كل ملف في المجلد</p>
+                    <p><strong>input_files:</strong> قائمة محددة من الملفات</p>
+                    <p>المدرب اختار input_files عشان يشتغل مع ملف واحد بس للتوضيح.</p>
+                </div>
+            </div>
+
+            <div class="card document">
+                <h2>فهم Document Objects ونتائج التحميل</h2>
+                <p>لما نشغل الكود، هنحصل على list. الـ documents اللي عرفناها هنا هي list، بس كام عنصر في الـ list ده؟</p>
+                
+                <div class="numbers-showcase">
+                    <div class="numbers-title">📊 نتائج التحميل المذهلة</div>
+                    <div class="numbers-grid">
+                        <div class="number-item">
+                            <div class="number-value">242</div>
+                            <div class="number-label">عنصر في القائمة</div>
+                        </div>
+                        
+                        <div class="number-item">
+                            <div class="number-value">242</div>
+                            <div class="number-label">صفحة في الـ PDF</div>
+                        </div>
+                        
+                        <div class="number-item">
+                            <div class="number-value">1:1</div>
+                            <div class="number-label">نسبة الصفحات للعناصر</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>📄 الحاجة لـ PDF Viewer</h3>
+                    <p>للأسف الـ PDF مش ممكن يتعرض، فمحتاجين نجيب extension. المدرب نصب PDF Viewer extension عشان يقدر يشوف الـ PDFs.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>ملاحظة مهمة:</strong> الـ PDF ده عنده 242 صفحة. يبقى قائمة الـ documents اللي عندنا كمان طولها 242 عنصر. ده مثير للاهتمام!
+                </div>
+                
+                <div class="code-card">
+                    <h3>استكشاف Document Object</h3>
+                    <pre># التحقق من نوع العنصر الأول
+print(type(documents[0]))
+# Output: <class 'llama_index.core.schema.Document'>
+
+# استكشاف محتويات الـ document
+print(documents[0].__dict__)</pre>
+                </div>
+            </div>
+
+            <div class="card manual">
+                <h2>بنية LlamaIndex Document Object</h2>
+                <p>العنصر الأول هو LlamaIndex document object. ممكن نشوف شكله إزاي. ممكن نختار أي عنصر عشوائي من القائمة ونضرب عليه __dict__.</p>
+                
+                <div class="document-structure">
+                    <div class="structure-title">📄 مكونات Document Object</div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">ID</div>
+                        <div class="structure-desc">معرف فريد يتم استخدامه لتحديد هوية هذا الـ document object</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">Embedding</div>
+                        <div class="structure-desc">مكان لحفظ الـ embedding الخاص بالوثيقة</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">Metadata</div>
+                        <div class="structure-desc">مكان للـ metadata (بيانات وصفية) الخاصة بالوثيقة</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">Exclude Metadata</div>
+                        <div class="structure-desc">مكان لتحديد metadata معينة تتجاهل</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">Text</div>
+                        <div class="structure-desc">النص الخام الفعلي للصفحة دي</div>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الأهم من كده كله:</strong> إن فيه النص الخام الفعلي للصفحة دي. وده بالضبط هو LlamaIndex document object. الـ LlamaIndex document object ده اللي هنشتغل معاه أساساً في الكورس كله.
+                </div>
+            </div>
+
+            <div class="card metadata">
+                <h2>إنشاء Document Objects يدوياً</h2>
+                <p>ممكن كمان تعمل document object يدوياً. يلا نشوف إزاي ده بيتعمل هنا.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء Document يدوياً</h3>
+                    <pre># استيراد Document class
+from llama_index.core import Document
+
+# إنشاء document يدوياً
+manual_document = Document(text="This is my custom document text.")
+
+# عرض محتوياته
+print(manual_document.__dict__)</pre>
+                </div>
+                
+                <div class="code-card">
+                    <h3>إضافة Metadata للـ Document</h3>
+                    <pre># إنشاء document مع metadata
+manual_document_with_metadata = Document(
+    text="This is a document with metadata.",
+    metadata={
+        "file_name": "my_document.txt",
+        "category": "research"
+    }
+)
+
+# إضافة metadata بعد الإنشاء
+manual_document.metadata["author"] = "Ahmed"
+manual_document.metadata["date"] = "2025-10-18"</pre>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🏷️ مرونة الـ Metadata</h4>
+                    <p>ممكن تضيف metadata للـ document object بنفسك. المدرب أضاف file name وcategory. وطبعاً تقدر تشوف إن ده ظهر هنا، عندنا الـ metadata مع الـ file name والـ category.</p>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>⏰ Metadata بعد الإنشاء</h3>
+                    <p>ممكن كمان تضيف metadata للـ document object بعد ما الـ document object ده يتعمل إنشاء له خلاص. هنا تشوف إن الـ metadata كان فاضي، بس بعد ما أضفنا metadata، بقى عندنا metadata مرتبطة بالـ document object ده.</p>
+                </div>
+            </div>
+
+            <div class="card transform">
+                <h2>تحويل Documents إلى Nodes</h2>
+                <p>بعد ما البيانات تتحمل، محتاجين نعالجها ونحولها للاسترجاع. الطريقة اللي بنعمل بيها ده هي إننا نحول قائمة document objects لقائمة node objects.</p>
+                
+                <div class="transformation-flow">
+                    <div class="flow-title">🔄 عملية التحويل من Documents لـ Nodes</div>
+                    <div class="flow-steps">
+                        <div class="flow-step">
+                            <div class="step-icon">✂️</div>
+                            <div class="step-name">Chunking</div>
+                            <div class="step-desc">تقسيم النصوص لأجزاء صغيرة</div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-icon">🏷️</div>
+                            <div class="step-name">Extracting Metadata</div>
+                            <div class="step-desc">استخراج البيانات الوصفية</div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-icon">🔢</div>
+                            <div class="step-name">Embedding</div>
+                            <div class="step-desc">تحويل كل chunk لـ embedding</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>مفهوم الـ Node:</strong> الـ node object ده مواطن من الدرجة الأولى (first class citizen) في LlamaIndex. وممكن تعرف node مباشرة أو تحلله من document.
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔗 العلاقة بين Document وNode</h4>
+                    <p>مهم نوضح هنا إن الـ document في الواقع هو subclass من node. يعني الـ nodes هي chunks من documents. ممكن تكون text، أو images، أو metadata، أو علاقة بين nodes كمان.</p>
+                </div>
+            </div>
+
+            <div class="card parsers">
+                <h2>Node Parsers: أدوات التحويل</h2>
+                <p>LlamaIndex عندها عدد من الـ node parsers. تقدر تشوف هنا كل الـ node parsers المختلفة اللي عند LlamaIndex.</p>
+                
+                <div class="node-parsers-showcase">
+                    <div class="parsers-title">🔧 وظيفة Node Parsers</div>
+                    <div class="parsers-features">
+                        <p>اللي بيعمله الـ node parser هو إنه يحول documents لـ nodes مع كل الـ attributes الضرورية اللي محتاجها.</p>
+                        
+                        <p><strong>الـ High Level API:</strong> استخدام from_documents method بتاع node parser. وده هيعمل parse وchunk تلقائياً للـ document object ويحوله لـ nodes.</p>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4>⚙️ آلية العمل</h4>
+                    <p>اللي بيحصل تحت الكواليس هو إننا بنقسم الـ documents لـ node objects، وده هيحافظ على النص والـ metadata مع رابط للـ parent document.</p>
+                </div>
+            </div>
+
+            <div class="card splitting">
+                <h2>تطبيق عملي: Sentence Splitter</h2>
+                <p>اللي هنعمله هنا هو إننا نعرف node parser، في الحالة دي sentence splitter. هنتكلم كتير عن التقسيم لاحقاً، بس خد الموضوع كمسلم به.</p>
+                
+                <div class="code-card">
+                    <h3>إعداد وتشغيل Sentence Splitter</h3>
+                    <pre># استيراد SentenceSplitter
+from llama_index.core.node_parser import SentenceSplitter
+
+# إعداد الـ sentence splitter
+node_parser = SentenceSplitter(
+    chunk_size=128,      # حجم كل chunk بالتوكنز
+    chunk_overlap=16,    # التداخل بين الـ chunks
+    paragraph_separator="\n\n"  # فاصل الفقرات
+)
+
+# تحويل documents إلى nodes
+nodes = node_parser.get_nodes_from_documents(documents)
+print(f"Number of nodes: {len(nodes)}")</pre>
+                </div>
+                
+                <div class="numbers-showcase">
+                    <div class="numbers-title">📊 نتائج التقسيم</div>
+                    <div class="numbers-grid">
+                        <div class="number-item">
+                            <div class="number-value">242</div>
+                            <div class="number-label">Documents أصلية</div>
+                        </div>
+                        
+                        <div class="number-item">
+                            <div class="number-value">890</div>
+                            <div class="number-label">Nodes بعد التقسيم</div>
+                        </div>
+                        
+                        <div class="number-item">
+                            <div class="number-value">128</div>
+                            <div class="number-label">Token لكل chunk</div>
+                        </div>
+                        
+                        <div class="number-item">
+                            <div class="number-value">16</div>
+                            <div class="number-label">Token تداخل</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>النتيجة المذهلة:</strong> بدأنا بـ 242 documents، قسمنا الـ 242 documents دول باستخدام sentence splitter، ودلوقتي اللي عندنا هو قائمة من 890 nodes. كل واحد من الـ nodes دول هو text node object.
+                </div>
+            </div>
+
+            <div class="card nodes">
+                <h2>بنية Node Object التفصيلية</h2>
+                <p>كل واحد من الـ nodes دول هو text node object، وده شكل الـ node. تاني، ده في الأساس مجرد dictionary.</p>
+                
+                <div class="document-structure">
+                    <div class="structure-title">🔗 مكونات Node Object</div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">Page Label</div>
+                        <div class="structure-desc">تسمية الصفحة اللي جاي منها الـ node ده</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">File Name</div>
+                        <div class="structure-desc">اسم الملف المصدر</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">File Path</div>
+                        <div class="structure-desc">مسار الملف الكامل</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">Creation/Modified Date</div>
+                        <div class="structure-desc">تاريخ الإنشاء والتعديل</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">Relationships</div>
+                        <div class="structure-desc">العلاقات مع الـ nodes الأخرى (قبل وبعد)</div>
+                    </div>
+                    
+                    <div class="structure-item">
+                        <div class="structure-key">Text</div>
+                        <div class="structure-desc">النص الفعلي للـ node</div>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>إنشاء Node يدوياً</h3>
+                    <pre># استيراد TextNode
+from llama_index.core.schema import TextNode
+
+# إنشاء node يدوياً
+manual_node = TextNode(
+    text="This is a manually created node.",
+    id_="manual_node_1"
+)
+
+print(manual_node.__dict__)</pre>
+                </div>
+            </div>
+
+            <div class="card relationships">
+                <h2>Node Relationships: ربط المعلومات</h2>
+                <p>وشفتني أذكر node relationships، وده مفيد لأن ده بيعين اتصالات بين chunks من النصوص. ده مفيد للوثائق اللي منظمة بطريقة هرمية.</p>
+                
+                <div class="relationship-types">
+                    <div class="relationship-card">
+                        <div class="relationship-icon">📚</div>
+                        <div class="relationship-name">الكتب الهرمية</div>
+                        <div class="relationship-usage">كتب بفصول وأقسام وأقسام فرعية وفقرات وجمل وكلمات</div>
+                    </div>
+                    
+                    <div class="relationship-card">
+                        <div class="relationship-icon">⚖️</div>
+                        <div class="relationship-name">الوثائق القانونية</div>
+                        <div class="relationship-usage">وثائق قانونية لها روابط لبنود أو قضايا أو سوابق أخرى</div>
+                    </div>
+                    
+                    <div class="relationship-card">
+                        <div class="relationship-icon">🔢</div>
+                        <div class="relationship-name">الترتيب التتابعي</div>
+                        <div class="relationship-usage">الحفاظ على الترتيب التتابعي للـ nodes</div>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <h3>تطبيق Node Relationships</h3>
+                    <pre># إنشاء nodes متصلة
+node1 = TextNode(text="First node content", id_="node_1")
+node2 = TextNode(text="Second node content", id_="node_2")
+
+# تعيين العلاقات
+node1.relationships[NodeRelationship.NEXT] = RelatedNodeInfo(
+    node_id="node_2"
+)
+node2.relationships[NodeRelationship.PREVIOUS] = RelatedNodeInfo(
+    node_id="node_1"
+)
+
+# علاقة parent-child
+parent_node = TextNode(text="Parent content", id_="parent")
+child_node = TextNode(text="Child content", id_="child")
+
+child_node.relationships[NodeRelationship.PARENT] = RelatedNodeInfo(
+    node_id="parent"
+)</pre>
+                </div>
+                
+                <div class="highlight">
+                    <strong>الفوائد:</strong> ده بيساعد في الحفاظ على الترتيب التتابعي للـ nodes، وده مفيد أوي للحاجات اللي عندها علاقات معقدة، زي الوثائق القانونية أو الكتب المنظمة هرمياً.
+                </div>
+            </div>
+
+            <div class="card summary">
+                <h2>الخلاصة: من البيانات الخام إلى Nodes جاهزة</h2>
+                <p>دلوقتي احنا عارفين إزاي نحمل البيانات. التالي، هنتكلم عن الفهرسة وليه ده مهم للـ retrieval augmented generation.</p>
+                
+                <div class="pipeline-stages">
+                    <div class="stage-card">
+                        <div class="stage-icon">📥</div>
+                        <div class="stage-title">تحميل البيانات</div>
+                        <div class="stage-description">من PDF لـ Document Objects باستخدام SimpleDirectoryReader</div>
+                    </div>
+                    
+                    <div class="stage-card">
+                        <div class="stage-icon">📄</div>
+                        <div class="stage-title">Document Objects</div>
+                        <div class="stage-description">هياكل بيانات غنية بالـ metadata والنصوص الخام</div>
+                    </div>
+                    
+                    <div class="stage-card">
+                        <div class="stage-icon">✂️</div>
+                        <div class="stage-title">التقسيم والتحويل</div>
+                        <div class="stage-description">تحويل Documents لـ Nodes باستخدام Node Parsers</div>
+                    </div>
+                    
+                    <div class="stage-card">
+                        <div class="stage-icon">🔗</div>
+                        <div class="stage-title">Node Relationships</div>
+                        <div class="stage-description">ربط الـ Nodes ببعضها للحفاظ على السياق</div>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>إنجازات الدرس:</strong> تعلمنا إزاي نحمل البيانات من ملفات PDF، نحولها لـ Document Objects، نقسمها لـ Nodes أصغر، ونربطها ببعض بـ relationships. ده الأساس اللي هنبني عليه باقي نظام RAG.
+                </div>
+                
+                <div class="info-box">
+                    <h4>🚀 الخطوة التالية</h4>
+                    <p>في الفيديو الجاي، هنتعلم عن الفهرسة (Indexing) وليه ده مهم جداً للـ retrieval augmented generation. الفهرسة هي اللي هتخلي البحث في البيانات سريع وفعال.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>📊 تحميل البيانات: الخطوة الأولى في رحلة بناء نظام RAG قوي</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

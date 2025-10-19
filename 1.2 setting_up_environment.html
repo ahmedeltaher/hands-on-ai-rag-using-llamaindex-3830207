@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد بيئة التطوير للعمل مع LlamaIndex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #f39c12;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: "⚙️";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .card.intro h2::before {
+            content: "🎯";
+        }
+        
+        .card.conda h2::before {
+            content: "🐍";
+        }
+        
+        .card.env h2::before {
+            content: "📦";
+        }
+        
+        .card.libraries h2::before {
+            content: "📚";
+        }
+        
+        .card.kernel h2::before {
+            content: "🔗";
+        }
+        
+        .card p {
+            color: #34495e;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #4a5568;
+        }
+        
+        .code-card h3 {
+            color: #81C784;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .code-card pre {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #f39c12;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .option-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        
+        .option-card.codespaces {
+            border-right: 4px solid #28a745;
+        }
+        
+        .option-card.local {
+            border-right: 4px solid #17a2b8;
+        }
+        
+        .option-card.colab {
+            border-right: 4px solid #ffc107;
+        }
+        
+        .option-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .option-card.codespaces .option-title {
+            color: #28a745;
+        }
+        
+        .option-card.local .option-title {
+            color: #17a2b8;
+        }
+        
+        .option-card.colab .option-title {
+            color: #f57c00;
+        }
+        
+        .steps-timeline {
+            position: relative;
+            padding: 30px 0;
+            margin: 30px 0;
+        }
+        
+        .step-item {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-right: 4px solid #e74c3c;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .step-title {
+            color: #e74c3c;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #e74c3c;
+            text-align: center;
+        }
+        
+        .info-box {
+            background: #f0f8ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #2196f3;
+        }
+        
+        .version-info {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-right: 4px solid #4caf50;
+        }
+        
+        .libraries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .library-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-right: 4px solid #9c27b0;
+        }
+        
+        .library-title {
+            color: #7b1fa2;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .options-grid, .libraries-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>إعداد بيئة التطوير للعمل مع LlamaIndex</h1>
+            <p>الخطوات الكاملة لتجهيز بيئة تطوير احترافية لمشاريع الـ RAG</p>
+        </div>
+        
+        <div class="content">
+            <div class="card intro">
+                <h2>دلوقتي عندنا Codespace جاهز، وقت إعداد بيئة التطوير</h2>
+                <p>بعد ما عملنا Codespace instance وبدأت تشتغل، دلوقتي جه الوقت إننا نعمل إعداد لبيئة التطوير الفعلية اللي هنشتغل عليها.</p>
+                
+                <div class="options-grid">
+                    <div class="option-card codespaces">
+                        <div style="font-size: 3em; margin-bottom: 15px;">☁️</div>
+                        <div class="option-title">لو بتتابع على Codespaces</div>
+                        <p>اعمل كل حاجة زي ما المدرب بيعملها بالظبط، خطوة بخطوة.</p>
+                    </div>
+                    
+                    <div class="option-card local">
+                        <div style="font-size: 3em; margin-bottom: 15px;">💻</div>
+                        <div class="option-title">لو بتشتغل محلياً</div>
+                        <p>كمان اعمل نفس اللي المدرب بيعمله، نفس الخطوات بالظبط.</p>
+                    </div>
+                    
+                    <div class="option-card colab">
+                        <div style="font-size: 3em; margin-bottom: 15px;">📓</div>
+                        <div class="option-title">لو بتستخدم Google Colab</div>
+                        <p>ده الخيار الوحيد اللي ممكن تتخطى فيه الدرس ده، لأن كل notebook فيها الـ installs اللازمة في أول cell.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <strong>معلومة مهمة:</strong> لو اخترت تشغل كل الـ notebooks في بيئة Google Colab، فكل notebook عملها المدرب فيها أول cell تحتوي على كل التثبيتات اللازمة مع تثبيت الإصدارات اللي هو بيستخدمها.
+                </div>
+            </div>
+
+            <div class="card conda">
+                <h2>استخدام Conda كمدير للحزم</h2>
+                <p>المدرب اختار يستخدم Conda كمدير للحزم. Conda بيجي مثبت مسبقاً على Codespaces، وده رائع ومريح.</p>
+                
+                <div class="info-box">
+                    <h4>🤔 ليه Conda مش venv أو Poetry؟</h4>
+                    <p>المدرب مش متأكد لو venv أو Poetry متثبتين مسبقاً على Codespaces ولا لأ، وهو مقرش يدور لأنه مش بيستخدمهم عادة. لكن لو انت بتحب تستخدم venv أو Poetry وعايز تعملهم محلياً، مفيش حاجة تمنعك.</p>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>⚠️ مهم للي بيشتغلوا محلياً</h3>
+                    <p>لو انت مستخدمتش Conda قبل كده خالص، لازم تروح لموقع Conda وتتبع التعليمات وتنزله وتثبته الأول، وبعدين ترجع تكمل معانا. ده بس لو بتشتغل محلياً.</p>
+                </div>
+                
+                <div class="steps-timeline">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-title">🔍 التحقق من تثبيت Conda</div>
+                        <p>تقدر تتأكد إن Conda مثبت فعلاً عن طريق تشغيله في سطر الأوامر:</p>
+                        <div class="code-card">
+                            <h3>التحقق من Conda</h3>
+                            <pre>conda</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-title">🚀 تهيئة Conda</div>
+                        <p>أول حاجة لازم تعملها هي تهيئة Conda:</p>
+                        <div class="code-card">
+                            <h3>تهيئة Conda</h3>
+                            <pre>conda init</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-title">🔄 إعادة فتح Terminal</div>
+                        <p>لازم تقفل الـ shell وتفتحه تاني. اضغط على X، وبعدين اضغط Control + Shift + backtick عشان تفتح الـ terminal تاني.</p>
+                        <p>هتلاقي إن عندك base Conda environment دلوقتي.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card env">
+                <h2>إنشاء بيئة Conda جديدة</h2>
+                <p>دلوقتي هنعمل بيئة Conda جديدة. المدرب هيسميها "lil" اختصاراً لـ LinkedIn Learning_llama_index.</p>
+                
+                <div class="code-card">
+                    <h3>إنشاء البيئة الجديدة</h3>
+                    <pre>conda create -n lil_llama_index python==3.10 python-dotenv</pre>
+                </div>
+                
+                <div class="version-info">
+                    <h4>🐍 ليه Python 3.10؟</h4>
+                    <p>لو عايز تستخدم Python 3.11 أو 3.12، تقدر تعمل كده. بس المدرب بيقول إن تجربته مع الـ frameworks والمكتبات الحديثة، كل ما يستخدم Python 3.11 أو 3.12، بيواجه مشاكل غريبة. زائد إنه بيستخدم Python 3.10 بكثرة في آخر سنتين من غير مشاكل.</p>
+                </div>
+                
+                <p>الكود ده هياخد حوالي دقيقة أو اثنين للتثبيت. اتبع التعليمات اللي هتظهرلك.</p>
+                
+                <div class="code-card">
+                    <h3>تفعيل البيئة</h3>
+                    <pre>conda activate lil_llama_index</pre>
+                </div>
+                
+                <div class="highlight">
+                    <strong>🎉 تهانينا!</strong> دلوقتي انت في بيئة LinkedIn Learning LlamaIndex الخاصة بيك!
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>تثبيت الأدوات الأساسية</h2>
+                <p>لو بتشتغل محلياً ومعندكش ipython kernel jupyter jupyterlab مثبتين، تقدر تثبتهم دلوقتي.</p>
+                
+                <div class="code-card">
+                    <h3>فحص المثبت حالياً</h3>
+                    <pre>conda list</pre>
+                </div>
+                
+                <p>تقدر تتأكد إيه اللي مثبت. في الواقع، الأدوات دي مش مثبتة في البيئة الحالية، فيلا نثبتها:</p>
+                
+                <div class="code-card">
+                    <h3>تثبيت الأدوات الأساسية</h3>
+                    <pre>conda install ipython ipykernel jupyter jupyterlab -y</pre>
+                </div>
+                
+                <p>العملية دي هتاخد شوية وقت للتنزيل والتثبيت.</p>
+                
+                <div class="info-box">
+                    <h4>📋 للتحقق من JupyterLab (للشغل المحلي)</h4>
+                    <p>لو بتشتغل محلياً، تقدر تتأكد إن JupyterLab اتثبت صح عن طريق:</p>
+                    <div class="code-card">
+                        <h3>فحص JupyterLab</h3>
+                        <pre>jupyter lab --version</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card libraries">
+                <h2>تثبيت المكتبات والحزم الأساسية</h2>
+                <p>دلوقتي نقدر نبدأ نثبت المكتبات والحزم الأساسية اللي محتاجينها. لو في أي حاجة تانية محتاجة برا اللي هنثبته دلوقتي، المدرب هيتأكد إنه يوضحها في كل notebook.</p>
+                
+                <div class="libraries-grid">
+                    <div class="library-card">
+                        <div class="library-title">🦙 LlamaIndex الأساسي</div>
+                        <p>المدرب هيستخدم الحزمة الأساسية لـ LlamaIndex دلوقتي. LlamaIndex مقسم بشكل جميل لعدة حزم صغيرة، وهيتكلم عن ده في وحدة لاحقة.</p>
+                        <div class="code-card">
+                            <h3>تثبيت LlamaIndex</h3>
+                            <pre>pip install llama-index==0.10.37</pre>
+                        </div>
+                        <div class="version-info">
+                            <p><strong>الإصدار الحالي:</strong> 0.10.37 (وقت التسجيل)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="library-card">
+                        <div class="library-title">🗃️ Qdrant Vector Database</div>
+                        <p>Qdrant هيكون قاعدة البيانات المتجهة المختارة طوال الكورس. المدرب هيتكلم عن اختيار قاعدة بيانات متجهة في وحدة لاحقة.</p>
+                        <div class="code-card">
+                            <h3>تثبيت Qdrant</h3>
+                            <pre>pip install qdrant-client==1.9.1</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="library-card">
+                        <div class="library-title">🔗 LlamaIndex Dependencies</div>
+                        <p>هنثبت dependencies الخاصة بـ LlamaIndex للتعامل مع الملفات الخارجية وقواعد البيانات المتجهة زي Qdrant.</p>
+                        <div class="code-card">
+                            <h3>تثبيت Dependencies</h3>
+                            <pre>pip install llama-index-vector-stores-qdrant
+pip install llama-index-readers-file</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>⚡ احنا بنشتغل على حافة التكنولوجيا!</h3>
+                    <p>فعلاً، احنا كده. LlamaIndex بيتغير بسرعة. OpenAI، Cohere، كل المكتبات دي بتتغير بسرعة. عشان كده لازم تثبت نفس إصدارات المكتبات اللي المدرب بيستخدمها.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>تثبيت مكتبات نماذج اللغة</h2>
+                <p>طوال الكورس، المدرب هيستخدم Cohere وOpenAI. لو عايز تستخدم أي مزود LLM تاني، أهلاً وسهلاً. LlamaIndex بيخلي تثبيتهم سهل.</p>
+                
+                <div class="info-box">
+                    <h4>📋 نمط التثبيت لمزودي LLM</h4>
+                    <p>كلهم بيتبعوا نمط عام مشابه:</p>
+                    <ul style="margin-right: 20px; margin-top: 10px;">
+                        <li><strong>Mistral:</strong> llama-index-llms-mistral</li>
+                        <li><strong>Hugging Face:</strong> llama-index-llms-huggingface</li>
+                        <li><strong>وهكذا...</strong> النمط واحد لكل المزودين</li>
+                    </ul>
+                </div>
+                
+                <div class="code-card">
+                    <h3>تثبيت مكتبات الـ LLM الأساسية</h3>
+                    <pre>pip install cohere openai</pre>
+                </div>
+                
+                <div class="code-card">
+                    <h3>تثبيت تكاملات LlamaIndex</h3>
+                    <pre>pip install llama-index-llms-cohere
+pip install llama-index-llms-openai</pre>
+                </div>
+                
+                <div class="version-info">
+                    <h4>🤖 النماذج المستخدمة في الكورس</h4>
+                    <p>المدرب بيكتب ده في وقت كان فيه:</p>
+                    <ul style="margin-right: 20px; margin-top: 10px;">
+                        <li><strong>أحدث نموذج من Cohere:</strong> Command R+</li>
+                        <li><strong>أحدث نموذج من OpenAI:</strong> GPT-4o</li>
+                    </ul>
+                    <p>هنستخدم النماذج دي في الكورس.</p>
+                </div>
+                
+                <div class="code-card">
+                    <h3>تكامل OpenAI مع Embeddings</h3>
+                    <pre>pip install llama-index-embeddings-openai</pre>
+                </div>
+                
+                <div class="code-card">
+                    <h3>Cohere Reranking</h3>
+                    <pre>pip install llama-index-postprocessor-cohere-rerank</pre>
+                </div>
+                
+                <p>هنستخدم Cohere postprocessor للـ reranking كمان.</p>
+            </div>
+
+            <div class="card kernel">
+                <h2>ربط IPython Kernel ببيئة Conda</h2>
+                <p>لو بتشتغل محلياً، ممكن تحتاج تربط الـ IPython kernel ببيئة Conda بتاعتك.</p>
+                
+                <div class="info-box">
+                    <h4>🔍 إزاي تعرف إنك محتاج الخطوة دي؟</h4>
+                    <p>لما تفتح notebook وتحاول تختار الـ kernel، هتلاقي خيار "Select Kernel" وتدور على Python Environments. لو لقيت "lil_llama_index" موجود، يبقى كويس. لو مش موجود، يبقى محتاج تعمل الخطوة دي.</p>
+                </div>
+                
+                <div class="code-card">
+                    <h3>ربط البيئة بالـ Notebook</h3>
+                    <pre>python -m ipykernel install --user --name lil_llama_index --display-name "Python (lil_llama_index)"</pre>
+                </div>
+                
+                <p>الكود ده هيربط البيئة اللي عملتها بالـ notebook عشان تقدر تختارها من قائمة الـ kernels.</p>
+            </div>
+
+            <div class="card">
+                <h2>خلاص، كده احنا جاهزين! 🎉</h2>
+                <p>بيئة التطوير دلوقتي كاملة وجاهزة للشغل. كل حاجة اتثبتت صح وكل الإعدادات اللازمة اتعملت.</p>
+                
+                <div class="highlight">
+                    <strong>🚀 الخطوة الجاية:</strong> في الفيديو الجاي، المدرب هيتكلم عن إزاي تختار مزود LLM ومزود embeddings مناسب لمشروعك.
+                </div>
+                
+                <div class="version-info">
+                    <h4>🔮 نصيحة مهمة للمستقبل</h4>
+                    <p>لو جيت للكورس ده في المستقبل ولقيت إن LlamaIndex بقى في إصدار 0.10.55 أو 0.10.99، ماتقلقش! الكورس لسه هيكون مفيد ليك. اللي مهم هو المبادئ والأنماط اللي هنستخدمها.</p>
+                    <p><strong>ليه الإصدارات بتتغير كتير؟</strong> لأن المزودين بيطلعوا نماذج جديدة طول الوقت - نماذج لغة جديدة، نماذج embedding جديدة، تقنيات جديدة للبحث المتجه، وهكذا. ولأن LlamaIndex معتمد على الـ frameworks دي، لازم يكبر معاها.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>💡 مبروك! دلوقتي عندك بيئة تطوير احترافية كاملة جاهزة لبناء أنظمة RAG متقدمة</p>
+            <p style="margin-top: 10px; opacity: 0.8;">تم إنشاء هذا الملخص باستخدام تقنيات الذكاء الاصطناعي المتقدمة 🤖</p>
+        </div>
+    </div>
+</body>
+</html>
