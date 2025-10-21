@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معاملات SentenceEmbeddingOptimizer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .param-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .calculation-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .combination-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .context-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ معاملات SentenceEmbeddingOptimizer</h1>
+            <p>الدرس الثالث عشر: فهم كل المعاملات وطرق استخدامها</p>
+        </div>
+
+        <div class="card">
+            <h2>🧠 Embedding Model</h2>
+            <div class="param-box">
+                <h3>🎯 المعامل الأساسي:</h3>
+                <p>أول حاجة محتاجها هي <strong>embedding model</strong> عشان يحول النصوص لـ vectors.</p>
+                
+                <h3>🔧 الإعداد الافتراضي:</h3>
+                <ul>
+                    <li><strong>Default:</strong> OpenAI embeddings</li>
+                    <li><strong>السبب:</strong> زي كل شيء في LlamaIndex</li>
+                    <li><strong>البدائل:</strong> يمكن استخدام نماذج تانية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Percentile Cutoff</h2>
+            <div class="calculation-box">
+                <h3>🧮 طريقة الحساب:</h3>
+                <p>عدد الجمل = integer(إجمالي عدد الجمل × percentile_cutoff)</p>
+                
+                <h3>🎯 مثال عملي:</h3>
+                <p>لو عندك 10 جمل و percentile_cutoff = 0.5:</p>
+                <p>عدد الجمل المختارة = integer(10 × 0.5) = 5 جمل</p>
+                
+                <h3>💡 المعنى:</h3>
+                <ul>
+                    <li><strong>0.5 = 50%:</strong> أفضل نص الجمل</li>
+                    <li><strong>0.3 = 30%:</strong> أفضل ثلث الجمل</li>
+                    <li><strong>0.7 = 70%:</strong> أفضل سبعة أعشار الجمل</li>
+                </ul>
+                
+                <h3>🎯 متى نستخدمه:</h3>
+                <p>لما عايز تحدد <strong>نسبة ثابتة</strong> من أفضل الجمل، مهما كان عددها الكلي.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚖️ Threshold Cutoff</h2>
+            <div class="param-box">
+                <h3>🎯 معيار الجودة:</h3>
+                <p>بناءً على <strong>similarity score</strong> بين الجملة والاستعلام.</p>
+                
+                <h3>📊 مثال عملي:</h3>
+                <p>لو threshold_cutoff = 0.7:</p>
+                <p>هيتم اختيار الجمل اللي similarity score بتاعها > 0.7 بس</p>
+                
+                <h3>🎮 أمثلة على القيم:</h3>
+                <ul>
+                    <li><strong>0.8:</strong> جمل عالية الصلة جداً</li>
+                    <li><strong>0.6:</strong> جمل متوسطة إلى عالية الصلة</li>
+                    <li><strong>0.4:</strong> جمل متوسطة الصلة</li>
+                </ul>
+                
+                <h3>🎯 متى نستخدمه:</h3>
+                <p>لما عايز تضمن <strong>حد أدنى من الجودة</strong> في الجمل المختارة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🤝 الجمع بين المعيارين</h2>
+            <div class="combination-box">
+                <h3>💪 قوة الجمع:</h3>
+                <p>يمكن استخدام <strong>percentile_cutoff</strong> و <strong>threshold_cutoff</strong> مع بعض!</p>
+                
+                <h3>⚙️ إزاي بيشتغل:</h3>
+                <ol>
+                    <li><strong>تطبيق threshold:</strong> استبعاد الجمل الضعيفة</li>
+                    <li><strong>تطبيق percentile:</strong> اختيار نسبة من الباقي</li>
+                    <li><strong>النتيجة:</strong> جمل عالية الجودة بعدد محكوم</li>
+                </ol>
+                
+                <h3>🎯 مثال عملي:</h3>
+                <ul>
+                    <li><strong>threshold_cutoff = 0.6:</strong> جمل أعلى من 0.6 بس</li>
+                    <li><strong>percentile_cutoff = 0.5:</strong> أفضل 50% من اللي عدوا الـ threshold</li>
+                    <li><strong>النتيجة:</strong> أفضل نص الجمل الجيدة!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>✂️ Tokenizer Function</h2>
+            <div class="param-box">
+                <h3>🔧 المهمة:</h3>
+                <p>تقسيم النص إلى جمل منفردة.</p>
+                
+                <h3>📚 الأداة المستخدمة:</h3>
+                <p><strong>NLTK English tokenizer</strong> - وتحديداً punkt sentence tokenizer</p>
+                
+                <h3>🎯 ليه مهم:</h3>
+                <ul>
+                    <li><strong>دقة التقسيم:</strong> فهم صحيح لحدود الجمل</li>
+                    <li><strong>تعامل مع التعقيدات:</strong> اختصارات، أرقام، علامات ترقيم</li>
+                    <li><strong>جودة معترف بها:</strong> NLTK مكتبة موثوقة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📖 Context Before/After</h2>
+            <div class="context-box">
+                <h3>🎯 الهدف:</h3>
+                <p>إضافة جمل من السياق المحيط بالجمل المختارة.</p>
+                
+                <h3>⚙️ المعاملات:</h3>
+                <ul>
+                    <li><strong>context_before:</strong> عدد الجمل اللي قبل الجملة المختارة</li>
+                    <li><strong>context_after:</strong> عدد الجمل اللي بعد الجملة المختارة</li>
+                </ul>
+                
+                <h3>💡 ليه مفيد:</h3>
+                <ul>
+                    <li><strong>سياق أوسع:</strong> فهم أفضل للمعنى</li>
+                    <li><strong>ترابط النص:</strong> الجمل مترابطة مع بعض</li>
+                    <li><strong>تجنب التقطع:</strong> معنى مكتمل</li>
+                </ul>
+                
+                <h3>🎮 مثال:</h3>
+                <p>لو اخترت جملة وحددت context_before=1, context_after=1:</p>
+                <p>هيتم إضافة الجملة اللي قبلها والجملة اللي بعدها للسياق النهائي.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 نصائح لاختيار القيم</h2>
+            <div class="calculation-box">
+                <h3>🎮 للبداية:</h3>
+                <ul>
+                    <li><strong>percentile_cutoff = 0.5:</strong> نقطة بداية متوازنة</li>
+                    <li><strong>threshold_cutoff = 0.6:</strong> جودة جيدة</li>
+                    <li><strong>context_before/after = 1:</strong> سياق خفيف</li>
+                </ul>
+                
+                <h3>🔧 للضبط الدقيق:</h3>
+                <ul>
+                    <li><strong>اختبر قيم مختلفة:</strong> على بياناتك</li>
+                    <li><strong>راقب النتائج:</strong> جودة مقابل كمية</li>
+                    <li><strong>اضبط تدريجياً:</strong> حسب الأداء</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 فهم المعاملات = تحكم أفضل في جودة النتائج!</p>
+        </div>
+    </div>
+</body>
+</html>

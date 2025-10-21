@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعدادات النموذج والمتطلبات التقنية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #00b894; padding-bottom: 10px; }
+        .model-box { background: linear-gradient(120deg, #fd79a8 0%, #fdcb6e 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .gpu-box { background: linear-gradient(120deg, #e17055 0%, #fdcb6e 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .config-box { background: linear-gradient(120deg, #74b9ff 0%, #0984e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .params-box { background: linear-gradient(120deg, #6c5ce7 0%, #a29bfe 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+        .warning-box { background: linear-gradient(120deg, #ff7675 0%, #fd79a8 100%); padding: 15px; border-radius: 10px; margin: 15px 0; color: white; border-right: 5px solid #d63031; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ إعدادات النموذج والمتطلبات التقنية</h1>
+            <p>الدرس الخامس: كل ما تحتاج معرفته قبل التطبيق</p>
+        </div>
+
+        <div class="card">
+            <h2>🤖 النموذج الافتراضي: Llama-2-7B</h2>
+            <div class="model-box">
+                <h3>🎯 ليه Llama-2-7B بالضبط؟</h3>
+                <p>مش اختيار عشوائي! ده نموذج متوازن بين القوة والكفاءة، ومناسب جداً لمهام الضغط.</p>
+                
+                <h3>📊 مواصفات النموذج:</h3>
+                <ul>
+                    <li><strong>حجم المعاملات:</strong> 7 مليار معامل</li>
+                    <li><strong>المطور:</strong> Meta (فيسبوك سابقاً)</li>
+                    <li><strong>النسخة المستخدمة:</strong> تطوير NousResearch</li>
+                    <li><strong>التخصص:</strong> معالجة لغة طبيعية متقدمة</li>
+                </ul>
+                
+                <h3>🌟 ليه NousResearch version؟</h3>
+                <ul>
+                    <li><strong>تحسينات خاصة:</strong> معايرة محسنة لمهام الضغط</li>
+                    <li><strong>إتاحة أوسع:</strong> متوفر على Hugging Face بسهولة</li>
+                    <li><strong>استقرار أعلى:</strong> أقل أخطاء وcrashes</li>
+                    <li><strong>توثيق أفضل:</strong> documentation ومجتمع نشيط</li>
+                </ul>
+                
+                <h3>⚡ قدرات النموذج:</h3>
+                <ul>
+                    <li><strong>فهم السياق:</strong> يفهم النصوص المعقدة</li>
+                    <li><strong>تحليل الصلة:</strong> يقدر يحدد المعلومات المهمة</li>
+                    <li><strong>حفظ المعنى:</strong> يضغط بدون فقدان المعنى الأساسي</li>
+                    <li><strong>سرعة معقولة:</strong> مش بطيء زيادة عن اللزوم</li>
+                </ul>
+                
+                <h3>🔄 بدائل أخرى:</h3>
+                <ul>
+                    <li><strong>Llama-2-13B:</strong> أقوى بس محتاج موارد أكتر</li>
+                    <li><strong>Llama-2-70B:</strong> الأقوى لكن محتاج GPU قوي جداً</li>
+                    <li><strong>نماذج أخرى:</strong> ممكن تجرب نماذج مختلفة حسب احتياجك</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💻 متطلبات الـ GPU</h2>
+            <div class="gpu-box">
+                <div class="warning-box">
+                    <h3>⚠️ تحذير مهم!</h3>
+                    <p>المدرب قال بوضوح: "مش هنشغل الطريقة دي هنا عشان محتاجة GPU". ده معناه إيه؟</p>
+                </div>
+                
+                <h3>🔥 ليه GPU ضروري؟</h3>
+                <ul>
+                    <li><strong>عمليات حسابية ضخمة:</strong> النموذج محتاج معالجة متوازية</li>
+                    <li><strong>ذاكرة كبيرة:</strong> تحميل 7 مليار معامل</li>
+                    <li><strong>سرعة الاستجابة:</strong> CPU لوحده هيبقى بطيء جداً</li>
+                    <li><strong>كفاءة الطاقة:</strong> GPU أكفأ في النوع ده من المعالجة</li>
+                </ul>
+                
+                <h3>📋 المتطلبات الدنيا:</h3>
+                <ul>
+                    <li><strong>ذاكرة GPU:</strong> على الأقل 16GB VRAM</li>
+                    <li><strong>نوع الكارت:</strong> RTX 3090/4090 أو A100/V100</li>
+                    <li><strong>ذاكرة النظام:</strong> 32GB RAM أو أكثر</li>
+                    <li><strong>مساحة التخزين:</strong> 50GB للنموذج والمتطلبات</li>
+                </ul>
+                
+                <h3>☁️ بدائل السحابة:</h3>
+                <ul>
+                    <li><strong>Google Colab Pro:</strong> GPU مجاني لفترة محدودة</li>
+                    <li><strong>AWS/Azure:</strong> instances بـ GPU قوية</li>
+                    <li><strong>Paperspace:</strong> خيار اقتصادي للتجارب</li>
+                    <li><strong>Runpod:</strong> متخصص في AI workloads</li>
+                </ul>
+                
+                <h3>💡 Device Map:</h3>
+                <p>لو عندك GPU، لازم تستخدم device map عشان توزع النموذج صح على الذاكرة:</p>
+                <ul>
+                    <li><strong>Auto mapping:</strong> النظام يوزع تلقائياً</li>
+                    <li><strong>Manual mapping:</strong> تحكم دقيق في التوزيع</li>
+                    <li><strong>Mixed precision:</strong> استخدام FP16 لتوفير الذاكرة</li>
+                    <li><strong>Gradient checkpointing:</strong> تقليل استخدام الذاكرة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 إعدادات النموذج الإضافية</h2>
+            <div class="config-box">
+                <h3>⚙️ Model Configurations:</h3>
+                <p>مش بس تحميل النموذج وخلاص، فيه إعدادات مهمة لازم تضبطها!</p>
+                
+                <h3>🎛️ إعدادات الأداء:</h3>
+                <ul>
+                    <li><strong>Batch Size:</strong> عدد العينات اللي تتعالج مع بعض</li>
+                    <li><strong>Max Length:</strong> أقصى طول للنص المدخل</li>
+                    <li><strong>Temperature:</strong> مستوى العشوائية في الإخراج</li>
+                    <li><strong>Top-k/Top-p:</strong> استراتيجيات اختيار الكلمات</li>
+                </ul>
+                
+                <h3>💾 إعدادات الذاكرة:</h3>
+                <ul>
+                    <li><strong>Cache Size:</strong> حجم الذاكرة المؤقتة</li>
+                    <li><strong>Offload Strategy:</strong> نقل أجزاء للـ CPU عند الحاجة</li>
+                    <li><strong>Memory Mapping:</strong> كيفية توزيع البيانات</li>
+                    <li><strong>Precision Mode:</strong> FP32 vs FP16 vs INT8</li>
+                </ul>
+                
+                <h3>🔒 إعدادات الأمان:</h3>
+                <ul>
+                    <li><strong>Content Filtering:</strong> فلترة المحتوى غير المناسب</li>
+                    <li><strong>Resource Limits:</strong> حدود استخدام الموارد</li>
+                    <li><strong>Error Handling:</strong> طرق التعامل مع الأخطاء</li>
+                    <li><strong>Timeout Settings:</strong> مهلة زمنية للعمليات</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔑 إعدادات OpenAI API</h2>
+            <div class="params-box">
+                <h3>💭 ليه OpenAI مع النموذج المحلي؟</h3>
+                <p>سؤال ذكي! أحياناً النظام بيحتاج يستخدم OpenAI كـ fallback أو لمهام محددة.</p>
+                
+                <h3>🎯 حالات الاستخدام:</h3>
+                <ul>
+                    <li><strong>Fallback Option:</strong> لو النموذج المحلي فشل</li>
+                    <li><strong>Comparison Testing:</strong> مقارنة النتائج</li>
+                    <li><strong>Hybrid Processing:</strong> استخدام كلا النموذجين</li>
+                    <li><strong>Quality Assurance:</strong> تحقق من جودة الضغط</li>
+                </ul>
+                
+                <h3>🔐 إعداد الـ API Key:</h3>
+                <ul>
+                    <li><strong>Environment Variable:</strong> الطريقة الآمنة للحفظ</li>
+                    <li><strong>Config File:</strong> ملف إعدادات منفصل</li>
+                    <li><strong>Runtime Input:</strong> إدخال وقت التشغيل</li>
+                    <li><strong>Secure Storage:</strong> تخزين مشفر للمفاتيح</li>
+                </ul>
+                
+                <h3>💰 اعتبارات التكلفة:</h3>
+                <ul>
+                    <li><strong>Token Counting:</strong> حساب دقيق للاستخدام</li>
+                    <li><strong>Rate Limiting:</strong> تحديد معدل الطلبات</li>
+                    <li><strong>Cost Monitoring:</strong> مراقبة التكلفة</li>
+                    <li><strong>Budget Alerts:</strong> تنبيهات الميزانية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 باقي المعاملات المهمة</h2>
+            <div class="model-box">
+                <h3>🎪 Metadata Mode:</h3>
+                <p>اتكلمنا عنه قبل كده، بس مهم نفهم دوره في الضغط:</p>
+                <ul>
+                    <li><strong>NONE:</strong> بدون metadata إضافية</li>
+                    <li><strong>LLM:</strong> metadata محسنة للـ LLM</li>
+                    <li><strong>EMBED:</strong> metadata للـ embedding models</li>
+                    <li><strong>ALL:</strong> كل أنواع الـ metadata</li>
+                </ul>
+                
+                <h3>📝 Instruction String:</h3>
+                <p>التعليمات اللي بتتبعت للنموذج عشان يفهم إزاي يضغط:</p>
+                <ul>
+                    <li><strong>Clear Instructions:</strong> تعليمات واضحة ومحددة</li>
+                    <li><strong>Context Aware:</strong> مرتبطة بنوع المحتوى</li>
+                    <li><strong>Goal Oriented:</strong> موجهة لهدف الضغط</li>
+                    <li><strong>Format Specific:</strong> حسب شكل المخرجات المطلوب</li>
+                </ul>
+                
+                <h3>🎯 Target Token:</h3>
+                <p>الهدف اللي عايز توصله في الضغط:</p>
+                <ul>
+                    <li><strong>Absolute Number:</strong> رقم محدد من الـ tokens</li>
+                    <li><strong>Percentage:</strong> نسبة مئوية من الأصل</li>
+                    <li><strong>Dynamic:</strong> متغير حسب المحتوى</li>
+                    <li><strong>Context Window:</strong> محدود بحجم النموذج</li>
+                </ul>
+                
+                <h3>📊 Ranking Method:</h3>
+                <p>الطريقة اللي بتحدد أهمية كل جزء:</p>
+                <ul>
+                    <li><strong>LongLLMLingua Default:</strong> الطريقة الافتراضية المجربة</li>
+                    <li><strong>Custom Scoring:</strong> طريقة تقييم مخصصة</li>
+                    <li><strong>ML-based:</strong> تعلم آلي لتحديد الأهمية</li>
+                    <li><strong>Rule-based:</strong> قواعد محددة مسبقاً</li>
+                </ul>
+                
+                <h3>⚙️ Additional Keyword Arguments:</h3>
+                <p>معاملات إضافية للتحكم الدقيق:</p>
+                <ul>
+                    <li><strong>Compression Ratio:</strong> نسبة الضغط المطلوبة</li>
+                    <li><strong>Quality Threshold:</strong> حد أدنى للجودة</li>
+                    <li><strong>Processing Options:</strong> خيارات المعالجة</li>
+                    <li><strong>Output Format:</strong> شكل المخرجات</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 نصائح التطبيق العملي</h2>
+            <div class="config-box">
+                <h3>🚀 للمبتدئين:</h3>
+                <ul>
+                    <li><strong>ابدأ بالإعدادات الافتراضية:</strong> اتأكد إن كله شغال</li>
+                    <li><strong>استخدم Colab:</strong> لو مش عندك GPU</li>
+                    <li><strong>اختبر على بيانات صغيرة:</strong> قبل التطبيق الكامل</li>
+                    <li><strong>راقب استخدام الذاكرة:</strong> متخليهاش تمتلئ</li>
+                </ul>
+                
+                <h3>⚡ للمتقدمين:</h3>
+                <ul>
+                    <li><strong>جرب نماذج مختلفة:</strong> شوف أيهم أنسب لاحتياجك</li>
+                    <li><strong>اضبط المعاملات:</strong> حسن الأداء تدريجياً</li>
+                    <li><strong>استخدم Mixed Precision:</strong> لتوفير الذاكرة</li>
+                    <li><strong>مراقبة مستمرة:</strong> للأداء والتكلفة</li>
+                </ul>
+                
+                <h3>🎯 لبيئة الإنتاج:</h3>
+                <ul>
+                    <li><strong>Load Balancing:</strong> توزيع الأحمال</li>
+                    <li><strong>Caching Strategy:</strong> استراتيجية ذاكرة مؤقتة</li>
+                    <li><strong>Error Recovery:</strong> خطط للتعامل مع الأخطاء</li>
+                    <li><strong>Performance Monitoring:</strong> مراقبة دائمة للأداء</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚙️ الإعداد الصحيح نصف النجاح في تطبيق LongLLMLingua!</p>
+        </div>
+    </div>
+</body>
+</html>

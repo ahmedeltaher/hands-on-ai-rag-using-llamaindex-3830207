@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary Index - الجزء الخامس عشر: أمثلة تطبيقية متقدمة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #ddd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 5px solid #00b894;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .use-case-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .implementation-box {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #5f3dc4;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .demo-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 أمثلة تطبيقية متقدمة</h1>
+            <p>الجزء الخامس عشر: تطبيقات عملية شاملة لـ Document Summary Index</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>🏥 المثال الأول: نظام استشارات طبية ذكي</h2>
+                <div class="card-content">
+                    <div class="use-case-box">
+                        <h4>🎯 وصف المشروع</h4>
+                        <p>نظام ذكي لتحليل التقارير الطبية والأبحاث العلمية لتقديم إجابات دقيقة للاستفسارات الطبية مع الحفاظ على الخصوصية والدقة العلمية.</p>
+                        
+                        <h4>✨ المميزات المطلوبة:</h4>
+                        <ul>
+                            <li>تحليل التقارير الطبية المعقدة</li>
+                            <li>ربط الأعراض بالتشخيصات المحتملة</li>
+                            <li>تقديم مراجع علمية موثقة</li>
+                            <li>واجهة سهلة للأطباء والمرضى</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+# نظام الاستشارات الطبية الذكي
+from llama_index.core import DocumentSummaryIndex, Settings
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
+import json
+from typing import Dict, List
+
+class MedicalConsultationSystem:
+    def __init__(self):
+        # إعداد نماذج متخصصة للمجال الطبي
+        self.medical_llm = OpenAI(
+            model="gpt-4",
+            temperature=0.1,  # دقة عالية للمعلومات الطبية
+            max_tokens=1500,
+            system_prompt="""أنت مساعد طبي متخصص. قدم معلومات دقيقة ومفصلة 
+            بناء على الأدبيات الطبية المتاحة. اذكر دائماً أن هذه معلومات 
+            للإرشاد فقط وليست بديلاً للاستشارة الطبية المباشرة."""
+        )
+        
+        # embedding model محسن للنصوص الطبية
+        self.medical_embeddings = OpenAIEmbedding(
+            model="text-embedding-3-large",
+            dimensions=3072
+        )
+        
+        Settings.llm = self.medical_llm
+        Settings.embed_model = self.medical_embeddings
+        
+        self.medical_index = None
+        self.consultation_history = []
+        
+    def setup_medical_knowledge_base(self, medical_documents):
+        """إعداد قاعدة المعرفة الطبية"""
+        
+        print("🏥 إعداد قاعدة المعرفة الطبية...")
+        
+        # template مخصص للملخصات الطبية
+        medical_summary_template = """
+قم بإنشاء ملخص طبي شامل للمستند التالي:
+
+المحتوى الطبي:
+{context_str}
+
+يجب أن يشمل الملخص:
+
+🔬 التشخيص الرئيسي:
+[التشخيص الأساسي المذكور]
+
+🩺 الأعراض المذكورة:
+- [عرض 1]
+- [عرض 2]
+- [عرض 3]
+
+💊 العلاجات المقترحة:
+1. [علاج 1]
+2. [علاج 2]
+
+⚠️ التحذيرات والاحتياطات:
+[أي تحذيرات مهمة]
+
+📚 المراجع العلمية:
+[أي مراجع مذكورة]
+
+🏷️ الكلمات المفتاحية الطبية:
+[مصطلحات طبية مهمة]
+
+الملخص:
+        """
+        
+        # بناء الفهرس الطبي
+        self.medical_index = DocumentSummaryIndex.from_documents(
+            medical_documents,
+            summary_template=medical_summary_template,
+            show_progress=True
+        )
+        
+        print("✅ تم إعداد قاعدة المعرفة الطبية")
+        
+    def medical_consultation(self, patient_query: str, consultation_type: str = "general"):
+        """استشارة طبية ذكية"""
+        
+        print(f"🏥 بدء استشارة طبية: {consultation_type}")
+        
+        # تخصيص محرك الاستعلام حسب نوع الاستشارة
+        if consultation_type == "diagnosis":
+            query_engine = self.medical_index.as_query_engine(
+                retriever_mode="llm",  # دقة عالية للتشخيص
+                choice_batch_size=10,
+                choice_top_k=5,
+                response_mode="tree_summarize"
+            )
+        elif consultation_type == "treatment":
+            query_engine = self.medical_index.as_query_engine(
+                retriever_mode="embedding",  # سرعة للعلاجات
+                similarity_top_k=7,
+                response_mode="compact"
+            )
+        else:  # general
+            query_engine = self.medical_index.as_query_engine(
+                retriever_mode="embedding",
+                similarity_top_k=5,
+                response_mode="tree_summarize"
+            )
+        
+        # إضافة context طبي للسؤال
+        enhanced_query = f"""
+كطبيب متخصص، أحتاج مساعدة في:
+
+سؤال المريض: {patient_query}
+
+نوع الاستشارة: {consultation_type}
+
+يرجى تقديم إجابة شاملة تتضمن:
+1. تحليل الأعراض (إن وجدت)
+2. التشخيصات المحتملة
+3. الفحوصات المقترحة
+4. خيارات العلاج
+5. نصائح وقائية
+
+مع التأكيد على أهمية استشارة طبيب متخصص.
+        """
+        
+        # الحصول على الإجابة
+        response = query_engine.query(enhanced_query)
+        
+        # حفظ الاستشارة في التاريخ
+        consultation_record = {
+            'timestamp': datetime.now().isoformat(),
+            'query': patient_query,
+            'type': consultation_type,
+            'response': response.response,
+            'sources': [node.text[:200] + "..." for node in response.source_nodes[:3]]
+        }
+        
+        self.consultation_history.append(consultation_record)
+        
+        return response
+    
+    def generate_medical_report(self, consultation_id: int = -1):
+        """توليد تقرير طبي مفصل"""
+        
+        if not self.consultation_history:
+            return "لا توجد استشارات محفوظة"
+        
+        consultation = self.consultation_history[consultation_id]
+        
+        report = f"""
+📋 تقرير الاستشارة الطبية
+==============================
+
+📅 التاريخ: {consultation['timestamp']}
+🔍 نوع الاستشارة: {consultation['type']}
+
+👤 استفسار المريض:
+{consultation['query']}
+
+🏥 الرد الطبي:
+{consultation['response']}
+
+📚 المراجع المستخدمة:
+"""
+        
+        for i, source in enumerate(consultation['sources'], 1):
+            report += f"{i}. {source}\n"
+        
+        report += """
+⚠️ تنبيه مهم:
+هذه المعلومات للإرشاد فقط وليست بديلاً عن الاستشارة الطبية المباشرة.
+يُنصح بشدة باستشارة طبيب متخصص للحصول على تشخيص وعلاج دقيق.
+        """
+        
+        return report
+
+# إنشاء نظام الاستشارات الطبية
+medical_system = MedicalConsultationSystem()
+
+print("🏥 نظام الاستشارات الطبية الذكي جاهز للتشغيل")
+
+# مثال على الاستخدام (بعد تحميل المستندات الطبية)
+# medical_system.setup_medical_knowledge_base(medical_documents)
+# response = medical_system.medical_consultation(
+#     "أعاني من صداع مستمر وغثيان، ما السبب المحتمل؟",
+#     consultation_type="diagnosis"
+# )
+                    </div>
+
+                    <div class="implementation-box">
+                        <h4>🛠️ تفاصيل التنفيذ</h4>
+                        <ul>
+                            <li><strong>قاعدة المعرفة:</strong> مجموعة شاملة من الأبحاث الطبية والإرشادات الإكلينيكية</li>
+                            <li><strong>نماذج متخصصة:</strong> GPT-4 مع prompts محسنة للمجال الطبي</li>
+                            <li><strong>أنواع الاستشارات:</strong> تشخيصية، علاجية، وقائية، عامة</li>
+                            <li><strong>توثيق شامل:</strong> حفظ كل استشارة مع المراجع العلمية</li>
+                        </ul>
+                    </div>
+
+                    <div class="demo-grid">
+                        <div class="demo-item">
+                            <h5>🔬 استشارة تشخيصية</h5>
+                            <p>تحليل الأعراض وربطها بالتشخيصات المحتملة من قاعدة البيانات الطبية</p>
+                        </div>
+                        <div class="demo-item">
+                            <h5>💊 استشارة علاجية</h5>
+                            <p>اقتراح خطط العلاج بناء على أحدث الإرشادات العلمية</p>
+                        </div>
+                        <div class="demo-item">
+                            <h5>🛡️ استشارة وقائية</h5>
+                            <p>نصائح للوقاية والحفاظ على الصحة العامة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📚 المثال الثاني: منصة تحليل أبحاث أكاديمية</h2>
+                <div class="card-content">
+                    <div class="use-case-box">
+                        <h4>🎯 وصف المشروع</h4>
+                        <p>منصة متقدمة لتحليل وتلخيص الأبحاث الأكاديمية، تساعد الباحثين في العثور على المعلومات الأكثر صلة وإنشاء مراجعات أدبية شاملة.</p>
+                        
+                        <h4>✨ المميزات المطلوبة:</h4>
+                        <ul>
+                            <li>تحليل آلاف الأبحاث في ثوانٍ</li>
+                            <li>استخراج الاستنتاجات الرئيسية</li>
+                            <li>مقارنة النتائج عبر دراسات متعددة</li>
+                            <li>توليد مراجعات أدبية تلقائياً</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+# منصة تحليل الأبحاث الأكاديمية
+from datetime import datetime
+import pandas as pd
+from typing import Dict, List, Tuple
+import re
+
+class AcademicResearchAnalyzer:
+    def __init__(self):
+        # إعداد نماذج متخصصة للبحث الأكاديمي
+        self.research_llm = OpenAI(
+            model="gpt-4",
+            temperature=0.2,  # توازن بين الدقة والإبداع
+            max_tokens=2000,
+            system_prompt="""أنت محلل أبحاث أكاديمي خبير. مهمتك تحليل 
+            وتلخيص الأبحاث العلمية بطريقة منهجية ودقيقة. ركز على 
+            المنهجية، النتائج، والاستنتاجات."""
+        )
+        
+        Settings.llm = self.research_llm
+        
+        self.research_index = None
+        self.analysis_results = {}
+        self.research_metadata = {}
+        
+    def setup_research_database(self, research_papers):
+        """إعداد قاعدة بيانات الأبحاث"""
+        
+        print("📚 إعداد قاعدة بيانات الأبحاث...")
+        
+        # template مخصص للأبحاث الأكاديمية
+        research_summary_template = """
+قم بتحليل البحث الأكاديمي التالي بطريقة منهجية:
+
+البحث:
+{context_str}
+
+يجب أن يشمل التحليل:
+
+📄 عنوان البحث ومعلومات النشر:
+[العنوان، المؤلفون، المجلة، السنة]
+
+🎯 هدف الدراسة:
+[الهدف الرئيسي من البحث]
+
+🔬 المنهجية المستخدمة:
+[نوع الدراسة، العينة، الأدوات]
+
+📊 النتائج الرئيسية:
+1. [نتيجة 1]
+2. [نتيجة 2]
+3. [نتيجة 3]
+
+💡 الاستنتاجات:
+[الاستنتاجات الأساسية للبحث]
+
+⚠️ القيود والتحديات:
+[أي قيود ذكرها المؤلفون]
+
+🔗 الكلمات المفتاحية:
+[المصطلحات العلمية الأساسية]
+
+📈 الأهمية العلمية:
+[تأثير البحث على المجال]
+
+الملخص:
+        """
+        
+        # بناء فهرس الأبحاث
+        self.research_index = DocumentSummaryIndex.from_documents(
+            research_papers,
+            summary_template=research_summary_template,
+            show_progress=True
+        )
+        
+        print("✅ تم إعداد قاعدة بيانات الأبحاث")
+    
+    def research_query(self, research_question: str, analysis_type: str = "comprehensive"):
+        """استعلام بحثي متقدم"""
+        
+        print(f"🔍 تحليل السؤال البحثي: {analysis_type}")
+        
+        # تخصيص المحرك حسب نوع التحليل
+        if analysis_type == "comprehensive":
+            query_engine = self.research_index.as_query_engine(
+                retriever_mode="llm",
+                choice_batch_size=15,
+                choice_top_k=8,
+                response_mode="tree_summarize"
+            )
+        elif analysis_type == "quick":
+            query_engine = self.research_index.as_query_engine(
+                retriever_mode="embedding",
+                similarity_top_k=5,
+                response_mode="compact"
+            )
+        elif analysis_type == "comparative":
+            query_engine = self.research_index.as_query_engine(
+                retriever_mode="llm",
+                choice_batch_size=20,
+                choice_top_k=10,
+                response_mode="tree_summarize"
+            )
+        
+        # تحسين السؤال البحثي
+        enhanced_query = f"""
+كباحث أكاديمي، أريد تحليل شامل للسؤال التالي:
+
+السؤال البحثي: {research_question}
+
+نوع التحليل: {analysis_type}
+
+يرجى تقديم تحليل يشمل:
+
+1. 🔍 مراجعة شاملة للأدبيات ذات الصلة
+2. 📊 تلخيص النتائج الرئيسية من الدراسات المختلفة  
+3. 🔄 مقارنة المنهجيات المستخدمة
+4. 💡 تحديد الثغرات البحثية الموجودة
+5. 🎯 اقتراحات لأبحاث مستقبلية
+6. 📚 قائمة بأهم المراجع
+
+مع ترقيم وتنظيم واضح للمعلومات.
+        """
+        
+        # الحصول على النتائج
+        response = query_engine.query(enhanced_query)
+        
+        # تحليل وحفظ النتائج
+        analysis_id = len(self.analysis_results)
+        
+        self.analysis_results[analysis_id] = {
+            'timestamp': datetime.now().isoformat(),
+            'question': research_question,
+            'analysis_type': analysis_type,
+            'response': response.response,
+            'sources': response.source_nodes,
+            'source_count': len(response.source_nodes)
+        }
+        
+        return response, analysis_id
+    
+    def comparative_analysis(self, research_topics: List[str]):
+        """تحليل مقارن لعدة موضوعات بحثية"""
+        
+        print(f"🔄 تحليل مقارن لـ {len(research_topics)} موضوع")
+        
+        comparative_results = {}
+        
+        for topic in research_topics:
+            print(f"  📊 تحليل: {topic}")
+            
+            query = f"""
+قارن بين الدراسات المختلفة حول موضوع: {topic}
+
+ركز على:
+- اختلاف المنهجيات
+- تباين النتائج  
+- نقاط القوة والضعف
+- الاتجاهات العامة
+            """
+            
+            response, _ = self.research_query(query, "comparative")
+            comparative_results[topic] = response.response
+        
+        # إنشاء تقرير مقارن شامل
+        comparative_report = self._generate_comparative_report(
+            research_topics, 
+            comparative_results
+        )
+        
+        return comparative_report
+    
+    def _generate_comparative_report(self, topics: List[str], results: Dict):
+        """توليد تقرير مقارن شامل"""
+        
+        report = f"""
+📊 تقرير التحليل المقارن
+==========================
+
+📅 تاريخ التحليل: {datetime.now().strftime('%Y-%m-%d %H:%M')}
+📋 عدد المواضيع المحللة: {len(topics)}
+
+"""
+        
+        for i, topic in enumerate(topics, 1):
+            report += f"""
+{i}. موضوع: {topic}
+{'='*50}
+
+{results[topic]}
+
+{'='*50}
+
+"""
+        
+        # إضافة ملخص مقارن
+        report += """
+📈 الملخص المقارن:
+==================
+
+🔍 أوجه التشابه:
+- [سيتم استخراجها من التحليل]
+
+🔄 أوجه الاختلاف:
+- [سيتم استخراجها من التحليل]
+
+💡 التوصيات:
+- [بناءً على التحليل المقارن]
+        """
+        
+        return report
+    
+    def generate_literature_review(self, topic: str, max_papers: int = 50):
+        """توليد مراجعة أدبية شاملة"""
+        
+        print(f"📝 إنشاء مراجعة أدبية لموضوع: {topic}")
+        
+        # استعلام شامل
+        review_query = f"""
+أنشئ مراجعة أدبية شاملة حول موضوع: {topic}
+
+يجب أن تشمل المراجعة:
+
+1. 📖 مقدمة عن الموضوع وأهميته
+2. 🔍 تطور البحوث في هذا المجال تاريخياً
+3. 📊 المنهجيات المستخدمة في الدراسات
+4. 📈 النتائج الرئيسية والاتجاهات
+5. 🔄 مقارنة النتائج المختلفة
+6. ⚠️ القيود والتحديات
+7. 💡 الثغرات البحثية الموجودة
+8. 🎯 اتجاهات البحث المستقبلية
+9. 📚 المراجع الأساسية
+
+مع تنظيم أكاديمي واضح ولغة علمية دقيقة.
+        """
+        
+        response, analysis_id = self.research_query(review_query, "comprehensive")
+        
+        # تحسين المراجعة الأدبية
+        enhanced_review = f"""
+📚 مراجعة أدبية: {topic}
+{'='*60}
+
+📅 تاريخ الإعداد: {datetime.now().strftime('%Y-%m-%d')}
+👤 النظام: Academic Research Analyzer
+📊 عدد المصادر المحللة: {self.analysis_results[analysis_id]['source_count']}
+
+{response.response}
+
+📋 إحصائيات التحليل:
+- نوع التحليل: شامل
+- مصادر مستخدمة: {self.analysis_results[analysis_id]['source_count']}
+- وقت التحليل: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        """
+        
+        return enhanced_review
+
+# إنشاء محلل الأبحاث الأكاديمية
+research_analyzer = AcademicResearchAnalyzer()
+
+print("📚 منصة تحليل الأبحاث الأكاديمية جاهزة للتشغيل")
+
+# أمثلة على الاستخدام:
+# research_analyzer.setup_research_database(research_papers)
+# response, analysis_id = research_analyzer.research_query(
+#     "ما تأثير الذكاء الاصطناعي على التعليم العالي؟"
+# )
+# literature_review = research_analyzer.generate_literature_review("التعلم الآلي في الطب")
+                    </code>
+
+                    <div class="feature-box">
+                        <h4>🌟 المميزات المتقدمة</h4>
+                        <ul>
+                            <li><strong>تحليل شامل:</strong> مراجعة آلاف الأبحاث في دقائق</li>
+                            <li><strong>مقارنات ذكية:</strong> ربط النتائج عبر دراسات متعددة</li>
+                            <li><strong>مراجعات أدبية:</strong> توليد تلقائي للمراجعات المنهجية</li>
+                            <li><strong>اكتشاف الثغرات:</strong> تحديد المجالات التي تحتاج بحث أكثر</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🏢 المثال الثالث: نظام إدارة المعرفة المؤسسية</h2>
+                <div class="card-content">
+                    <div class="use-case-box">
+                        <h4>🎯 وصف المشروع</h4>
+                        <p>نظام شامل لإدارة المعرفة في الشركات الكبيرة، يساعد الموظفين في الوصول السريع للمعلومات والخبرات المؤسسية من خلال واجهة ذكية.</p>
+                    </div>
+
+                    <div class="code-block">
+# نظام إدارة المعرفة المؤسسية
+class CorporateKnowledgeManager:
+    def __init__(self, company_name: str):
+        self.company_name = company_name
+        
+        # نماذج متخصصة للبيئة المؤسسية
+        self.corporate_llm = OpenAI(
+            model="gpt-4",
+            temperature=0.15,  # دقة عالية للمعلومات المؤسسية
+            max_tokens=1800,
+            system_prompt=f"""أنت مساعد ذكي لإدارة المعرفة في شركة {company_name}.
+            مهمتك مساعدة الموظفين في العثور على المعلومات المؤسسية، السياسات، 
+            الإجراءات، والخبرات الداخلية. كن دقيقاً ومهنياً في ردودك."""
+        )
+        
+        Settings.llm = self.corporate_llm
+        
+        # فهارس متعددة للأقسام المختلفة
+        self.knowledge_bases = {
+            'policies': None,      # السياسات والإجراءات
+            'technical': None,     # المعرفة التقنية
+            'hr': None,           # الموارد البشرية
+            'projects': None,     # المشاريع والتجارب
+            'training': None      # التدريب والتطوير
+        }
+        
+        self.access_logs = []
+        self.popular_queries = {}
+        
+    def setup_knowledge_base(self, category: str, documents):
+        """إعداد قاعدة معرفة لقسم محدد"""
+        
+        print(f"🏢 إعداد قاعدة معرفة: {category}")
+        
+        # templates مخصصة لكل نوع
+        templates = {
+            'policies': """
+ملخص السياسة أو الإجراء:
+
+المستند:
+{context_str}
+
+📋 نوع السياسة:
+[تصنيف السياسة]
+
+🎯 الهدف:
+[الغرض من السياسة]
+
+👥 المشمولون:
+[من ينطبق عليهم]
+
+📝 الإجراءات:
+1. [خطوة 1]
+2. [خطوة 2]
+3. [خطوة 3]
+
+⚠️ القيود والاستثناءات:
+[أي قيود مهمة]
+
+📞 جهة الاتصال:
+[المسؤول عن السياسة]
+
+الملخص:
+            """,
+            
+            'technical': """
+ملخص المعرفة التقنية:
+
+المحتوى التقني:
+{context_str}
+
+🔧 المجال التقني:
+[نوع التكنولوجيا أو النظام]
+
+💡 الوصف:
+[شرح مبسط للتقنية]
+
+📋 متطلبات الاستخدام:
+[ما يحتاجه المستخدم]
+
+⚙️ خطوات التنفيذ:
+1. [خطوة 1]
+2. [خطوة 2]
+
+🚨 تحذيرات:
+[أي مخاطر أو تحذيرات]
+
+🏷️ الكلمات المفتاحية:
+[مصطلحات تقنية مهمة]
+
+الملخص:
+            """,
+            
+            'hr': """
+ملخص معلومات الموارد البشرية:
+
+المحتوى:
+{context_str}
+
+👥 الموضوع:
+[موضوع HR الرئيسي]
+
+📋 الفئة المستهدفة:
+[الموظفون المعنيون]
+
+📝 المتطلبات:
+[ما يجب على الموظف فعله]
+
+📅 المواعيد المهمة:
+[أي تواريخ حاسمة]
+
+📞 للاستفسارات:
+[جهة الاتصال في HR]
+
+الملخص:
+            """
+        }
+        
+        template = templates.get(category, templates['technical'])
+        
+        # بناء الفهرس
+        self.knowledge_bases[category] = DocumentSummaryIndex.from_documents(
+            documents,
+            summary_template=template,
+            show_progress=True
+        )
+        
+        print(f"✅ تم إعداد قاعدة معرفة {category}")
+    
+    def smart_search(self, query: str, user_department: str = "general", 
+                    search_scope: List[str] = None):
+        """بحث ذكي عبر قواعد المعرفة"""
+        
+        print(f"🔍 بحث ذكي: {query[:50]}...")
+        
+        # تحديد نطاق البحث
+        if search_scope is None:
+            search_scope = list(self.knowledge_bases.keys())
+        
+        # تحليل نوع الاستفسار
+        query_type = self._classify_query(query)
+        
+        results = {}
+        
+        # البحث في كل قاعدة معرفة مناسبة
+        for kb_name in search_scope:
+            if self.knowledge_bases[kb_name] is None:
+                continue
+                
+            print(f"  🔎 البحث في: {kb_name}")
+            
+            # تخصيص محرك البحث
+            query_engine = self.knowledge_bases[kb_name].as_query_engine(
+                retriever_mode="embedding" if query_type == "quick" else "llm",
+                similarity_top_k=3,
+                response_mode="compact"
+            )
+            
+            # تحسين الاستعلام حسب القسم
+            enhanced_query = self._enhance_query_for_department(
+                query, kb_name, user_department
+            )
+            
+            try:
+                response = query_engine.query(enhanced_query)
+                results[kb_name] = {
+                    'response': response.response,
+                    'relevance': self._calculate_relevance(response),
+                    'sources': len(response.source_nodes)
+                }
+            except Exception as e:
+                print(f"    ❌ خطأ في البحث بـ {kb_name}: {str(e)}")
+        
+        # ترتيب النتائج حسب الصلة
+        sorted_results = sorted(
+            results.items(), 
+            key=lambda x: x[1]['relevance'], 
+            reverse=True
+        )
+        
+        # تسجيل الاستعلام
+        self._log_query(query, user_department, sorted_results)
+        
+        return sorted_results
+    
+    def _classify_query(self, query: str) -> str:
+        """تصنيف نوع الاستفسار"""
+        
+        quick_keywords = ['ما هو', 'متى', 'أين', 'من', 'كم']
+        detailed_keywords = ['كيف', 'لماذا', 'اشرح', 'وضح', 'قارن']
+        
+        query_lower = query.lower()
+        
+        if any(keyword in query_lower for keyword in detailed_keywords):
+            return "detailed"
+        elif any(keyword in query_lower for keyword in quick_keywords):
+            return "quick"
+        else:
+            return "standard"
+    
+    def _enhance_query_for_department(self, query: str, kb_name: str, department: str):
+        """تحسين الاستعلام حسب القسم وقاعدة المعرفة"""
+        
+        dept_context = {
+            'IT': 'كموظف في قسم تكنولوجيا المعلومات',
+            'HR': 'كموظف في قسم الموارد البشرية',
+            'Finance': 'كموظف في القسم المالي',
+            'Operations': 'كموظف في العمليات',
+            'Sales': 'كموظف في المبيعات'
+        }
+        
+        kb_context = {
+            'policies': 'بخصوص السياسات والإجراءات',
+            'technical': 'حول المعلومات التقنية',
+            'hr': 'عن موضوع الموارد البشرية',
+            'projects': 'حول المشاريع',
+            'training': 'عن التدريب والتطوير'
+        }
+        
+        context = dept_context.get(department, 'كموظف في الشركة')
+        kb_ctx = kb_context.get(kb_name, '')
+        
+        return f"{context} أريد معلومات {kb_ctx}: {query}"
+    
+    def _calculate_relevance(self, response) -> float:
+        """حساب درجة الصلة بالموضوع"""
+        
+        # حساب بسيط بناء على طول الإجابة وعدد المصادر
+        response_length = len(response.response)
+        source_count = len(response.source_nodes)
+        
+        # معادلة بسيطة للحساب
+        relevance = min(1.0, (response_length / 1000) * 0.6 + (source_count / 5) * 0.4)
+        
+        return relevance
+    
+    def _log_query(self, query: str, department: str, results):
+        """تسجيل الاستعلام للإحصائيات"""
+        
+        log_entry = {
+            'timestamp': datetime.now().isoformat(),
+            'query': query,
+            'department': department,
+            'results_count': len(results),
+            'best_source': results[0][0] if results else None
+        }
+        
+        self.access_logs.append(log_entry)
+        
+        # تحديث الاستعلامات الشائعة
+        query_key = query.lower()[:50]  # أول 50 حرف
+        self.popular_queries[query_key] = self.popular_queries.get(query_key, 0) + 1
+    
+    def get_analytics_dashboard(self):
+        """لوحة تحليلات الاستخدام"""
+        
+        if not self.access_logs:
+            return "لا توجد بيانات استخدام بعد"
+        
+        # إحصائيات عامة
+        total_queries = len(self.access_logs)
+        departments = {}
+        sources_usage = {}
+        
+        for log in self.access_logs:
+            dept = log['department']
+            departments[dept] = departments.get(dept, 0) + 1
+            
+            if log['best_source']:
+                source = log['best_source']
+                sources_usage[source] = sources_usage.get(source, 0) + 1
+        
+        # أشهر الاستعلامات
+        top_queries = sorted(
+            self.popular_queries.items(), 
+            key=lambda x: x[1], 
+            reverse=True
+        )[:5]
+        
+        dashboard = f"""
+📊 لوحة تحليلات إدارة المعرفة - {self.company_name}
+{'='*60}
+
+📈 إحصائيات عامة:
+- إجمالي الاستعلامات: {total_queries}
+- عدد الأقسام النشطة: {len(departments)}
+- متوسط النتائج: {sum(log['results_count'] for log in self.access_logs) / total_queries:.1f}
+
+👥 الاستخدام حسب القسم:
+"""
+        
+        for dept, count in departments.items():
+            percentage = (count / total_queries) * 100
+            dashboard += f"- {dept}: {count} ({percentage:.1f}%)\n"
+        
+        dashboard += f"""
+🔍 أشهر الاستعلامات:
+"""
+        
+        for i, (query, count) in enumerate(top_queries, 1):
+            dashboard += f"{i}. {query}... ({count} مرة)\n"
+        
+        dashboard += f"""
+📚 استخدام قواعد المعرفة:
+"""
+        
+        for source, count in sources_usage.items():
+            percentage = (count / total_queries) * 100
+            dashboard += f"- {source}: {count} ({percentage:.1f}%)\n"
+        
+        return dashboard
+
+# إنشاء نظام إدارة المعرفة المؤسسية
+knowledge_manager = CorporateKnowledgeManager("شركة التقنية المتقدمة")
+
+print("🏢 نظام إدارة المعرفة المؤسسية جاهز للتشغيل")
+                    </code>
+
+                    <div class="implementation-box">
+                        <h4>🏗️ هيكل النظام المؤسسي</h4>
+                        <div class="demo-grid">
+                            <div class="demo-item">
+                                <h5>📋 قاعدة السياسات</h5>
+                                <p>السياسات، الإجراءات، واللوائح الداخلية</p>
+                            </div>
+                            <div class="demo-item">
+                                <h5>🔧 المعرفة التقنية</h5>
+                                <p>الأدلة التقنية، التوثيق، وحلول المشاكل</p>
+                            </div>
+                            <div class="demo-item">
+                                <h5>👥 الموارد البشرية</h5>
+                                <p>إجراءات HR، المزايا، والتدريب</p>
+                            </div>
+                            <div class="demo-item">
+                                <h5>📊 المشاريع</h5>
+                                <p>تجارب المشاريع، الدروس المستفادة، أفضل الممارسات</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 خلاصة الأمثلة التطبيقية</h2>
+                <div class="card-content">
+                    <div class="example-box">
+                        <h4>✅ ما تعلمناه من الأمثلة</h4>
+                        <ul>
+                            <li><strong>التخصص مهم:</strong> كل مجال يحتاج templates وإعدادات مخصصة</li>
+                            <li><strong>المرونة في التطبيق:</strong> نفس التقنية، تطبيقات متنوعة</li>
+                            <li><strong>أهمية السياق:</strong> فهم المجال يحسن النتائج بشكل كبير</li>
+                            <li><strong>التحليل والمراقبة:</strong> قياس الاستخدام يحسن النظام</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-box">
+                        <h4>🚀 إمكانيات لا محدودة</h4>
+                        <p>Document Summary Index ليس مجرد تقنية، بل منصة لبناء حلول ذكية متطورة تخدم احتياجات حقيقية في العالم الواقعي. من الطب إلى البحث الأكاديمي إلى إدارة المعرفة المؤسسية، الإمكانيات لا تنتهي!</p>
+                    </div>
+
+                    <div class="use-case-box">
+                        <h4>💡 أفكار لمشاريع أخرى</h4>
+                        <ul>
+                            <li><strong>مساعد قانوني:</strong> تحليل القوانين والسوابق القضائية</li>
+                            <li><strong>نظام تعليمي:</strong> مساعد ذكي للطلاب والمعلمين</li>
+                            <li><strong>تحليل أخبار:</strong> مراقبة وتحليل الأحداث العالمية</li>
+                            <li><strong>مساعد مالي:</strong> تحليل التقارير والاستثمارات</li>
+                            <li><strong>نظام صحي:</strong> متابعة الحالة الصحية وتقديم النصائح</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

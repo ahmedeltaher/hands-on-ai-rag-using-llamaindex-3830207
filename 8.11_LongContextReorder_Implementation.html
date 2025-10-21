@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LongContextReorder - التنفيذ والخوارزمية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .algorithm-steps { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-visualization { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .example-demo { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-card { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 15px; margin: 20px 0; direction: ltr; text-align: left; }
+        .pattern-explanation { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .performance-note { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ LongContextReorder - التنفيذ والخوارزمية</h1>
+            <p>الدرس الحادي عشر: فهم الخوارزمية step by step</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 "مافيش arguments محتاجة"</h2>
+            <div class="algorithm-steps">
+                <p>واحدة من أجمل مميزات LongContextReorder إنه مش محتاج أي parameters! ليه؟</p>
+                
+                <h3>🤖 الذكاء المدمج:</h3>
+                <ul>
+                    <li><strong>Self-contained:</strong> كل اللي محتاجه موجود في النودز نفسها</li>
+                    <li><strong>Score-based:</strong> بيعتمد على الـ similarity scores الموجودة</li>
+                    <li><strong>Universal:</strong> يشتغل مع أي نوع نودز</li>
+                    <li><strong>Plug and Play:</strong> تحطه وهو يشتغل فوراً</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 الخوارزمية خطوة بخطوة</h2>
+            <div class="algorithm-steps">
+                <h3>📊 Step 1: الترتيب (Sorting)</h3>
+                <p>أول حاجة، النظام بيرتب كل النودز حسب الـ similarity scores بتاعتها، من الأعلى للأقل.</p>
+                
+                <h3>🔍 Step 2: معالجة الـ None Scores</h3>
+                <p>لو أي نود مالوش score (None)، بيتعامل معاه على إنه صفر.</p>
+                
+                <h3>🔄 Step 3: الـ Even/Odd Pattern</h3>
+                <p>دلوقتي الجزء الذكي! بيمر على النودز المرتبة ويشوف الـ index:</p>
+                <ul>
+                    <li><strong>Even Index (0, 2, 4...):</strong> يحطه في بداية القائمة الجديدة</li>
+                    <li><strong>Odd Index (1, 3, 5...):</strong> يحطه في نهاية القائمة الجديدة</li>
+                </ul>
+                
+                <h3>📤 Step 4: النتيجة النهائية</h3>
+                <p>في النهاية هيبقى عندك قائمة مرتبة بحيث الأهم في البداية والنهاية!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 مثال عملي مفصل</h2>
+            <div class="example-demo">
+                <h3>📋 البيانات الأصلية (مرتبة حسب الـ score):</h3>
+                <ul>
+                    <li><strong>Node A:</strong> score = 0.95 (index 0 - even)</li>
+                    <li><strong>Node B:</strong> score = 0.87 (index 1 - odd)</li>
+                    <li><strong>Node C:</strong> score = 0.82 (index 2 - even)</li>
+                    <li><strong>Node D:</strong> score = 0.76 (index 3 - odd)</li>
+                    <li><strong>Node E:</strong> score = 0.71 (index 4 - even)</li>
+                    <li><strong>Node F:</strong> score = 0.65 (index 5 - odd)</li>
+                </ul>
+                
+                <h3>🔄 عملية إعادة الترتيب:</h3>
+                <ul>
+                    <li><strong>Node A (even):</strong> يروح في بداية القائمة → Position 1</li>
+                    <li><strong>Node B (odd):</strong> يروح في نهاية القائمة → Position 6</li>
+                    <li><strong>Node C (even):</strong> يروح في بداية القائمة → Position 2</li>
+                    <li><strong>Node D (odd):</strong> يروح في نهاية القائمة → Position 5</li>
+                    <li><strong>Node E (even):</strong> يروح في بداية القائمة → Position 3</li>
+                    <li><strong>Node F (odd):</strong> يروح في نهاية القائمة → Position 4</li>
+                </ul>
+                
+                <h3>✨ النتيجة النهائية:</h3>
+                <p><strong>الترتيب الجديد:</strong> A, C, E, F, D, B</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💻 التنفيذ في الكود</h2>
+            <div class="code-card">
+                <h3>Algorithm Implementation:</h3>
+                <pre><code>def reorder_nodes(nodes):
+    # Step 1: Sort by relevance scores (descending)
+    sorted_nodes = sorted(nodes, 
+                         key=lambda x: x.score if x.score is not None else 0, 
+                         reverse=True)
+    
+    reordered_nodes = []
+    
+    # Step 2: Apply even/odd pattern
+    for i, node in enumerate(sorted_nodes):
+        if i % 2 == 0:  # Even index
+            reordered_nodes.insert(0, node)  # Insert at beginning
+        else:  # Odd index
+            reordered_nodes.append(node)     # Append at end
+    
+    return reordered_nodes</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 تحليل الـ Insert Method</h2>
+            <div class="code-visualization">
+                <h3>⚙️ insert(0, node) إيه؟</h3>
+                <p>دي method في Python بتحط الـ element في موقع محدد وبتزحزح باقي العناصر.</p>
+                
+                <h3>📝 مثال التطبيق:</h3>
+                <ul>
+                    <li><strong>البداية:</strong> []</li>
+                    <li><strong>Node A (even):</strong> insert(0, A) → [A]</li>
+                    <li><strong>Node B (odd):</strong> append(B) → [A, B]</li>
+                    <li><strong>Node C (even):</strong> insert(0, C) → [C, A, B]</li>
+                    <li><strong>Node D (odd):</strong> append(D) → [C, A, B, D]</li>
+                </ul>
+                
+                <h3>🎯 النتيجة:</h3>
+                <p>النودز الأهم بتتجمع في البداية والنهاية، والأقل أهمية في النص!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧠 "ليه الطريقة دي ذكية؟"</h2>
+            <div class="pattern-explanation">
+                <h3>🎯 استغلال نقاط القوة:</h3>
+                <ul>
+                    <li><strong>البداية:</strong> أعلى score (أهم معلومة)</li>
+                    <li><strong>النهاية:</strong> تاني أعلى score (تاني أهم معلومة)</li>
+                    <li><strong>النص:</strong> نودز أقل أهمية (مش هتأثر لو اتفوتت)</li>
+                </ul>
+                
+                <h3>🔬 علمياً:</h3>
+                <p>ده بيحاكي طريقة شغل الـ attention mechanism في النماذج اللغوية، ويستغل نقاط القوة بتاعتها.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 "مش صعب ولا معقد، بس قوي"</h2>
+            <div name="performance-note">
+                <p>المدرس قال: "it is not that long or hard of a function to reason through, but it is powerful"</p>
+                
+                <h3>💡 ليه البساطة دي قوة؟</h3>
+                <ul>
+                    <li><strong>سهل الفهم:</strong> أي حد يقدر يفهم الخوارزمية</li>
+                    <li><strong>سهل الـ Debug:</strong> لو في مشكلة، هتلاقيها بسرعة</li>
+                    <li><strong>سريع التنفيذ:</strong> O(n log n) للـ sorting + O(n) للـ reordering</li>
+                    <li><strong>موثوق:</strong> مافيش edge cases معقدة</li>
+                </ul>
+                
+                <h3>🎯 القوة في التأثير:</h3>
+                <p>رغم بساطة الكود، بس التأثير كبير جداً على أداء النموذج!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 طريقة الاستخدام</h2>
+            <div class="code-card">
+                <h3>Simple Usage:</h3>
+                <pre><code>from llama_index.core.postprocessor import LongContextReorder
+
+# No parameters needed!
+reorder_postprocessor = LongContextReorder()
+
+# Use with query engine
+query_engine = index.as_query_engine(
+    node_postprocessors=[reorder_postprocessor]
+)</code></pre>
+            </div>
+            <div class="algorithm-steps">
+                <h3>🎉 Beautiful API Consistency!</h3>
+                <p>زي ما المدرس قال، الـ APIs في LlamaIndex كلها متشابهة. نفس الـ pattern، نفس الطريقة، سهولة في التعلم والاستخدام!</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚙️ انتهى الجزء الحادي عشر | الجزء التالي: SentenceEmbeddingOptimizer - المقدمة</p>
+        </div>
+    </div>
+</body>
+</html>

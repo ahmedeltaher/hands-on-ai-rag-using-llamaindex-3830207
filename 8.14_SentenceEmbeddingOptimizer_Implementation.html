@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentenceEmbeddingOptimizer - آلية العمل التفصيلية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .algorithm-flow { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .step-detail { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-card { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 15px; margin: 20px 0; direction: ltr; text-align: left; }
+        .example-walkthrough { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .performance-analysis { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .context-demo { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 SentenceEmbeddingOptimizer - آلية العمل التفصيلية</h1>
+            <p>الدرس الرابع عشر: فهم كل خطوة في العملية تحت الغطاء</p>
+        </div>
+
+        <div class="card">
+            <h2>🔄 الخطوات التفصيلية للخوارزمية</h2>
+            <div class="algorithm-flow">
+                <h3>📋 الـ Pipeline الكامل:</h3>
+                <ol>
+                    <li><strong>استخراج المحتوى:</strong> أخذ النص من كل node</li>
+                    <li><strong>التقسيم:</strong> تقسيم النص لجمل باستخدام tokenizer</li>
+                    <li><strong>إنشاء embeddings للـ query:</strong> تحويل السؤال لـ vector</li>
+                    <li><strong>إنشاء embeddings للجمل:</strong> تحويل كل جملة لـ vector</li>
+                    <li><strong>حساب المقارنات:</strong> similarity بين query وكل جملة</li>
+                    <li><strong>الترتيب:</strong> ترتيب الجمل حسب similarity</li>
+                    <li><strong>الفلترة:</strong> تطبيق percentile أو threshold cutoff</li>
+                    <li><strong>إضافة السياق:</strong> أخذ الجمل المجاورة</li>
+                    <li><strong>إعادة التجميع:</strong> تجميع الجمل المختارة</li>
+                    <li><strong>الإرجاع:</strong> إرجاع النود المحسن</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧠 Step 1-2: استخراج وتقسيم النص</h2>
+            <div class="step-detail">
+                <h3>📝 استخراج المحتوى:</h3>
+                <p>النظام بياخد النص من كل node في القائمة. ده قد يكون node.text أو node.content حسب نوع النود.</p>
+                
+                <h3>✂️ التقسيم بالـ Tokenizer:</h3>
+                <p>بيستخدم punkt sentence tokenizer عشان يقسم النص لجمل. ده مش بسيط زي split('.') لكن ذكي جداً:</p>
+                
+                <h4>🎯 مثال على الذكاء:</h4>
+                <ul>
+                    <li><strong>النص:</strong> "Dr. Ahmed works at Cairo University. He specializes in AI."</li>
+                    <li><strong>تقسيم سيء:</strong> ["Dr", " Ahmed works at Cairo University", " He specializes in AI", ""]</li>
+                    <li><strong>تقسيم punkt:</strong> ["Dr. Ahmed works at Cairo University.", "He specializes in AI."]</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔢 Step 3-4: إنشاء Embeddings</h2>
+            <div class="step-detail">
+                <h3>🎯 Query Embedding:</h3>
+                <p>أول حاجة، السؤال نفسه بيتحول لـ embedding vector. ده بيحصل مرة واحدة بس لكل query.</p>
+                
+                <h3>📊 Sentence Embeddings:</h3>
+                <p>كل جملة في النود بتتحول لـ embedding vector منفصل. لو عندك 10 جمل، هيبقى عندك 10 vectors.</p>
+                
+                <h3>🔍 مثال توضيحي:</h3>
+                <ul>
+                    <li><strong>Query:</strong> "ما هي فوائد AI؟" → [0.1, 0.8, 0.3, ...] (512 dimensions)</li>
+                    <li><strong>Sentence 1:</strong> "AI يحسن التشخيص" → [0.2, 0.7, 0.4, ...]</li>
+                    <li><strong>Sentence 2:</strong> "الطقس جميل اليوم" → [0.9, 0.1, 0.2, ...]</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚖️ Step 5: حساب Similarity Scores</h2>
+            <div name="example-walkthrough">
+                <h3>🧮 الحساب الرياضي:</h3>
+                <p>النظام بيحسب cosine similarity بين query vector وكل sentence vector.</p>
+                
+                <div class="code-card">
+                    <h4>Cosine Similarity Formula:</h4>
+                    <pre><code>similarity = (query_vector · sentence_vector) / 
+             (||query_vector|| × ||sentence_vector||)
+
+# Result is between -1 and 1, but usually 0 to 1 for text</code></pre>
+                </div>
+                
+                <h3>📊 نتائج المثال:</h3>
+                <ul>
+                    <li><strong>Query vs "AI يحسن التشخيص":</strong> 0.87 (similarity عالي)</li>
+                    <li><strong>Query vs "الطقس جميل اليوم":</strong> 0.12 (similarity ضعيف)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📈 Step 6-7: الترتيب والفلترة</h2>
+            <div class="algorithm-flow">
+                <h3>🔄 الترتيب:</h3>
+                <p>كل الجمل بتتרتب من الأعلى للأقل similarity score.</p>
+                
+                <h3>✂️ تطبيق Cutoffs:</h3>
+                <h4>📊 لو percentile_cutoff = 0.5:</h4>
+                <ul>
+                    <li>عدد الجمل المطلوب = int(10 × 0.5) = 5 جمل</li>
+                    <li>ياخد أعلى 5 جمل</li>
+                </ul>
+                
+                <h4>🎯 لو threshold_cutoff = 0.6:</h4>
+                <ul>
+                    <li>ياخد بس الجمل اللي similarity > 0.6</li>
+                    <li>لو 3 جمل بس فوق 0.6، هياخد 3 بس</li>
+                </ul>
+                
+                <h4>🔄 لو الاتنين مع بعض:</h4>
+                <p>ياخد أعلى 5 جمل، لكن بس اللي similarity > 0.6</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📍 Step 8: إضافة السياق</h2>
+            <div class="context-demo">
+                <h3>🎯 Context Before/After:</h3>
+                <p>لو اختار جملة معينة، ممكن ياخد جمل قبلها وبعدها عشان السياق.</p>
+                
+                <h3>📝 مثال تطبيقي:</h3>
+                <p><strong>الجمل الأصلية:</strong></p>
+                <ol>
+                    <li>"التكنولوجيا تتطور سريعاً" (similarity: 0.4)</li>
+                    <li>"الذكاء الاصطناعي مفيد في الطب" (similarity: 0.9) ✅ مختارة</li>
+                    <li>"يساعد في التشخيص المبكر" (similarity: 0.5)</li>
+                </ol>
+                
+                <p><strong>مع context_before=1, context_after=1:</strong></p>
+                <p>هياخد الجملة المختارة + الجملة قبلها + الجملة بعدها = 3 جمل مترابطة</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 Step 9-10: التجميع والإرجاع</h2>
+            <div class="step-detail">
+                <h3>📋 إعادة التجميع:</h3>
+                <p>كل الجمل المختارة بتتجمع في نص واحد مترابط. النظام بيحافظ على الترتيب الأصلي للجمل.</p>
+                
+                <h3>✨ الإرجاع:</h3>
+                <p>النود الجديد بيبقى فيه النص المحسن بدلاً من النص الأصلي، ونفس الـ metadata والـ score.</p>
+                
+                <h3>🎯 النتيجة النهائية:</h3>
+                <ul>
+                    <li><strong>نود أقصر:</strong> أقل tokens</li>
+                    <li><strong>محتوى مركز:</strong> كل الجمل مفيدة</li>
+                    <li><strong>سياق محفوظ:</strong> الجمل مترابطة</li>
+                    <li><strong>جودة عالية:</strong> similarity scores عالية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ تحليل الأداء</h2>
+            <div class="performance-analysis">
+                <h3>🔍 التعقيد الحاسوبي:</h3>
+                <ul>
+                    <li><strong>Tokenization:</strong> O(n) حيث n = طول النص</li>
+                    <li><strong>Embedding Generation:</strong> O(s × e) حيث s = عدد الجمل، e = وقت الـ embedding</li>
+                    <li><strong>Similarity Calculation:</strong> O(s × d) حيث d = embedding dimension</li>
+                    <li><strong>Sorting:</strong> O(s log s)</li>
+                </ul>
+                
+                <h3>💾 استهلاك الذاكرة:</h3>
+                <ul>
+                    <li>تخزين embeddings لكل الجمل</li>
+                    <li>مؤقت لكن قد يكون كبير للنصوص الطويلة</li>
+                    <li>ممكن تحسينه بـ batch processing</li>
+                </ul>
+                
+                <h3>⚖️ التوازن:</h3>
+                <p>الكلفة الحاسوبية عالية شوية، لكن الفائدة في جودة النتائج تستاهل.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💻 مثال شامل للتنفيذ</h2>
+            <div class="code-card">
+                <h3>Complete Implementation Example:</h3>
+                <pre><code>from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
+
+# Create optimizer
+optimizer = SentenceEmbeddingOptimizer(
+    percentile_cutoff=0.6,
+    threshold_cutoff=0.5,
+    context_before=1,
+    context_after=1
+)
+
+# Use with query engine
+query_engine = index.as_query_engine(
+    node_postprocessors=[optimizer]
+)
+
+# Query will now get optimized context
+response = query_engine.query("What are the benefits of AI in medicine?")</code></pre>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🔬 انتهى الجزء الرابع عشر | الجزء التالي: قيود الاستخدام والحالات الخاصة</p>
+        </div>
+    </div>
+</body>
+</html>

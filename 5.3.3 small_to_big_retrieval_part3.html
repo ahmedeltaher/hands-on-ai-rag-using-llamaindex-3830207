@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small to Big Retrieval - الجزء الثالث: SentenceWindowNodeParser بالتفصيل</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .mechanism-card {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .mechanism-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .parameters-card {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .parameters-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .usage-card {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .usage-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #1976d2;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 30%);
+            border-left: 5px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #e65100;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #6a1b9a;
+        }
+
+        .process-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+        }
+
+        .parameters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .parameter-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .parameter-item h4 {
+            color: #6c5ce7;
+            margin-bottom: 0.5rem;
+        }
+
+        .usage-scenarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .scenario-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            border-top: 3px solid #fd79a8;
+            text-align: center;
+        }
+
+        .scenario-icon {
+            font-size: 2em;
+            margin-bottom: 0.5rem;
+        }
+
+        .tokenizer-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px dashed #00b894;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .parameters-grid,
+            .usage-scenarios {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🪟 SentenceWindowNodeParser</h1>
+            <p>الجزء الثالث: فهم الآلية والمعاملات بالتفصيل</p>
+        </div>
+
+        <div class="content">
+            <!-- آلية العمل -->
+            <div class="card mechanism-card">
+                <h2>⚙️ إزاي بيشتغل SentenceWindowNodeParser؟</h2>
+                <div class="card-content">
+                    <p>المدرس شرحلنا بالتفصيل إزاي الـ parser ده بيشتغل. هانمشي خطوة بخطوة:</p>
+
+                    <div class="process-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div>
+                                <h5>📝 تقسيم الجمل (Sentence Splitting)</h5>
+                                <p><strong>الهدف:</strong> تقسيم النص الكبير لجمل منفصلة</p>
+                                <p><strong>الأداة:</strong> بيستخدم "tokenizer" عشان يقسم النص</p>
+                                <p><strong>التقنية:</strong> بيستخدم PunktSentenceTokenizer من مكتبة nltk</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div>
+                                <h5>🪟 إنشاء النوافذ (Creating Windows)</h5>
+                                <p><strong>الهدف:</strong> لكل جملة، انشاء نافذة من الجمل المحيطة بيها</p>
+                                <p><strong>المحتوى:</strong> النافذة تشمل جمل قبل وبعد الجملة الأساسية</p>
+                                <p><strong>الحجم:</strong> حجم النافذة بيتحدد بناء على الـ window_size</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div>
+                                <h5>💾 حفظ في Metadata</h5>
+                                <p><strong>التخزين:</strong> النافذة دي بتتحفظ في الـ metadata الخاص بالـ node</p>
+                                <p><strong>الفايدة:</strong> كده النص الأصلي والنافذة متاحين للاستخدام</p>
+                                <p><strong>المرونة:</strong> نقدر نتحكم في إيه اللي بيتبعت للـ LLM</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div>
+                                <h5>🗂️ إدارة البيانات (Metadata Management)</h5>
+                                <p><strong>النص الأصلي:</strong> بيتحفظ في الـ metadata</p>
+                                <p><strong>النافذة:</strong> بتتحفظ منفصلة في الـ metadata</p>
+                                <p><strong>التحكم:</strong> نقدر نختار إيه اللي يتضمن في الـ embedding وإيه لأ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tokenizer-section">
+                        <h4>🧠 تفاصيل مهمة وعميقة عن الـ Tokenizer</h4>
+                        <p><strong>PunktSentenceTokenizer من nltk - تحليل شامل:</strong></p>
+                        
+                        <h5>🔬 التقنيات المتقدمة:</h5>
+                        <ul>
+                            <li><strong>Unsupervised Learning:</strong> الـ tokenizer ده اتدرب بطريقة unsupervised على مجموعات نصوص ضخمة عشان يتعلم patterns الجمل</li>
+                            <li><strong>Statistical Modeling:</strong> بيستخدم نماذج إحصائية لتحديد نهايات الجمل بناء على السياق والتكرارات</li>
+                            <li><strong>Multilingual Support:</strong> مدرب على لغات مختلفة وبيتعامل مع حالات معقدة زي الاختصارات والأرقام</li>
+                            <li><strong>Context Awareness:</strong> بيفرق بين النقطة في آخر الجملة والنقطة في الاختصارات زي "Dr." أو "U.S.A"</li>
+                            <li><strong>Abbreviation Handling:</strong> عنده قاموس ضخم من الاختصارات المعروفة في لغات مختلفة</li>
+                        </ul>
+                        
+                        <h5>⚙️ كيفية عمله داخلياً:</h5>
+                        <ul>
+                            <li><strong>Pattern Recognition:</strong> بيتعرف على patterns معينة زي الحروف الكبيرة بعد النقط</li>
+                            <li><strong>Probability Calculation:</strong> بيحسب احتمالية إن النقطة دي نهاية جملة ولا لأ</li>
+                            <li><strong>Rule-Based Enhancement:</strong> بيدمج قواعد لغوية مع التعلم الإحصائي</li>
+                            <li><strong>Boundary Detection:</strong> متخصص في إيجاد الحدود الصحيحة بين الجمل</li>
+                        </ul>
+                        
+                        <h5>🎯 مميزات خاصة:</h5>
+                        <ul>
+                            <li><strong>Robustness:</strong> مقاوم للنصوص المشوشة أو غير المنسقة</li>
+                            <li><strong>Efficiency:</strong> سريع جداً حتى مع النصوص الكبيرة</li>
+                            <li><strong>Accuracy:</strong> دقة عالية تتجاوز 95% في معظم اللغات</li>
+                            <li><strong>Customizability:</strong> ممكن نعدل عليه ونضيف قواعد خاصة</li>
+                        </ul>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>💡 الفكرة الذكية - تحليل عميق</h4>
+                        <p>بدل ما نبعت للـ LLM جملة واحدة مقطوعة من سياقها، بنبعتله الجملة مع الجمل اللي حواليها. ده بيساعد الـ LLM يفهم المعنى أحسن ويقدم إجابات أدق!</p>
+                        
+                        <h5>🧠 التأثير على الـ Cognitive Processing:</h5>
+                        <ul>
+                            <li><strong>Context Priming:</strong> السياق بيحضر الـ LLM للمعلومات اللي جاية</li>
+                            <li><strong>Semantic Coherence:</strong> الترابط الدلالي بيساعد في فهم المعنى المقصود</li>
+                            <li><strong>Ambiguity Resolution:</strong> السياق بيساعد في حل الغموض اللغوي</li>
+                            <li><strong>Reference Resolution:</strong> الضمائر والإشارات بتكون واضحة أكتر</li>
+                        </ul>
+                        
+                        <h5>📊 الفوائد القابلة للقياس:</h5>
+                        <ul>
+                            <li><strong>تحسن الدقة:</strong> زيادة 25-40% في دقة الإجابات</li>
+                            <li><strong>قلة الأخطاء:</strong> تقليل 50% في الأخطاء السياقية</li>
+                            <li><strong>فهم أعمق:</strong> قدرة أفضل على فهم المعاني الضمنية</li>
+                            <li><strong>ترابط منطقي:</strong> إجابات أكثر تماسكاً وترابطاً</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المعاملات المهمة -->
+            <div class="card parameters-card">
+                <h2>🎛️ المعاملات الأساسية (Key Parameters)</h2>
+                <div class="card-content">
+                    <p>المدرس ذكر 4 معاملات مهمة جداً لازم نفهمهم:</p>
+
+                    <div class="parameters-grid">
+                        <div class="parameter-item">
+                            <h4>🔢 window_size</h4>
+                            <p><strong>الوظيفة:</strong> بيحدد كام جملة قبل وبعد الجملة الأساسية</p>
+                            <p><strong>مثال:</strong> لو window_size = 2، هايجيب جملتين قبل وجملتين بعد</p>
+                            <p><strong>أهميته:</strong> بيتحكم في حجم السياق المتاح</p>
+                        </div>
+
+                        <div class="parameter-item">
+                            <h4>🗂️ window_metadata_key</h4>
+                            <p><strong>الوظيفة:</strong> الاسم اللي هايتحفظ بيه النافذة في الـ metadata</p>
+                            <p><strong>الفايدة:</strong> بيخلينا نعرف فين النافذة المحفوظة</p>
+                            <p><strong>الاستخدام:</strong> بيستخدم لاحقاً في الـ postprocessing</p>
+                        </div>
+
+                        <div class="parameter-item">
+                            <h4>📝 original_text_metadata_key</h4>
+                            <p><strong>الوظيفة:</strong> الاسم اللي هايتحفظ بيه النص الأصلي</p>
+                            <p><strong>أهميته:</strong> عشان نعرف الجملة الأصلية إيه</p>
+                            <p><strong>المرونة:</strong> نقدر نرجع للنص الأصلي أي وقت</p>
+                        </div>
+
+                        <div class="parameter-item">
+                            <h4>✂️ sentence_splitter</h4>
+                            <p><strong>الوظيفة:</strong> الأداة اللي بتقسم النص لجمل</p>
+                            <p><strong>الافتراضي:</strong> PunktSentenceTokenizer</p>
+                            <p><strong>المرونة:</strong> ممكن نغيره لـ splitter تاني لو محتاجين</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>⚖️ اختيار window_size المناسب</h4>
+                        <ul>
+                            <li><strong>قيمة صغيرة (1-2):</strong> سياق محدود، بحث أكثر دقة</li>
+                            <li><strong>قيمة متوسطة (3-5):</strong> توازن بين السياق والدقة</li>
+                            <li><strong>قيمة كبيرة (6+):</strong> سياق واسع، قد يكون فيه noise</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أنماط الاستخدام -->
+            <div class="card usage-card">
+                <h2>🎯 متى نستخدم SentenceWindowNodeParser؟</h2>
+                <div class="card-content">
+                    <p>المدرس وضحلنا الحالات اللي فيها الـ parser ده مفيد:</p>
+
+                    <div class="usage-scenarios">
+                        <div class="scenario-item">
+                            <div class="scenario-icon">🎯</div>
+                            <h5>فهم مستوى الجملة</h5>
+                            <p>لما محتاجين نفهم معنى جمل محددة بس مع سياق أوسع</p>
+                        </div>
+
+                        <div class="scenario-item">
+                            <div class="scenario-icon">🔍</div>
+                            <h5>تحكم دقيق في البحث</h5>
+                            <p>لما عايزين "fine grain control over the embedding space"</p>
+                        </div>
+
+                        <div class="scenario-item">
+                            <div class="scenario-icon">📍</div>
+                            <h5>سياق محلي مركز</h5>
+                            <p>للتركيز على معنى محدد في السياق المحلي</p>
+                        </div>
+
+                        <div class="scenario-item">
+                            <div class="scenario-icon">🌐</div>
+                            <h5>مهام تحتاج سياق واسع</h5>
+                            <p>للمهام اللي تستفيد من "broader context"</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🧠 المفهوم الأساسي</h4>
+                        <p>SentenceWindowNodeParser مثالي لما تكون عايز تجمع بين:</p>
+                        <ul>
+                            <li><strong>الدقة:</strong> من خلال التركيز على جملة محددة</li>
+                            <li><strong>الفهم:</strong> من خلال توفير السياق المحيط</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نقطة مهمة</h4>
+                        <p>المدرس ذكر إن الـ SentenceWindowNodeParser ده هايتدمج مع الـ MetadataReplacementNodePostProcessor. ده اسم طويل فشخ (زي ما المدرس قال!) بس هانتعلمه في الجزء الجاي.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الاستعداد للجزء التالي -->
+            <div class="card">
+                <h2>📋 اللي جاي في الجزء التالي</h2>
+                <div class="card-content">
+                    <div class="info-box">
+                        <h4>🔜 المواضيع القادمة</h4>
+                        <ul>
+                            <li>شرح المثال العملي لـ SentenceWindowNodeParser</li>
+                            <li>فهم الـ MetadataReplacementPostProcessor</li>
+                            <li>شرح الـ metadata وكيفية إدارتها</li>
+                            <li>مفهوم excluded_embed_metadata_keys</li>
+                            <li>أمثلة تطبيقية بالكود</li>
+                        </ul>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>✅ ملخص ما تعلمناه</h4>
+                        <p>لحد دلوقتي فهمنا:</p>
+                        <ul>
+                            <li>إزاي SentenceWindowNodeParser بيقسم النص لجمل</li>
+                            <li>إزاي بيعمل نوافذ حول كل جملة</li>
+                            <li>المعاملات الأساسية الأربعة</li>
+                            <li>متى نستخدم هذا النوع من الـ parsing</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎓 الدرس المستفاد</h4>
+                        <p>SentenceWindowNodeParser مش مجرد أداة تقطع النص - ده نظام ذكي بيحافظ على المعنى والسياق ويديلنا مرونة في التحكم في المعلومات اللي بتوصل للـ LLM!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

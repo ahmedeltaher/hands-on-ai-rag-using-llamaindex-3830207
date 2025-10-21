@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary Index - الجزء الثاني عشر: Low-level API للتحكم المتقدم</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #ddd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 5px solid #00b894;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Low-level API للتحكم المتقدم</h1>
+            <p>الجزء الثاني عشر: السيطرة الكاملة على كل جزئية في Document Summary Index</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>🎛️ مقدمة Low-level API</h2>
+                <div class="card-content">
+                    <p>الـ Low-level API يوفر تحكم كامل في كل جزئية من Document Summary Index:</p>
+
+                    <div class="highlight-box">
+                        <h4>🔧 متى تحتاج Low-level API؟</h4>
+                        <ul>
+                            <li><strong>تخصيص عميق:</strong> إعدادات مخصصة لكل مكون</li>
+                            <li><strong>أداء محسن:</strong> تحسين السرعة والكفاءة</li>
+                            <li><strong>تكامل معقد:</strong> ربط مع أنظمة أخرى</li>
+                            <li><strong>متطلبات خاصة:</strong> احتياجات غير تقليدية</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+# الاستيراد المتقدم للـ Low-level API
+from llama_index.core import (
+    DocumentSummaryIndex,
+    Settings,
+    StorageContext,
+    ServiceContext
+)
+from llama_index.core.storage.docstore import SimpleDocumentStore
+from llama_index.core.storage.index_store import SimpleIndexStore
+from llama_index.core.vector_stores import SimpleVectorStore
+from llama_index.core.response_synthesizers import ResponseMode
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
+
+print("📦 تم تحميل جميع المكونات المتقدمة")
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🏗️ إعداد مكونات التخزين المخصصة</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# إنشاء مكونات تخزين مخصصة
+def create_custom_storage_context():
+    # Document Store: لحفظ المستندات الأصلية
+    docstore = SimpleDocumentStore()
+    
+    # Index Store: لحفظ metadata الخاص بالـ index
+    index_store = SimpleIndexStore()
+    
+    # Vector Store: لحفظ embeddings الملخصات
+    vector_store = SimpleVectorStore()
+    
+    # دمج المكونات في storage context
+    storage_context = StorageContext.from_defaults(
+        docstore=docstore,
+        index_store=index_store,
+        vector_store=vector_store
+    )
+    
+    return storage_context
+
+# استخدام التخزين المخصص
+custom_storage = create_custom_storage_context()
+print("🗃️ تم إعداد مكونات التخزين المخصصة")
+                    </div>
+
+                    <div class="code-block">
+# تخصيص أعمق للـ storage
+from llama_index.vector_stores.chroma import ChromaVectorStore
+import chromadb
+
+def create_advanced_storage_context(collection_name="document_summaries"):
+    # استخدام ChromaDB للـ vector storage
+    chroma_client = chromadb.EphemeralClient()
+    chroma_collection = chroma_client.create_collection(collection_name)
+    
+    # Vector store متقدم
+    vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+    
+    # Document store مخصص
+    docstore = SimpleDocumentStore()
+    
+    # Index store مخصص
+    index_store = SimpleIndexStore()
+    
+    # Storage context متقدم
+    storage_context = StorageContext.from_defaults(
+        docstore=docstore,
+        index_store=index_store,
+        vector_store=vector_store
+    )
+    
+    return storage_context
+
+advanced_storage = create_advanced_storage_context()
+print("🚀 تم إعداد تخزين متقدم مع ChromaDB")
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🔍 مكونات التخزين</h4>
+                        <ul>
+                            <li><strong>DocStore:</strong> يحفظ المستندات الأصلية والملخصات</li>
+                            <li><strong>IndexStore:</strong> يحفظ metadata وإعدادات الـ index</li>
+                            <li><strong>VectorStore:</strong> يحفظ embeddings للبحث السريع</li>
+                            <li><strong>StorageContext:</strong> يدير التفاعل بين المكونات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🤖 تخصيص النماذج والمعالجات</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# إعداد نماذج مخصصة بدقة
+def setup_custom_models():
+    # LLM مخصص للتلخيص
+    summary_llm = OpenAI(
+        model="gpt-4",
+        temperature=0.1,        # ثبات عالي
+        max_tokens=800,         # مساحة كافية للملخص
+        request_timeout=60,     # timeout مناسب
+        max_retries=3          # إعادة المحاولة عند الفشل
+    )
+    
+    # LLM آخر للـ query processing
+    query_llm = OpenAI(
+        model="gpt-4o-mini",
+        temperature=0.2,        # مرونة قليلة للإجابات
+        max_tokens=1500,        # مساحة أكبر للإجابات
+        request_timeout=30
+    )
+    
+    # Embedding model محسن
+    embed_model = OpenAIEmbedding(
+        model="text-embedding-3-large",
+        dimensions=3072,        # أبعاد عالية للدقة
+        api_key=os.getenv("OPENAI_API_KEY")
+    )
+    
+    return summary_llm, query_llm, embed_model
+
+# إعداد النماذج
+summary_llm, query_llm, embed_model = setup_custom_models()
+
+# تطبيق الإعدادات على النظام
+Settings.llm = summary_llm  # للتلخيص
+Settings.embed_model = embed_model
+
+print("🧠 تم إعداد النماذج المخصصة")
+                    </div>
+
+                    <div class="code-block">
+# تخصيص templates التلخيص المتقدمة
+def create_advanced_summary_template():
+    template = """
+أنت خبير في تلخيص المستندات. قم بإنشاء ملخص شامل ومهيكل للمستند التالي:
+
+المستند:
+{context_str}
+
+يجب أن يشمل الملخص:
+
+🎯 الموضوع الرئيسي:
+[ملخص في جملة واحدة]
+
+📋 النقاط الأساسية:
+1. [النقطة الأولى]
+2. [النقطة الثانية]  
+3. [النقطة الثالثة]
+
+🔍 التفاصيل المهمة:
+- [تفصيل مهم 1]
+- [تفصيل مهم 2]
+
+💡 الاستنتاجات والتوصيات:
+[الاستنتاجات الرئيسية]
+
+🏷️ الكلمات المفتاحية:
+[5-7 كلمات مفتاحية مفصولة بفواصل]
+
+الملخص:
+    """
+    return template
+
+advanced_template = create_advanced_summary_template()
+print("📝 تم إعداد template متقدم للتلخيص")
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 فوائد التخصيص المتقدم</h4>
+                        <ul>
+                            <li><strong>جودة محسنة:</strong> نماذج محسنة لكل مهمة</li>
+                            <li><strong>أداء أفضل:</strong> إعدادات مُحسنة للسرعة</li>
+                            <li><strong>تكلفة محسوبة:</strong> تحكم دقيق في الاستهلاك</li>
+                            <li><strong>مرونة كاملة:</strong> تكييف مع أي متطلبات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔧 بناء Index متقدم بالكامل</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# بناء DocumentSummaryIndex متقدم بالكامل
+def build_advanced_document_summary_index(documents):
+    # إعداد storage context مخصص
+    storage_context = create_advanced_storage_context()
+    
+    # إعداد النماذج
+    Settings.llm = summary_llm
+    Settings.embed_model = embed_model
+    
+    # بناء الـ index مع تحكم كامل
+    index = DocumentSummaryIndex.from_documents(
+        documents,
+        storage_context=storage_context,
+        summary_template=advanced_template,
+        response_mode=ResponseMode.TREE_SUMMARIZE,
+        show_progress=True,
+        # معاملات متقدمة
+        use_async=False,           # تحكم في المعالجة المتوازية
+        transformations=[]         # تحويلات مخصصة للنصوص
+    )
+    
+    return index
+
+# مثال على الاستخدام
+from llama_index.core import SimpleDirectoryReader
+
+# تحميل المستندات
+documents = SimpleDirectoryReader("./data").load_data()
+
+# بناء index متقدم
+advanced_index = build_advanced_document_summary_index(documents)
+
+print("🎯 تم بناء DocumentSummaryIndex متقدم بالكامل")
+                    </div>
+
+                    <div class="code-block">
+# تخصيص عملية التلخيص بالتفصيل
+def create_custom_summarizer():
+    from llama_index.core.response_synthesizers import TreeSummarize
+    
+    # Response synthesizer مخصص
+    response_synthesizer = TreeSummarize(
+        service_context=ServiceContext.from_defaults(
+            llm=summary_llm,
+            embed_model=embed_model
+        ),
+        streaming=False,           # تحكم في الـ streaming
+        use_async=True,           # استخدام async للسرعة
+        verbose=True              # تفاصيل العملية
+    )
+    
+    return response_synthesizer
+
+# إعداد summarizer مخصص
+custom_summarizer = create_custom_summarizer()
+
+# استخدامه في بناء الـ index
+def build_index_with_custom_summarizer(documents):
+    index = DocumentSummaryIndex.from_documents(
+        documents,
+        storage_context=advanced_storage,
+        summary_template=advanced_template,
+        response_synthesizer=custom_summarizer,
+        show_progress=True
+    )
+    return index
+
+print("🔄 تم إعداد معالج تلخيص مخصص")
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نصائح للتحكم المتقدم</h4>
+                        <ul>
+                            <li><strong>اختبر التدريجي:</strong> غير إعداد واحد في كل مرة</li>
+                            <li><strong>راقب الأداء:</strong> تتبع السرعة والتكلفة</li>
+                            <li><strong>احفظ الإعدادات:</strong> وثق كل تغيير مهم</li>
+                            <li><strong>استخدم الـ verbose:</strong> لفهم ما يحدث داخلياً</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎛️ Query Engines متقدمة</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# إنشاء query engines متخصصة
+def create_specialized_query_engines(index):
+    # Engine للاستعلامات السريعة
+    fast_engine = index.as_query_engine(
+        retriever_mode="embedding",
+        similarity_top_k=2,
+        response_mode="compact",
+        streaming=True,
+        service_context=ServiceContext.from_defaults(
+            llm=query_llm  # نموذج أسرع للاستجابة
+        )
+    )
+    
+    # Engine للتحليل العميق
+    analytical_engine = index.as_query_engine(
+        retriever_mode="llm",
+        choice_batch_size=5,
+        choice_top_k=3,
+        response_mode="tree_summarize",
+        service_context=ServiceContext.from_defaults(
+            llm=OpenAI(model="gpt-4", temperature=0.1)  # نموذج قوي للتحليل
+        )
+    )
+    
+    # Engine هجين ذكي
+    hybrid_engine = index.as_query_engine(
+        retriever_mode="embedding",  # بداية سريعة
+        similarity_top_k=5,
+        response_mode="tree_summarize",  # تحليل عميق للنتائج
+        streaming=False,
+        verbose=True
+    )
+    
+    return fast_engine, analytical_engine, hybrid_engine
+
+# إنشاء المحركات المتخصصة
+fast_engine, analytical_engine, hybrid_engine = create_specialized_query_engines(advanced_index)
+
+print("⚡ تم إعداد محركات استعلام متخصصة")
+                    </div>
+
+                    <div class="code-block">
+# نظام توجيه ذكي للاستعلامات
+class IntelligentQueryRouter:
+    def __init__(self, fast_engine, analytical_engine, hybrid_engine):
+        self.fast_engine = fast_engine
+        self.analytical_engine = analytical_engine
+        self.hybrid_engine = hybrid_engine
+    
+    def route_query(self, question, priority="balanced"):
+        """توجيه السؤال للمحرك المناسب"""
+        
+        # تحليل نوع السؤال
+        question_lower = question.lower()
+        
+        # كلمات مفتاحية للتحليل العميق
+        analytical_keywords = [
+            "قارن", "حلل", "اشرح", "لماذا", "كيف", 
+            "تأثير", "علاقة", "فرق", "سبب"
+        ]
+        
+        # كلمات مفتاحية للأسئلة السريعة
+        quick_keywords = [
+            "ما هو", "من", "متى", "أين", "كم",
+            "اذكر", "عدد", "اسم"
+        ]
+        
+        # تحديد نوع السؤال
+        is_analytical = any(keyword in question_lower for keyword in analytical_keywords)
+        is_quick = any(keyword in question_lower for keyword in quick_keywords)
+        
+        # اختيار المحرك المناسب
+        if priority == "speed" or is_quick:
+            print("🚀 استخدام المحرك السريع")
+            return self.fast_engine.query(question)
+            
+        elif priority == "accuracy" or is_analytical:
+            print("🔬 استخدام المحرك التحليلي")
+            return self.analytical_engine.query(question)
+            
+        else:  # balanced
+            print("⚖️ استخدام المحرك المتوازن")
+            return self.hybrid_engine.query(question)
+
+# إنشاء الموجه الذكي
+smart_router = IntelligentQueryRouter(fast_engine, analytical_engine, hybrid_engine)
+
+# اختبار التوجيه الذكي
+test_questions = [
+    "ما هو الذكاء الاصطناعي؟",  # سريع
+    "قارن بين الذكاء الاصطناعي والتعلم الآلي وحدد أيهما أهم للمستقبل؟",  # تحليلي
+    "كيف يؤثر AI على التعليم؟"  # متوازن
+]
+
+for question in test_questions:
+    print(f"\n❓ {question}")
+    response = smart_router.route_query(question)
+    print(f"💡 {response.response[:100]}...")
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🎯 مميزات التوجيه الذكي</h4>
+                        <ul>
+                            <li><strong>كفاءة محسنة:</strong> كل سؤال يروح للمحرك الأنسب</li>
+                            <li><strong>توفير الموارد:</strong> استخدام النماذج القوية بس عند الحاجة</li>
+                            <li><strong>تحسين التجربة:</strong> إجابات سريعة ودقيقة حسب الحاجة</li>
+                            <li><strong>مرونة كاملة:</strong> تحكم في الأولوية لكل استعلام</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💾 حفظ وتحميل متقدم</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# نظام حفظ وتحميل متقدم
+import json
+from datetime import datetime
+import os
+
+class AdvancedIndexManager:
+    def __init__(self, base_dir="./advanced_storage"):
+        self.base_dir = base_dir
+        os.makedirs(base_dir, exist_ok=True)
+    
+    def save_index_with_metadata(self, index, name, description=""):
+        """حفظ index مع metadata شاملة"""
+        
+        # إنشاء مجلد للـ index
+        index_dir = os.path.join(self.base_dir, name)
+        os.makedirs(index_dir, exist_ok=True)
+        
+        # حفظ الـ index نفسه
+        index.storage_context.persist(persist_dir=index_dir)
+        
+        # إنشاء metadata
+        metadata = {
+            "name": name,
+            "description": description,
+            "created_at": datetime.now().isoformat(),
+            "index_type": "DocumentSummaryIndex",
+            "documents_count": len(index.docstore.docs),
+            "settings": {
+                "llm_model": Settings.llm.model,
+                "embed_model": Settings.embed_model.model_name,
+                "summary_template": getattr(index, '_summary_template', 'default')
+            }
+        }
+        
+        # حفظ metadata
+        with open(os.path.join(index_dir, "metadata.json"), "w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=2, ensure_ascii=False)
+        
+        print(f"💾 تم حفظ {name} مع metadata كاملة")
+        return index_dir
+    
+    def load_index_with_metadata(self, name):
+        """تحميل index مع metadata"""
+        
+        index_dir = os.path.join(self.base_dir, name)
+        
+        if not os.path.exists(index_dir):
+            raise FileNotFoundError(f"Index {name} not found")
+        
+        # تحميل metadata
+        metadata_file = os.path.join(index_dir, "metadata.json")
+        if os.path.exists(metadata_file):
+            with open(metadata_file, "r", encoding="utf-8") as f:
+                metadata = json.load(f)
+            print(f"📋 معلومات الـ Index:")
+            print(f"   الاسم: {metadata['name']}")
+            print(f"   الوصف: {metadata['description']}")
+            print(f"   تاريخ الإنشاء: {metadata['created_at']}")
+            print(f"   عدد المستندات: {metadata['documents_count']}")
+        
+        # تحميل الـ index
+        from llama_index.core import StorageContext, load_index_from_storage
+        
+        storage_context = StorageContext.from_defaults(persist_dir=index_dir)
+        index = load_index_from_storage(storage_context)
+        
+        print(f"✅ تم تحميل {name} بنجاح")
+        return index, metadata if 'metadata' in locals() else None
+    
+    def list_saved_indices(self):
+        """عرض قائمة بجميع الـ indices المحفوظة"""
+        
+        indices = []
+        
+        for item in os.listdir(self.base_dir):
+            item_path = os.path.join(self.base_dir, item)
+            if os.path.isdir(item_path):
+                metadata_file = os.path.join(item_path, "metadata.json")
+                if os.path.exists(metadata_file):
+                    with open(metadata_file, "r", encoding="utf-8") as f:
+                        metadata = json.load(f)
+                    indices.append(metadata)
+        
+        return indices
+
+# استخدام نظام الإدارة المتقدم
+manager = AdvancedIndexManager()
+
+# حفظ index مع معلومات شاملة
+saved_path = manager.save_index_with_metadata(
+    advanced_index,
+    "ai_documents_v1",
+    "مجموعة مستندات الذكاء الاصطناعي - الإصدار الأول"
+)
+
+# عرض قائمة الـ indices
+print("\n📚 الـ Indices المحفوظة:")
+saved_indices = manager.list_saved_indices()
+for idx_info in saved_indices:
+    print(f"- {idx_info['name']}: {idx_info['description']}")
+
+# تحميل index محفوظ
+loaded_index, loaded_metadata = manager.load_index_with_metadata("ai_documents_v1")
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🌟 فوائد نظام الإدارة المتقدم</h4>
+                        <ul>
+                            <li><strong>تتبع شامل:</strong> معلومات مفصلة عن كل index</li>
+                            <li><strong>سهولة الإدارة:</strong> حفظ وتحميل مع metadata</li>
+                            <li><strong>تنظيم أفضل:</strong> قائمة بجميع الـ indices</li>
+                            <li><strong>استعادة كاملة:</strong> تحميل مع جميع الإعدادات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 مراقبة الأداء المتقدمة</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# نظام مراقبة الأداء الشامل
+import time
+import psutil
+from contextlib import contextmanager
+
+class PerformanceMonitor:
+    def __init__(self):
+        self.metrics = {}
+    
+    @contextmanager
+    def monitor_operation(self, operation_name):
+        """مراقبة عملية محددة"""
+        
+        # قياس الذاكرة والمعالج قبل البدء
+        process = psutil.Process()
+        memory_before = process.memory_info().rss / 1024 / 1024  # MB
+        cpu_before = process.cpu_percent()
+        
+        start_time = time.time()
+        
+        try:
+            yield
+        finally:
+            # قياس الأداء بعد الانتهاء
+            end_time = time.time()
+            memory_after = process.memory_info().rss / 1024 / 1024  # MB
+            cpu_after = process.cpu_percent()
+            
+            # حفظ النتائج
+            self.metrics[operation_name] = {
+                'duration': end_time - start_time,
+                'memory_used': memory_after - memory_before,
+                'memory_peak': memory_after,
+                'cpu_usage': (cpu_before + cpu_after) / 2
+            }
+            
+            print(f"📊 {operation_name}:")
+            print(f"   الوقت: {self.metrics[operation_name]['duration']:.2f} ثانية")
+            print(f"   الذاكرة: {self.metrics[operation_name]['memory_used']:.1f} MB")
+            print(f"   المعالج: {self.metrics[operation_name]['cpu_usage']:.1f}%")
+    
+    def get_summary(self):
+        """ملخص شامل للأداء"""
+        
+        if not self.metrics:
+            print("❌ لا توجد بيانات أداء")
+            return
+        
+        print("\n📈 ملخص الأداء الشامل:")
+        print("-" * 50)
+        
+        total_time = sum(m['duration'] for m in self.metrics.values())
+        total_memory = sum(m['memory_used'] for m in self.metrics.values())
+        
+        for operation, metrics in self.metrics.items():
+            print(f"🔧 {operation}:")
+            print(f"   الوقت: {metrics['duration']:.2f}s ({metrics['duration']/total_time*100:.1f}%)")
+            print(f"   الذاكرة: {metrics['memory_used']:.1f}MB")
+            print()
+        
+        print(f"📊 الإجمالي:")
+        print(f"   إجمالي الوقت: {total_time:.2f} ثانية")
+        print(f"   إجمالي الذاكرة: {total_memory:.1f} MB")
+
+# استخدام نظام المراقبة
+monitor = PerformanceMonitor()
+
+# مراقبة بناء الـ index
+with monitor.monitor_operation("بناء DocumentSummaryIndex"):
+    test_index = DocumentSummaryIndex.from_documents(
+        documents[:5],  # عينة صغيرة للاختبار
+        show_progress=True
+    )
+
+# مراقبة الاستعلام
+with monitor.monitor_operation("استعلام embedding-based"):
+    engine = test_index.as_query_engine(retriever_mode="embedding")
+    response = engine.query("ما هو الموضوع الرئيسي؟")
+
+with monitor.monitor_operation("استعلام LLM-based"):
+    engine = test_index.as_query_engine(retriever_mode="llm")
+    response = engine.query("ما هو الموضوع الرئيسي؟")
+
+# عرض ملخص الأداء
+monitor.get_summary()
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 مقاييس الأداء المهمة</h4>
+                        <ul>
+                            <li><strong>الوقت:</strong> سرعة كل عملية</li>
+                            <li><strong>الذاكرة:</strong> استهلاك RAM</li>
+                            <li><strong>المعالج:</strong> استهلاك CPU</li>
+                            <li><strong>التكلفة:</strong> API calls ومصاريف</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 الخلاصة والتوصيات</h2>
+                <div class="card-content">
+                    <div class="highlight-box">
+                        <h4>✅ إنجازات Low-level API</h4>
+                        <ul>
+                            <li>تحكم كامل في كل مكون من مكونات النظام</li>
+                            <li>تخصيص عميق للنماذج والإعدادات</li>
+                            <li>أنظمة توجيه ذكية للاستعلامات</li>
+                            <li>إدارة متقدمة للحفظ والتحميل</li>
+                            <li>مراقبة شاملة للأداء</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نصائح مهمة</h4>
+                        <ul>
+                            <li><strong>لا تعقد بدون سبب:</strong> استخدم التعقيد فقط عند الحاجة</li>
+                            <li><strong>اختبر التدريجي:</strong> غير إعداد واحد في كل مرة</li>
+                            <li><strong>وثق التغييرات:</strong> اكتب سبب كل تخصيص</li>
+                            <li><strong>راقب الأداء:</strong> تأكد أن التعقيد يحسن النتائج</li>
+                        </ul>
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🚀 الرسالة النهائية</h4>
+                        <p>Low-level API يعطيك قوة هائلة، لكن مع القوة تأتي المسؤولية. استخدمه بحكمة لبناء أنظمة قوية ومحسنة تلبي احتياجاتك المحددة بدقة!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

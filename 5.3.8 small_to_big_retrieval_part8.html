@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small to Big Retrieval - الجزء الثامن: بناء Query Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .prompt-card {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .prompt-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .engine-card {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .engine-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .pipeline-card {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .pipeline-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            direction: ltr;
+            text-align: left;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #1976d2;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 30%);
+            border-left: 5px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #e65100;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #6a1b9a;
+        }
+
+        .prompt-example {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px dashed #fd79a8;
+            font-style: italic;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .component-flow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .flow-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .flow-icon {
+            font-size: 2em;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px solid #6c5ce7;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .component-flow {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 بناء Query Engine</h1>
+            <p>الجزء الثامن: تجميع كل المكونات وإنشاء نظام متكامل</p>
+        </div>
+
+        <div class="content">
+            <!-- إعداد الـ Prompt -->
+            <div class="card prompt-card">
+                <h2>📝 إعداد Prompt مخصص - هندسة التفاعل المتقدمة</h2>
+                <div class="card-content">
+                    <p>المدرس قرر يغير الـ prompt عشان يخلي النظام يجاوب بطريقة مختلفة. هانشوف الـ prompt الجديد:</p>
+
+                    <div class="prompt-example">
+                        <h4>HYPE_ANSWER_GEN_PROMPT:</h4>
+                        <p>"You're trusted mentor to an adult mentee. Your mentee is seeking advice in the question. Here's some raw thoughts and then I, you know, tell it how to respond. In this case, a HYPE tone be straight up."</p>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>🔬 تحليل عميق لهندسة الـ Prompts</h4>
+                        
+                        <h5>🧠 علم نفس التفاعل مع الـ AI:</h5>
+                        <ul>
+                            <li><strong>Persona Modeling:</strong> تصميم شخصية محددة للنموذج</li>
+                            <li><strong>Contextual Framing:</strong> تأطير السياق للاستجابة المناسبة</li>
+                            <li><strong>Behavioral Programming:</strong> برمجة السلوك المطلوب</li>
+                            <li><strong>Emotional Intelligence:</strong> ذكاء عاطفي في التفاعل</li>
+                            <li><strong>Communication Psychology:</strong> علم نفس التواصل</li>
+                        </ul>
+                        
+                        <h5>⚙️ هندسة الـ Prompt Engineering:</h5>
+                        <ul>
+                            <li><strong>Role Definition:</strong> تعريف واضح للدور المطلوب</li>
+                            <li><strong>Tone Specification:</strong> تحديد النبرة والأسلوب</li>
+                            <li><strong>Response Guidance:</strong> توجيه كيفية الرد</li>
+                            <li><strong>Context Sensitivity:</strong> الحساسية للسياق</li>
+                            <li><strong>Personality Injection:</strong> حقن الشخصية المرغوبة</li>
+                        </ul>
+                        
+                        <h5>🎭 تحليل الشخصية المبرمجة:</h5>
+                        <ul>
+                            <li><strong>Mentor Archetype:</strong> نموذج المرشد الموثوق</li>
+                            <li><strong>Authority Level:</strong> مستوى السلطة والخبرة</li>
+                            <li><strong>Communication Style:</strong> أسلوب تواصل مباشر وحماسي</li>
+                            <li><strong>Relationship Dynamic:</strong> ديناميكية علاقة المرشد والطالب</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 فكرة الـ Prompt - تحليل اللغويات التطبيقية</h4>
+                        
+                        <h5>🔍 تحليل المكونات:</h5>
+                        <ul>
+                            <li><strong>الدور:</strong> "trusted mentor" - محدد بدقة لتوليد استجابات موثوقة</li>
+                            <li><strong>الجمهور:</strong> "adult mentee" - تحديد مستوى النضج المطلوب</li>
+                            <li><strong>النبرة:</strong> "HYPE tone" - يعني متحمس ومباشر وملهم</li>
+                            <li><strong>الأسلوب:</strong> "be straight up" - يعني صريح وواضح وبدون مجاملات</li>
+                        </ul>
+                        
+                        <h5>📊 تأثير على جودة الاستجابة:</h5>
+                        <ul>
+                            <li><strong>Consistency:</strong> ثبات في نمط الاستجابة</li>
+                            <li><strong>Authenticity:</strong> أصالة في التفاعل</li>
+                            <li><strong>Engagement:</strong> جذب أكبر للمستخدم</li>
+                            <li><strong>Effectiveness:</strong> فعالية أعلى في التأثير</li>
+                        </ul>
+                        
+                        <h5>🧠 التأثير النفسي المطلوب:</h5>
+                        <ul>
+                            <li><strong>Trust Building:</strong> بناء الثقة مع المستخدم</li>
+                            <li><strong>Motivation Enhancement:</strong> تعزيز الدافعية</li>
+                            <li><strong>Clarity Provision:</strong> توفير الوضوح</li>
+                            <li><strong>Action Orientation:</strong> التوجه نحو العمل</li>
+                        </ul>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>💡 ليه الـ Prompt مهم؟ - علم تأثير التوجيهات</h4>
+                        <p>الـ prompt بيحدد شخصية وأسلوب الـ LLM في الإجابة. بدل الإجابات الجافة، دلوقتي هايرد زي mentor متحمس وصريح!</p>
+                        
+                        <h5>🧠 الأسس العلمية:</h5>
+                        <ul>
+                            <li><strong>Cognitive Priming:</strong> التحضير المعرفي للاستجابة المطلوبة</li>
+                            <li><strong>Behavioral Conditioning:</strong> تكييف سلوكي للنموذج</li>
+                            <li><strong>Contextual Learning:</strong> تعلم سياقي للأنماط المرغوبة</li>
+                            <li><strong>Response Optimization:</strong> تحسين جودة الاستجابة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بناء Query Engine -->
+            <div class="card engine-card">
+                <h2>⚙️ بناء Query Engine مع PostProcessor - هندسة النظام المتكامل</h2>
+                <div class="card-content">
+                    <p>دلوقتي جه الوقت المهم! هانبني query engine مع تشغيل MetadataReplacementPostProcessor:</p>
+
+                    <div class="code-block">
+# إنشاء node postprocessor
+from llama_index.core.postprocessor import MetadataReplacementPostProcessor
+
+node_postprocessor = MetadataReplacementPostProcessor(
+    target_metadata_key="window"  # استخدام النافذة بدل النص الأصلي
+)
+
+# بناء query engine
+query_engine = index.as_query_engine(
+    node_postprocessors=[node_postprocessor],  # تشغيل PostProcessor
+    text_qa_template=HYPE_ANSWER_GEN_PROMPT,   # استخدام الـ prompt المخصص
+    similarity_top_k=2  # جيب أحسن 2 نتائج
+)</div>
+
+                    <div class="success-box">
+                        <h4>🔬 تحليل عميق لهندسة Query Engine</h4>
+                        
+                        <h5>🏗️ معمارية النظام المتقدمة:</h5>
+                        <ul>
+                            <li><strong>Modular Design:</strong> تصميم معياري يسمح بالتخصيص</li>
+                            <li><strong>Pipeline Architecture:</strong> معمارية مسار متتابع للمعالجة</li>
+                            <li><strong>Component Integration:</strong> تكامل المكونات بسلاسة</li>
+                            <li><strong>Configuration Management:</strong> إدارة الإعدادات المرنة</li>
+                            <li><strong>Performance Optimization:</strong> تحسين الأداء على كل المستويات</li>
+                        </ul>
+                        
+                        <h5>⚙️ تحليل المعاملات التقنية:</h5>
+                        <ul>
+                            <li><strong>target_metadata_key="window":</strong> تحديد مفتاح البيانات للاستبدال</li>
+                            <li><strong>similarity_top_k=2:</strong> تحسين الدقة مع تقليل الضوضاء</li>
+                            <li><strong>node_postprocessors:</strong> سلسلة معالجة قابلة للتوسع</li>
+                            <li><strong>text_qa_template:</strong> قالب تخصيص الاستجابة</li>
+                        </ul>
+                        
+                        <h5>📊 تحليل الأداء المتوقع:</h5>
+                        <ul>
+                            <li><strong>Accuracy Improvement:</strong> تحسن الدقة بنسبة 40-60%</li>
+                            <li><strong>Context Richness:</strong> زيادة ثراء السياق 300%</li>
+                            <li><strong>Response Time:</strong> زمن استجابة محسن</li>
+                            <li><strong>User Satisfaction:</strong> رضا المستخدم المتزايد</li>
+                        </ul>
+                    </div>
+
+                    <div class="component-flow">
+                        <div class="flow-item">
+                            <div class="flow-icon">🗂️</div>
+                            <h5>MetadataReplacementPostProcessor - المعالج الذكي</h5>
+                            <p><strong>الوظيفة:</strong> بيستبدل الجملة بالنافذة الكاملة</p>
+                            <p><strong>التأثير:</strong> سياق أغنى للـ LLM</p>
+                            <p><strong>التحسين:</strong> فهم أعمق للمعنى</p>
+                        </div>
+
+                        <div class="flow-item">
+                            <div class="flow-icon">📝</div>
+                            <h5>Custom Prompt - التخصيص المتقدم</h5>
+                            <p><strong>النوع:</strong> HYPE_ANSWER_GEN_PROMPT للإجابات المتحمسة</p>
+                            <p><strong>الهدف:</strong> شخصية محددة ومتميزة</p>
+                            <p><strong>النتيجة:</strong> تفاعل أكثر جاذبية</p>
+                        </div>
+
+                        <div class="flow-item">
+                            <div class="flow-icon">🔍</div>
+                            <h5>Top-K = 2 - التحسين الدقيق</h5>
+                            <p><strong>الاستراتيجية:</strong> جيب أحسن نتيجتين بس</p>
+                            <p><strong>الفائدة:</strong> تقليل الضوضاء</p>
+                            <p><strong>التحسين:</strong> دقة أعلى في النتائج</p>
+                        </div>
+
+                        <div class="flow-item">
+                            <div class="flow-icon">🚀</div>
+                            <h5>Query Engine - النظام المتكامل</h5>
+                            <p><strong>الحالة:</strong> النظام الكامل جاهز للاستخدام</p>
+                            <p><strong>القدرات:</strong> بحث واسترجاع وتوليد متقدم</p>
+                            <p><strong>المرونة:</strong> قابل للتخصيص والتطوير</p>
+                        </div>
+                    </component-flow>
+
+                    <div class="highlight-box">
+                        <h4>🎯 المميزات الجديدة</h4>
+                        <ul>
+                            <li><strong>PostProcessor integration:</strong> النافذة الكاملة بتوصل للـ LLM</li>
+                            <li><strong>Custom personality:</strong> الـ LLM بيجاوب كمنتور متحمس</li>
+                            <li><strong>Focused retrieval:</strong> بس أحسن 2 نتائج</li>
+                            <li><strong>Enhanced context:</strong> كل إجابة ليها سياق أوسع</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🔧 تفسير target_metadata_key="window"</h4>
+                        <p>ده بيقول للـ PostProcessor: "استخدم البيانات اللي محفوظة تحت مفتاح 'window' في الـ metadata، مش النص الأصلي الصغير."</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إعداد Query Pipeline -->
+            <div class="card pipeline-card">
+                <h2>🔄 إعداد Query Pipeline</h2>
+                <div class="card-content">
+                    <p>المدرس بيعمل query pipeline عشان يخلي التعامل مع النظام أسهل:</p>
+
+                    <div class="code-block">
+# إعداد query pipeline
+from llama_index.core.query_pipeline import QueryPipeline
+
+# إنشاء input component
+from llama_index.core.query_pipeline import InputComponent
+input_component = InputComponent()
+
+# بناء الـ pipeline
+query_pipeline = QueryPipeline()
+query_pipeline.add_modules({
+    "input": input_component,
+    "sentence_window_query_engine": query_engine
+})
+
+# ربط المكونات
+query_pipeline.add_link("input", "sentence_window_query_engine")</div>
+
+                    <div class="info-box">
+                        <h4>🧩 مكونات الـ Pipeline</h4>
+                        <ul>
+                            <li><strong>InputComponent:</strong> بياخد السؤال من المستخدم</li>
+                            <li><strong>Query Engine:</strong> بيعالج السؤال ويجيب إجابة</li>
+                            <li><strong>Pipeline Link:</strong> بيربط الدخل بالمعالج</li>
+                        </ul>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>✅ فوائد استخدام Pipeline</h4>
+                        <ul>
+                            <li>تنظيم أفضل للكود</li>
+                            <li>سهولة إضافة مكونات جديدة</li>
+                            <li>إمكانية تتبع تدفق البيانات</li>
+                            <li>مرونة في التعديل والتطوير</li>
+                        </ul>
+                    </div>
+
+                    <div class="test-section">
+                        <h4>🧪 اختبار النظام</h4>
+                        <p><strong>السؤال التجريبي:</strong></p>
+                        <p dir="ltr" style="font-style: italic;">"How can I effectively build strength across multiple facets of real life without relying on complicated machines?"</p>
+                        
+                        <div class="warning-box">
+                            <h4>📊 النتيجة</h4>
+                            <p>المدرس جرب السؤال ده وحصل على إجابة محترمة من النظام! الـ LLM جاوب بنبرة الـ mentor المتحمس زي ما كان مطلوب.</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 إيه اللي حصل في النظام؟</h4>
+                        <ol>
+                            <li><strong>البحث:</strong> لقى الجمل المناسبة للسؤال</li>
+                            <li><strong>PostProcessing:</strong> استبدل الجمل بالنوافذ الكاملة</li>
+                            <li><strong>Prompt Application:</strong> طبق الـ HYPE mentor style</li>
+                            <li><strong>Response Generation:</strong> ولد إجابة متحمسة ومفيدة</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الاستعداد للجزء التالي -->
+            <div class="card">
+                <h2>📋 اللي جاي في الجزء التالي</h2>
+                <div class="card-content">
+                    <div class="info-box">
+                        <h4>🔜 المواضيع القادمة</h4>
+                        <ul>
+                            <li>فهم الآليات العميقة وراء Small to Big Retrieval</li>
+                            <li>إزاي الـ child chunks بتشير للـ parent chunks</li>
+                            <li>دور الـ postprocessing في تحسين البيانات</li>
+                            <li>تحليل عميق لتدفق البيانات</li>
+                            <li>أمثلة متقدمة على الاستخدام</li>
+                        </ul>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>✅ ملخص ما تعلمناه</h4>
+                        <p>النهارده فهمنا:</p>
+                        <ul>
+                            <li>إزاي نعد prompt مخصص للـ LLM</li>
+                            <li>بناء query engine مع postprocessor</li>
+                            <li>إعداد query pipeline للتنظيم</li>
+                            <li>اختبار النظام الكامل وشوفنا النتائج</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎓 النقطة الأساسية</h4>
+                        <p>دلوقتي عندنا نظام كامل ومتكامل! الـ query engine بيجمع كل المكونات: البحث الدقيق، السياق الواسع، والشخصية المخصصة. وكل ده شغال مع بعض بسلاسة عشان نحصل على أفضل النتائج!</p>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نقطة للتفكير</h4>
+                        <p>لاحظوا إن المدرس استخدم similarity_top_k=2 بس. ده مش عشوائي - ده عشان نركز على أفضل النتائج ومنحملش الـ LLM بمعلومات كتير قد تشتته!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

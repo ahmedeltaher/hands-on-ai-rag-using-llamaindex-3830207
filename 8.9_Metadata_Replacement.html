@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Replacement Postprocessor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .concept-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .synergy-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .process-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .use-case-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .implementation-box { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Metadata Replacement Postprocessor</h1>
+            <p>الدرس التاسع: استبدال المحتوى بالسياق الموسع</p>
+        </div>
+
+        <div class="card">
+            <h2>🎭 إعادة النظر في موضوع مألوف</h2>
+            <div class="concept-box">
+                <h3>🔄 ليه المدرس بيعيد الشرح؟</h3>
+                <p>المدرس وضح إن إحنا شفنا الـ Metadata Replacement Postprocessor قبل كده في درس سابق، بس هو قرر يتكلم عنه تاني هنا عشان:</p>
+                
+                <ul>
+                    <li><strong>التكامل:</strong> يخلي الشرح متكامل مع باقي الـ postprocessors</li>
+                    <li><strong>السياق الجديد:</strong> فهمه في إطار موضوع Node postprocessing عموماً</li>
+                    <li><strong>التفاصيل الإضافية:</strong> يضيف معلومات مكملة لما قاله قبل كده</li>
+                    <li><strong>المراجعة المفيدة:</strong> تثبيت المفهوم في الذهن</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 الوظيفة الأساسية</h2>
+            <div class="process-box">
+                <h3>💡 المفهوم الجوهري:</h3>
+                <p>الـ Metadata Replacement Postprocessor بيسمح لك تستبدل محتوى كل عقدة في القائمة بقيمة معينة من الـ <strong>metadata</strong> بدلاً من المحتوى الأصلي.</p>
+                
+                <h3>🔄 آلية الاستبدال:</h3>
+                <ul>
+                    <li><strong>المدخل:</strong> قائمة من العقد مع metadata</li>
+                    <li><strong>العملية:</strong> البحث عن metadata key محدد</li>
+                    <li><strong>الاستبدال:</strong> استعمال قيمة الـ key بدل النص الأصلي</li>
+                    <li><strong>المخرج:</strong> عقد بمحتوى موسع ومحسن</li>
+                </ul>
+                
+                <h3>⭐ الهدف النهائي:</h3>
+                <p>إعطاء الـ LLM سياق أوسع وأشمل من النص الأصلي المقطع للعقدة!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🤝 التناغم مع SentenceWindowNodeParser</h2>
+            <div class="synergy-box">
+                <h3>💎 الثنائي الذهبي:</h3>
+                <p>زي ما وضح المدرس سابقاً، الـ Metadata Replacement مفيد جداً لما يتستخدم مع <strong>SentenceWindowNodeParser</strong>.</p>
+                
+                <h3>📖 إزاي بيشتغلوا مع بعض:</h3>
+                
+                <h4>1️⃣ SentenceWindowNodeParser يعمل:</h4>
+                <ul>
+                    <li><strong>يقسم النص:</strong> لجمل منفردة (sentences)</li>
+                    <li><strong>يحفظ السياق:</strong> في metadata كـ "window"</li>
+                    <li><strong>يخزن المرجع:</strong> للجمل اللي قبل وبعد</li>
+                </ul>
+                
+                <h4>2️⃣ Metadata Replacement يكمل:</h4>
+                <ul>
+                    <li><strong>يسترجع السياق:</strong> من الـ metadata</li>
+                    <li><strong>يوسع المحتوى:</strong> بدل الجملة المفردة</li>
+                    <li><strong>يحسن الفهم:</strong> للـ LLM</li>
+                </ul>
+                
+                <h3>🎯 الفائدة المضاعفة:</h3>
+                <ul>
+                    <li><strong>دقة في الاستخراج:</strong> جملة محددة ذات صلة</li>
+                    <li><strong>شمولية في السياق:</strong> فقرة كاملة للفهم</li>
+                    <li><strong>توازن مثالي:</strong> بين الدقة والشمولية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ آلية العمل تحت الغطاء</h2>
+            <div class="process-box">
+                <h3>🔄 الخطوات التفصيلية:</h3>
+                
+                <h4>1️⃣ التكرار على العقد:</h4>
+                <p>بيعمل iteration على كل <strong>NodeWithScore object</strong> في القائمة الداخلة.</p>
+                
+                <h4>2️⃣ استخراج قيمة الـ Metadata:</h4>
+                <p>لكل عقدة، بيدور على قيمة الـ <strong>target metadata key</strong> المحدد.</p>
+                
+                <h4>3️⃣ فحص الوجود:</h4>
+                <ul>
+                    <li><strong>لو موجود:</strong> قيمة الـ metadata key هتستبدل محتوى العقدة</li>
+                    <li><strong>لو مش موجود:</strong> محتوى العقدة يبقى زي ما هو بدون تغيير</li>
+                </ul>
+                
+                <h4>4️⃣ الحفاظ على البنية:</h4>
+                <p>زي كل الـ postprocessors، بيرجع <strong>NodeWithScore object</strong> مع المحتوى المحسن.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 أمثلة عملية للاستخدام</h2>
+            <div class="use-case-box">
+                <h3>📚 سيناريو تحليل المستندات:</h3>
+                <p><strong>الموقف:</strong> عندك مستندات طويلة ومقسمة لفقرات</p>
+                <p><strong>المشكلة:</strong> الجملة المفردة مش بتدي سياق كافي</p>
+                <p><strong>الحل:</strong> Metadata فيها الفقرة كاملة</p>
+                <p><strong>النتيجة:</strong> LLM يشوف السياق الكامل ويجاوب أدق</p>
+                
+                <h3>🔬 سيناريو البحث العلمي:</h3>
+                <p><strong>الموقف:</strong> أبحاث علمية مقسمة لجمل</p>
+                <p><strong>المشكلة:</strong> الجملة الواحدة قد تكون غامضة</p>
+                <p><strong>الحل:</strong> Metadata تحتوي على الفقرة أو القسم كامل</p>
+                <p><strong>النتيجة:</strong> فهم أفضل للمنهجية والنتائج</p>
+                
+                <h3>📖 سيناريو المحتوى التعليمي:</h3>
+                <p><strong>الموقف:</strong> كتب تعليمية مقسمة لوحدات صغيرة</p>
+                <p><strong>المشكلة:</strong> المفهوم محتاج شرح أوسع</p>
+                <p><strong>الحل:</strong> Metadata بالشرح الكامل أو الأمثلة</p>
+                <p><strong>النتيجة:</strong> تعليم أكثر شمولية ووضوح</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ التطبيق العملي</h2>
+            <div class="implementation-box">
+                <h3>📋 نفس المنطق للكل:</h3>
+                <p>زي ما وضح المدرس، إنشاء الـ Metadata Replacement Postprocessor بيتبع نفس النمط اللي اتعلمناه:</p>
+                
+                <ul>
+                    <li><strong>نفس الـ abstraction:</strong> لكل الـ node postprocessors</li>
+                    <li><strong>Import وإنشاء:</strong> زي باقي الأنواع</li>
+                    <li><strong>تمرير الـ arguments:</strong> المطلوبة بس</li>
+                </ul>
+                
+                <h3>🎯 المعامل الأساسي:</h3>
+                <p><strong>target_metadata_key:</strong> اسم الـ key في metadata اللي عايز تستبدل بيه المحتوى</p>
+                
+                <h3>✨ البساطة والقوة:</h3>
+                <p>تقنية بسيطة في التطبيق، قوية في التأثير - تخيل الفرق بين إعطاء الـ LLM جملة واحدة أو فقرة كاملة!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🌟 فوائد ومميزات</h2>
+            <div class="concept-box">
+                <h3>🎯 تحسين جودة الإجابات:</h3>
+                <ul>
+                    <li><strong>سياق أوسع:</strong> LLM يشوف صورة أكبر</li>
+                    <li><strong>فهم أدق:</strong> معلومات كاملة مش مقطعة</li>
+                    <li><strong>إجابات أشمل:</strong> بناء على معلومات متكاملة</li>
+                </ul>
+                
+                <h3>⚡ كفاءة في الاستخدام:</h3>
+                <ul>
+                    <li><strong>مرونة في التحكم:</strong> تختار إيه اللي يتستبدل</li>
+                    <li><strong>حفظ للبنية:</strong> NodeWithScore objects تبقى كما هي</li>
+                    <li><strong>تكامل سلس:</strong> مع باقي مكونات النظام</li>
+                </ul>
+                
+                <h3>🔧 سهولة التطبيق:</h3>
+                <ul>
+                    <li><strong>نفس النمط:</strong> اللي اتعودنا عليه في LlamaIndex</li>
+                    <li><strong>إعداد بسيط:</strong> معامل واحد أساسي</li>
+                    <li><strong>نتائج فورية:</strong> تأثير واضح على الجودة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 نصائح للاستخدام الأمثل</h2>
+            <div class="synergy-box">
+                <h3>🎯 اختيار الـ metadata key:</h3>
+                <ul>
+                    <li><strong>كن واضح:</strong> اسم الـ key لازم يكون دال على المحتوى</li>
+                    <li><strong>تأكد من الوجود:</strong> الـ key لازم يكون موجود في معظم العقد</li>
+                    <li><strong>جودة المحتوى:</strong> تأكد إن المحتوى المخزن مفيد</li>
+                </ul>
+                
+                <h3>⚖️ التوازن في الحجم:</h3>
+                <ul>
+                    <li><strong>مش قصير أوي:</strong> ما يكونش أقل من المحتوى الأصلي</li>
+                    <li><strong>مش طويل أوي:</strong> ما يستهلكش tokens كتير</li>
+                    <li><strong>مناسب للهدف:</strong> حسب نوع التطبيق</li>
+                </ul>
+                
+                <h3>🔄 التجريب والتحسين:</h3>
+                <ul>
+                    <li><strong>اختبر metadata keys مختلفة:</strong> شوف إيه اللي يدي أفضل نتائج</li>
+                    <li><strong>قارن النتائج:</strong> قبل وبعد الاستبدال</li>
+                    <li><strong>راقب الأداء:</strong> الجودة مقابل استهلاك الموارد</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 Metadata Replacement - تقنية بسيطة لتحسين كبير في جودة السياق!</p>
+        </div>
+    </div>
+</body>
+</html>

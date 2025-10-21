@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Chunking - الجزء الرابع: المعاملات والخيارات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .parameter-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #74b9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .parameter-card:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+        }
+
+        .parameter-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .comparison-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .comparison-item {
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        .comparison-item.low {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .comparison-item.high {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .default-values {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 2px dashed #6c5ce7;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .parameter-grid,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ المعاملات والخيارات</h1>
+            <p>الجزء الرابع: فهم كل المعاملات اللي محتاج تعرفها</p>
+        </div>
+
+        <div class="content">
+            <!-- المعاملات الأساسية -->
+            <div class="card">
+                <h2>🎛️ المعاملات الأساسية اللي لازم تعرفها</h2>
+                <div class="card-content">
+                    <p>عشان تستخدم Semantic Chunking صح، لازم تفهم المعاملات دي وإزاي كل واحد فيهم بيأثر على النتيجة النهائية.</p>
+
+                    <div class="parameter-grid">
+                        <div class="parameter-card">
+                            <div class="parameter-header">
+                                <h4>🧠 Embedding Model</h4>
+                            </div>
+                            <div>
+                                <p><strong>إيه ده؟</strong> النموذج اللي بيحول النص لأرقام</p>
+                                <p><strong>Default:</strong> OpenAI Embeddings</p>
+                                <p><strong>تقدر تغيره؟</strong> أيوة، حسب احتياجك</p>
+                                <p><strong>أمثلة:</strong> text-embedding-3-small, text-embedding-3-large</p>
+                            </div>
+                        </div>
+
+                        <div class="parameter-card">
+                            <div class="parameter-header">
+                                <h4>🪟 Buffer Size</h4>
+                            </div>
+                            <div>
+                                <p><strong>إيه ده؟</strong> عدد الجمل اللي بنشوفها مع بعض</p>
+                                <p><strong>Default:</strong> 1</p>
+                                <p><strong>لو زودته:</strong> سياق أكتر، علاقات أوضح</p>
+                                <p><strong>لو قللته:</strong> سرعة أكتر، تفاصيل أقل</p>
+                            </div>
+                        </div>
+
+                        <div class="parameter-card">
+                            <div class="parameter-header">
+                                <h4>📊 Breakpoint Threshold</h4>
+                            </div>
+                            <div>
+                                <p><strong>إيه ده؟</strong> النسبة المئوية للتقسيم</p>
+                                <p><strong>Default:</strong> 95 (95th percentile)</p>
+                                <p><strong>لو قللته:</strong> nodes أكتر، chunks أصغر</p>
+                                <p><strong>لو زودته:</strong> nodes أقل، chunks أكبر</p>
+                            </div>
+                        </div>
+
+                        <div class="parameter-card">
+                            <div class="parameter-header">
+                                <h4>✂️ Sentence Splitter</h4>
+                            </div>
+                            <div>
+                                <p><strong>إيه ده؟</strong> الأداة اللي بتقسم النص لجمل</p>
+                                <p><strong>Default:</strong> Split by Sentence Tokenizer</p>
+                                <p><strong>بيستخدم:</strong> NLTK Punkt Sentence Tokenizer</p>
+                                <p><strong>وظيفته:</strong> تحضير النص للتحليل</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>💡 نصيحة مهمة</h4>
+                        <p>كل معامل ليه تأثير مختلف على النتيجة. الأفضل إنك تجرب قيم مختلفة وتشوف إيه اللي بيناسب نوع النصوص اللي بتشتغل عليها!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تأثير Buffer Size -->
+            <div class="card">
+                <h2>🪟 فهم Buffer Size بالتفصيل</h2>
+                <div class="card-content">
+                    <p>ده من أهم المعاملات لأنه بيحدد قد إيه من السياق النظام هايشوف عشان يحدد التشابه.</p>
+
+                    <div class="comparison-section">
+                        <h4>🔍 مقارنة بين قيم Buffer Size مختلفة</h4>
+                        
+                        <div class="comparison-grid">
+                            <div class="comparison-item low">
+                                <h5>❌ Buffer Size = 1 (صغير)</h5>
+                                <ul>
+                                    <li>سياق محدود جداً</li>
+                                    <li>قرارات تقسيم سريعة</li>
+                                    <li>ممكن يفوت علاقات مهمة</li>
+                                    <li>مناسب للنصوص البسيطة</li>
+                                </ul>
+                            </div>
+
+                            <div class="comparison-item high">
+                                <h5>✅ Buffer Size = 3-5 (متوسط لكبير)</h5>
+                                <ul>
+                                    <li>سياق أوسع وأشمل</li>
+                                    <li>علاقات أكثر وضوحاً</li>
+                                    <li>قرارات تقسيم أدق</li>
+                                    <li>مناسب للنصوص المعقدة</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🧠 كيف Buffer Size بيأثر على النتيجة؟</h4>
+                        <p>لما تزود الـ Buffer Size، النظام بيبقى عنده فرصة أكبر إنه يشوف الصورة الكاملة للنص. مثلاً، لو عندك buffer size = 3، النظام هايشوف 3 جمل قبل و 3 جمل بعد كل جملة عشان يفهم السياق أحسن.</p>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ احذر من القيم المفرطة!</h4>
+                        <p>لو خليت الـ Buffer Size كبير قوي، النظام ممكن ياخد وقت أكتر في المعالجة وممكن كمان يخلط بين مواضيع مختلفة. الأفضل تجرب قيم بين 1 لـ 5.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تأثير Breakpoint Threshold -->
+            <div class="card">
+                <h2>📊 فهم Breakpoint Threshold بالتفصيل</h2>
+                <div class="card-content">
+                    <p>ده المعامل اللي بيحدد قد إيه النظام هايكون حساس في التقسيم. هو بيتحكم في عدد الـ nodes اللي هاتطلع في النهاية.</p>
+
+                    <div class="default-values">
+                        <h4>📈 القيمة الافتراضية: 95th Percentile</h4>
+                        <p>ده معناه إن أكبر 5% من المسافات بس هي اللي هاتعتبر breakpoints. يعني النظام هايقسم بس في الأماكن اللي فيها اختلاف كبير فعلاً!</p>
+                    </div>
+
+                    <div class="comparison-section">
+                        <h4>⚖️ مقارنة بين قيم Threshold مختلفة</h4>
+                        
+                        <div class="comparison-grid">
+                            <div class="comparison-item low">
+                                <h5>📉 Threshold منخفض (زي 80%)</h5>
+                                <ul>
+                                    <li>nodes أكتر</li>
+                                    <li>chunks أصغر</li>
+                                    <li>تقسيم أكثر تفصيلاً</li>
+                                    <li>مناسب للنصوص المتنوعة</li>
+                                </ul>
+                            </div>
+
+                            <div class="comparison-item high">
+                                <h5>📈 Threshold عالي (زي 98%)</h5>
+                                <ul>
+                                    <li>nodes أقل</li>
+                                    <li>chunks أكبر</li>
+                                    <li>تقسيم أقل تفصيلاً</li>
+                                    <li>مناسب للنصوص المتجانسة</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🎯 إزاي تختار القيمة المناسبة؟</h4>
+                        <ul>
+                            <li><strong>للنصوص الأكاديمية:</strong> threshold عالي (95-98%)</li>
+                            <li><strong>للنصوص المتنوعة:</strong> threshold متوسط (85-95%)</li>
+                            <li><strong>للنصوص القصيرة:</strong> threshold منخفض (75-85%)</li>
+                            <li><strong>للتجريب:</strong> ابدأ بـ 95% وجرب تعدل</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🔍 مثال عملي</h4>
+                        <p>لو عندك 100 مسافة محسوبة بين الجمل، و threshold = 95%، النظام هايختار أكبر 5 مسافات (اللي هي الـ top 5%) ويعتبرها breakpoints. باقي المسافات مش هاتكون كفاية لعمل تقسيم.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sentence Splitter -->
+            <div class="card">
+                <h2>✂️ فهم Sentence Splitter</h2>
+                <div class="card-content">
+                    <p>ده المكون المسؤول عن تقسيم النص الأصلي لجمل منفصلة، وهو خطوة تحضيرية مهمة جداً.</p>
+
+                    <div class="technical-detail">
+                        <h4>🛠️ NLTK Punkt Sentence Tokenizer</h4>
+                        <p>ده tokenizer متطور جداً ومدرب على لغات كتير. بيقدر يميز بين النقط اللي في آخر الجمل والنقط اللي في الاختصارات زي "د." أو "ش.م.م".</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 وظيفة الـ Sentence Splitter</h4>
+                        <ul>
+                            <li><strong>التحضير:</strong> تقسيم النص لجمل واضحة ومنفصلة</li>
+                            <li><strong>التنسيق:</strong> ضمان تنسيق موحد للجمل</li>
+                            <li><strong>التنظيف:</strong> إزالة المسافات الزائدة والتنسيق الخاطئ</li>
+                            <li><strong>التحضير للتحليل:</strong> تهيئة النص للمراحل اللي بعدها</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🔗 علاقته بباقي العملية</h4>
+                        <p>Sentence Splitter ده بس خطوة تحضيرية. الحدود الحقيقية للـ nodes بتتحدد بناء على التشابه الدلالي، مش على نتيجة الـ sentence splitter. هو بس بيحضر النص في شكل مناسب للتحليل.</p>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ ملاحظة مهمة</h4>
+                        <p>رغم إن الـ sentence splitter بيقسم النص لجمل، إلا إن الـ nodes النهائية مش لازم تكون مطابقة للجمل. ممكن node واحد يحتوي على أكتر من جملة لو كانوا مترابطين دلالياً!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

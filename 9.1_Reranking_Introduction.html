@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقدمة عن Re-ranking في أنظمة RAG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .overview-box { background: linear-gradient(120deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .process-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .importance-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .timeline-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .key-point-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 مقدمة عن Re-ranking في أنظمة RAG</h1>
+            <p>الدرس الأول: فهم مكان Re-ranking في دورة حياة LlamaIndex</p>
+        </div>
+
+        <div class="card">
+            <h2>🌟 ايه هو Re-ranking؟</h2>
+            <div class="overview-box">
+                <h3>🎯 التعريف الأساسي:</h3>
+                <p>Re-ranking هو عملية <strong>إعادة ترتيب</strong> النتائج اللي جاتلك من البحث الأولي، بحيث إن أهم وأدق النتائج تكون في المقدمة.</p>
+                
+                <h3>🧠 فكر فيها كده:</h3>
+                <p>زي لما تدور على حاجة في جوجل، وجوجل يديك آلاف النتائج، بس هو بيرتبها بحيث إن أهم النتائج تكون في الصفحة الأولى. ده بالضبط اللي بيحصل في Re-ranking بس مع البيانات اللي رجعتلك من الـ vector database.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 دورة حياة العمليات في LlamaIndex</h2>
+            <div class="process-box">
+                <h3>📊 العمليات بالترتيب:</h3>
+                <ol>
+                    <li><strong>Data Ingestion:</strong> جمع البيانات من مصادر مختلفة (PDF, API, Database, etc.)</li>
+                    <li><strong>Indexing:</strong> تحويل البيانات لـ embeddings وحفظها في vector store</li>
+                    <li><strong>Retrieval:</strong> البحث في الفهرس وجلب المحتوى المشابه</li>
+                    <li><strong>Re-ranking:</strong> إعادة ترتيب النتائج حسب الأهمية والصلة ← هنا احنا</li>
+                    <li><strong>Post-processing:</strong> فلترة وتنظيف النتائج</li>
+                    <li><strong>Response Generation:</strong> إنتاج الإجابة النهائية</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ ليه Re-ranking مهم قوي؟</h2>
+            <div class="importance-box">
+                <h3>🎯 المشكلة اللي بيحلها:</h3>
+                <ul>
+                    <li><strong>البحث الأولي مش دقيق 100%:</strong> الـ vector similarity ممكن يجيبلك نتائج مشابهة بس مش الأهم</li>
+                    <li><strong>السياق مهم:</strong> نفس الكلمات ممكن تبقى مهمة في سياق ومش مهمة في سياق تاني</li>
+                    <li><strong>جودة الإجابة:</strong> لما تبقى أهم النتائج في المقدمة، الـ LLM هيقدر يدي إجابة أدق</li>
+                </ul>
+                
+                <h3>💡 مثال عملي:</h3>
+                <p>لو بتدور على "أسعار السيارات"، البحث الأولي ممكن يجيبلك مقالات عن سيارات عموماً، بس الـ Re-ranking هيقدم المقالات اللي فيها أسعار فعلية قدام اللي فيها مجرد مواصفات.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⏰ التوقيت الحرج: Re-ranking قبل Post-processing</h2>
+            <div class="timeline-box">
+                <h3>🎯 ليه الترتيب ده مهم؟</h3>
+                <p>المدرب أكد على نقطة مهمة جداً: إن <strong>Re-ranking لازم يحصل قبل Post-processing</strong>، مش بعده.</p>
+                
+                <h3>🧮 السبب العلمي:</h3>
+                <ul>
+                    <li><strong>Re-ranking:</strong> بيشتغل على ترتيب العقد حسب الأهمية</li>
+                    <li><strong>Post-processing:</strong> بيشتغل على محتوى العقد نفسها (فلترة، تنظيف، تحويل)</li>
+                </ul>
+                
+                <h3>⚙️ لو عكست الترتيب:</h3>
+                <p>لو عملت Post-processing الأول، ممكن تفقد معلومات مهمة لعملية Re-ranking، أو تغير في المحتوى بشكل يأثر على دقة إعادة الترتيب.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 امتى تستخدم Re-ranking؟</h2>
+            <div class="key-point-box">
+                <h3>✅ الحالات المناسبة:</h3>
+                <ul>
+                    <li><strong>لما النتائج كتيرة:</strong> عندك 50+ document ومحتاج أدق 5 أو 10</li>
+                    <li><strong>لما المحتوى متخصص:</strong> مجالات طبية، قانونية، تقنية تحتاج دقة عالية</li>
+                    <li><strong>لما المستخدم محتاج دقة:</strong> chatbots للعملاء، أنظمة دعم فني</li>
+                    <li><strong>لما عندك budget للـ API calls:</strong> لأن Re-ranking بيضيف تكلفة إضافية</li>
+                </ul>
+                
+                <h3>❌ متستخدموش لما:</h3>
+                <ul>
+                    <li><strong>البيانات قليلة:</strong> أقل من 10 documents</li>
+                    <li><strong>السرعة أولوية:</strong> تطبيقات real-time محتاجة رد فوري</li>
+                    <li><strong>Budget محدود:</strong> كل re-ranking call بيكلف فلوس</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 نظرة على المرحلة الجاية</h2>
+            <div class="process-box">
+                <h3>🚀 اللي جاي:</h3>
+                <p>في الدروس الجاية هنتعلم:</p>
+                <ul>
+                    <li><strong>تعريف Re-ranking بالتفصيل:</strong> إيه الفرق بينه وبين Post-processing</li>
+                    <li><strong>Cohere Rerank:</strong> أشهر وأقوى تقنية re-ranking</li>
+                    <li><strong>التطبيق العملي:</strong> إزاي تستخدمه في الكود</li>
+                    <li><strong>البدائل:</strong> تقنيات تانية زي ColBERT وFlag Embeddings</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 فهم دورة حياة العمليات = بناء أنظمة RAG أكثر ذكاءً ودقة!</p>
+        </div>
+    </div>
+</body>
+</html>

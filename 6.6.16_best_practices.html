@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary Index - الجزء السادس عشر: أفضل الممارسات والتوصيات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .best-practice-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .recommendation-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .guideline-box {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #5f3dc4;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #ddd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 5px solid #00b894;
+        }
+
+        .checklist {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #00b894;
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-right: 2rem;
+        }
+
+        .checklist li::before {
+            content: "✅";
+            position: absolute;
+            right: 0;
+            top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 أفضل الممارسات والتوصيات</h1>
+            <p>الجزء السادس عشر: دليل شامل لأفضل الممارسات في Document Summary Index</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>🎯 مبادئ التصميم الأساسية</h2>
+                <div class="card-content">
+                    <div class="best-practice-box">
+                        <h4>🏗️ مبادئ التصميم الذكي</h4>
+                        <ul>
+                            <li><strong>البساطة أولاً:</strong> ابدأ بأبسط حل يحل المشكلة</li>
+                            <li><strong>التدرج في التعقيد:</strong> أضف المميزات تدريجياً حسب الحاجة</li>
+                            <li><strong>المرونة:</strong> صمم النظام ليكون قابل للتوسع والتعديل</li>
+                            <li><strong>الأداء:</strong> راعي السرعة والكفاءة من البداية</li>
+                            <li><strong>الموثوقية:</strong> اجعل النظام قادر على التعامل مع الأخطاء</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+# إطار عمل متكامل لأفضل الممارسات
+class BestPracticesFramework:
+    """
+    إطار عمل شامل لتطبيق أفضل الممارسات في Document Summary Index
+    """
+    
+    def __init__(self):
+        self.design_principles = {
+            'simplicity': 'ابدأ بسيط واضف التعقيد تدريجياً',
+            'scalability': 'صمم للنمو المستقبلي',
+            'maintainability': 'اكتب كود قابل للصيانة',
+            'performance': 'حسن الأداء من البداية',
+            'reliability': 'اجعل النظام موثوق ومستقر'
+        }
+        
+        self.implementation_checklist = [
+            '✅ تحديد المتطلبات بوضوح',
+            '✅ اختيار النماذج المناسبة',
+            '✅ تصميم هيكل البيانات',
+            '✅ إعداد نظام المراقبة',
+            '✅ تطبيق آليات الحماية',
+            '✅ اختبار شامل للنظام',
+            '✅ توثيق كامل للكود'
+        ]
+    
+    def validate_design(self, system_design):
+        """التحقق من التصميم ضد أفضل الممارسات"""
+        
+        validation_results = {}
+        
+        # فحص البساطة
+        complexity_score = self._assess_complexity(system_design)
+        validation_results['simplicity'] = {
+            'score': complexity_score,
+            'recommendation': 'مقبول' if complexity_score < 7 else 'يحتاج تبسيط'
+        }
+        
+        # فحص القابلية للتوسع
+        scalability_score = self._assess_scalability(system_design)
+        validation_results['scalability'] = {
+            'score': scalability_score,
+            'recommendation': 'ممتاز' if scalability_score > 8 else 'يحتاج تحسين'
+        }
+        
+        return validation_results
+    
+    def _assess_complexity(self, design):
+        """تقييم تعقيد التصميم (1-10)"""
+        # حساب بسيط لتعقيد النظام
+        components_count = len(design.get('components', []))
+        dependencies_count = len(design.get('dependencies', []))
+        
+        complexity = min(10, (components_count * 0.5) + (dependencies_count * 0.3))
+        return complexity
+    
+    def _assess_scalability(self, design):
+        """تقييم قابلية التوسع (1-10)"""
+        # عوامل قابلية التوسع
+        has_caching = design.get('caching', False)
+        has_load_balancing = design.get('load_balancing', False)
+        modular_design = design.get('modular', False)
+        
+        score = 5  # نقطة البداية
+        if has_caching: score += 2
+        if has_load_balancing: score += 2
+        if modular_design: score += 1
+        
+        return min(10, score)
+
+# إنشاء إطار أفضل الممارسات
+bp_framework = BestPracticesFramework()
+
+print("📋 إطار أفضل الممارسات جاهز للاستخدام")
+                    </div>
+
+                    <div class="guideline-box">
+                        <h4>🎯 إرشادات التصميم العملية</h4>
+                        <ul>
+                            <li><strong>فكر في المستخدم:</strong> صمم من وجهة نظر المستخدم النهائي</li>
+                            <li><strong>قابلية الصيانة:</strong> اكتب كود واضح ومُفهم</li>
+                            <li><strong>التوثيق:</strong> وثق كل شيء مهم</li>
+                            <li><strong>الاختبار:</strong> اختبر بشكل منتظم ومنهجي</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚙️ إعداد وتكوين النظام</h2>
+                <div class="card-content">
+                    <div class="checklist">
+                        <h4>📋 قائمة فحص الإعداد</h4>
+                        <ul>
+                            <li>فحص وتأكيد مفاتيح API</li>
+                            <li>اختبار الاتصال بالخدمات الخارجية</li>
+                            <li>تكوين متغيرات البيئة</li>
+                            <li>إعداد نظام المراقبة والتنبيهات</li>
+                            <li>تكوين النسخ الاحتياطية</li>
+                            <li>اختبار الأداء الأولي</li>
+                            <li>إعداد نظام السجلات (logging)</li>
+                            <li>تكوين أدوات التطوير</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+# نظام فحص وإعداد شامل
+import os
+import sys
+import json
+from pathlib import Path
+import subprocess
+from typing import Dict, List, Tuple
+
+class SystemSetupValidator:
+    """نظام شامل للتحقق من صحة الإعداد"""
+    
+    def __init__(self):
+        self.requirements = {
+            'python_version': '3.8+',
+            'required_packages': [
+                'llama-index',
+                'openai', 
+                'python-dotenv',
+                'pandas',
+                'numpy'
+            ],
+            'environment_vars': [
+                'OPENAI_API_KEY'
+            ],
+            'optional_vars': [
+                'HUGGINGFACE_TOKEN',
+                'ANTHROPIC_API_KEY'
+            ]
+        }
+        
+        self.setup_results = {}
+    
+    def run_full_setup_check(self):
+        """فحص شامل لجميع متطلبات النظام"""
+        
+        print("🔍 بدء الفحص الشامل للنظام...")
+        print("=" * 50)
+        
+        # فحص إصدار Python
+        self._check_python_version()
+        
+        # فحص المكتبات المطلوبة
+        self._check_required_packages()
+        
+        # فحص متغيرات البيئة
+        self._check_environment_variables()
+        
+        # فحص مساحة القرص
+        self._check_disk_space()
+        
+        # فحص الذاكرة
+        self._check_memory()
+        
+        # تقرير النتائج
+        self._generate_setup_report()
+        
+        return self.setup_results
+    
+    def _check_python_version(self):
+        """فحص إصدار Python"""
+        
+        current_version = sys.version_info
+        required_major, required_minor = 3, 8
+        
+        if current_version.major >= required_major and current_version.minor >= required_minor:
+            self.setup_results['python_version'] = {
+                'status': 'pass',
+                'current': f"{current_version.major}.{current_version.minor}.{current_version.micro}",
+                'message': '✅ إصدار Python مناسب'
+            }
+        else:
+            self.setup_results['python_version'] = {
+                'status': 'fail',
+                'current': f"{current_version.major}.{current_version.minor}.{current_version.micro}",
+                'message': '❌ يحتاج Python 3.8 أو أحدث'
+            }
+    
+    def _check_required_packages(self):
+        """فحص المكتبات المطلوبة"""
+        
+        self.setup_results['packages'] = {}
+        
+        for package in self.requirements['required_packages']:
+            try:
+                __import__(package.replace('-', '_'))
+                self.setup_results['packages'][package] = {
+                    'status': 'installed',
+                    'message': f'✅ {package} مثبت'
+                }
+            except ImportError:
+                self.setup_results['packages'][package] = {
+                    'status': 'missing',
+                    'message': f'❌ {package} غير مثبت',
+                    'install_command': f'pip install {package}'
+                }
+    
+    def _check_environment_variables(self):
+        """فحص متغيرات البيئة"""
+        
+        self.setup_results['environment'] = {}
+        
+        # المتغيرات المطلوبة
+        for var in self.requirements['environment_vars']:
+            value = os.getenv(var)
+            if value and len(value) > 10:  # تحقق بسيط من الطول
+                self.setup_results['environment'][var] = {
+                    'status': 'set',
+                    'message': f'✅ {var} محدد بشكل صحيح'
+                }
+            else:
+                self.setup_results['environment'][var] = {
+                    'status': 'missing',
+                    'message': f'❌ {var} غير محدد أو قيمة غير صحيحة'
+                }
+        
+        # المتغيرات الاختيارية
+        for var in self.requirements['optional_vars']:
+            value = os.getenv(var)
+            status = 'set' if value else 'not_set'
+            self.setup_results['environment'][f'{var}_optional'] = {
+                'status': status,
+                'message': f'💡 {var} (اختياري): {"محدد" if value else "غير محدد"}'
+            }
+    
+    def _check_disk_space(self):
+        """فحص مساحة القرص المتاحة"""
+        
+        try:
+            import shutil
+            total, used, free = shutil.disk_usage('.')
+            
+            # تحويل إلى GB
+            free_gb = free / (1024**3)
+            
+            if free_gb > 5:  # 5GB على الأقل
+                self.setup_results['disk_space'] = {
+                    'status': 'adequate',
+                    'free_gb': f'{free_gb:.1f}',
+                    'message': f'✅ مساحة كافية ({free_gb:.1f} GB)'
+                }
+            else:
+                self.setup_results['disk_space'] = {
+                    'status': 'low',
+                    'free_gb': f'{free_gb:.1f}',
+                    'message': f'⚠️ مساحة منخفضة ({free_gb:.1f} GB)'
+                }
+                
+        except Exception as e:
+            self.setup_results['disk_space'] = {
+                'status': 'unknown',
+                'message': f'❓ لا يمكن فحص المساحة: {str(e)}'
+            }
+    
+    def _check_memory(self):
+        """فحص الذاكرة المتاحة"""
+        
+        try:
+            import psutil
+            memory = psutil.virtual_memory()
+            
+            available_gb = memory.available / (1024**3)
+            
+            if available_gb > 2:  # 2GB على الأقل
+                self.setup_results['memory'] = {
+                    'status': 'adequate',
+                    'available_gb': f'{available_gb:.1f}',
+                    'message': f'✅ ذاكرة كافية ({available_gb:.1f} GB)'
+                }
+            else:
+                self.setup_results['memory'] = {
+                    'status': 'low',
+                    'available_gb': f'{available_gb:.1f}',
+                    'message': f'⚠️ ذاكرة منخفضة ({available_gb:.1f} GB)'
+                }
+                
+        except ImportError:
+            self.setup_results['memory'] = {
+                'status': 'unknown',
+                'message': '❓ لا يمكن فحص الذاكرة (psutil غير مثبت)'
+            }
+    
+    def _generate_setup_report(self):
+        """توليد تقرير شامل للإعداد"""
+        
+        print("\n📊 تقرير فحص النظام:")
+        print("=" * 40)
+        
+        # فحص Python
+        python_result = self.setup_results['python_version']
+        print(f"🐍 Python: {python_result['message']}")
+        
+        # فحص المكتبات
+        print(f"\n📦 المكتبات:")
+        for package, result in self.setup_results['packages'].items():
+            print(f"   {result['message']}")
+            if result['status'] == 'missing':
+                print(f"      تثبيت: {result['install_command']}")
+        
+        # فحص البيئة
+        print(f"\n🔑 متغيرات البيئة:")
+        for var, result in self.setup_results['environment'].items():
+            print(f"   {result['message']}")
+        
+        # فحص الموارد
+        print(f"\n💻 موارد النظام:")
+        if 'disk_space' in self.setup_results:
+            print(f"   {self.setup_results['disk_space']['message']}")
+        if 'memory' in self.setup_results:
+            print(f"   {self.setup_results['memory']['message']}")
+        
+        # تقييم عام
+        self._provide_overall_assessment()
+    
+    def _provide_overall_assessment(self):
+        """تقييم عام للنظام"""
+        
+        issues = []
+        
+        # جمع المشاكل
+        if self.setup_results['python_version']['status'] == 'fail':
+            issues.append('إصدار Python قديم')
+        
+        missing_packages = [
+            pkg for pkg, result in self.setup_results['packages'].items() 
+            if result['status'] == 'missing'
+        ]
+        if missing_packages:
+            issues.append(f'مكتبات ناقصة: {len(missing_packages)}')
+        
+        missing_env = [
+            var for var, result in self.setup_results['environment'].items() 
+            if result['status'] == 'missing' and not var.endswith('_optional')
+        ]
+        if missing_env:
+            issues.append(f'متغيرات بيئة ناقصة: {len(missing_env)}')
+        
+        print(f"\n🎯 التقييم العام:")
+        if not issues:
+            print("   ✅ النظام جاهز للاستخدام!")
+        else:
+            print(f"   ⚠️ يحتاج إصلاح: {', '.join(issues)}")
+            print("   💡 اتبع التوصيات أعلاه لإصلاح المشاكل")
+
+# إنشاء مدقق الإعداد
+setup_validator = SystemSetupValidator()
+
+print("🔧 نظام فحص الإعداد جاهز للتشغيل")
+
+# تشغيل الفحص الشامل
+# results = setup_validator.run_full_setup_check()
+                    </code>
+
+                    <div class="recommendation-box">
+                        <h4>🛠️ توصيات الإعداد المثالي</h4>
+                        <ul>
+                            <li><strong>البيئة المعزولة:</strong> استخدم virtual environment دائماً</li>
+                            <li><strong>إدارة المتغيرات:</strong> ملف .env لجميع الإعدادات الحساسة</li>
+                            <li><strong>المراقبة:</strong> تفعيل logging من البداية</li>
+                            <li><strong>النسخ الاحتياطية:</strong> نظام تلقائي لحفظ البيانات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔒 الأمان وحماية البيانات</h2>
+                <div class="card-content">
+                    <div class="warning-box">
+                        <h4>⚠️ مخاطر أمنية يجب تجنبها</h4>
+                        <ul>
+                            <li><strong>تسرب المفاتيح:</strong> لا تحفظ API keys في الكود</li>
+                            <li><strong>البيانات الحساسة:</strong> احم المعلومات الشخصية</li>
+                            <li><strong>الوصول غير المحدود:</strong> ضع قيود على الاستخدام</li>
+                            <li><strong>عدم التشفير:</strong> شفر البيانات المهمة</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+# نظام أمان شامل للـ Document Summary Index
+import hashlib
+import secrets
+import os
+from cryptography.fernet import Fernet
+from datetime import datetime, timedelta
+import jwt
+
+class SecurityManager:
+    """نظام إدارة الأمان الشامل"""
+    
+    def __init__(self):
+        self.encryption_key = self._get_or_create_encryption_key()
+        self.cipher_suite = Fernet(self.encryption_key)
+        self.access_tokens = {}
+        self.rate_limits = {}
+        
+    def _get_or_create_encryption_key(self):
+        """الحصول على أو إنشاء مفتاح التشفير"""
+        
+        key_file = '.encryption_key'
+        
+        if os.path.exists(key_file):
+            with open(key_file, 'rb') as f:
+                return f.read()
+        else:
+            # إنشاء مفتاح جديد
+            key = Fernet.generate_key()
+            with open(key_file, 'wb') as f:
+                f.write(key)
+            
+            # جعل الملف قابل للقراءة للمالك فقط
+            os.chmod(key_file, 0o600)
+            
+            print("🔐 تم إنشاء مفتاح تشفير جديد")
+            return key
+    
+    def encrypt_sensitive_data(self, data: str) -> str:
+        """تشفير البيانات الحساسة"""
+        
+        encrypted_data = self.cipher_suite.encrypt(data.encode())
+        return encrypted_data.decode()
+    
+    def decrypt_sensitive_data(self, encrypted_data: str) -> str:
+        """فك تشفير البيانات"""
+        
+        try:
+            decrypted_data = self.cipher_suite.decrypt(encrypted_data.encode())
+            return decrypted_data.decode()
+        except Exception as e:
+            print(f"❌ خطأ في فك التشفير: {str(e)}")
+            return None
+    
+    def hash_user_data(self, user_input: str) -> str:
+        """إنشاء hash للبيانات الشخصية"""
+        
+        # إضافة salt عشوائي
+        salt = secrets.token_hex(16)
+        
+        # إنشاء hash
+        hash_object = hashlib.sha256((user_input + salt).encode())
+        return f"{hash_object.hexdigest()}:{salt}"
+    
+    def verify_hash(self, user_input: str, stored_hash: str) -> bool:
+        """التحقق من صحة hash"""
+        
+        try:
+            hash_part, salt = stored_hash.split(':')
+            new_hash = hashlib.sha256((user_input + salt).encode()).hexdigest()
+            return hash_part == new_hash
+        except:
+            return False
+    
+    def generate_access_token(self, user_id: str, permissions: list = None) -> str:
+        """إنشاء token وصول مؤقت"""
+        
+        if permissions is None:
+            permissions = ['read']
+        
+        # بيانات التوكن
+        payload = {
+            'user_id': user_id,
+            'permissions': permissions,
+            'issued_at': datetime.utcnow().isoformat(),
+            'expires_at': (datetime.utcnow() + timedelta(hours=24)).isoformat(),
+            'token_id': secrets.token_hex(8)
+        }
+        
+        # إنشاء JWT token
+        secret_key = os.getenv('JWT_SECRET', 'default-secret-change-me')
+        token = jwt.encode(payload, secret_key, algorithm='HS256')
+        
+        # حفظ معلومات التوكن
+        self.access_tokens[payload['token_id']] = payload
+        
+        return token
+    
+    def validate_access_token(self, token: str) -> dict:
+        """التحقق من صحة token الوصول"""
+        
+        try:
+            secret_key = os.getenv('JWT_SECRET', 'default-secret-change-me')
+            payload = jwt.decode(token, secret_key, algorithms=['HS256'])
+            
+            # فحص انتهاء الصلاحية
+            expires_at = datetime.fromisoformat(payload['expires_at'])
+            if datetime.utcnow() > expires_at:
+                return {'valid': False, 'reason': 'Token expired'}
+            
+            return {'valid': True, 'payload': payload}
+            
+        except jwt.InvalidTokenError as e:
+            return {'valid': False, 'reason': f'Invalid token: {str(e)}'}
+    
+    def check_rate_limit(self, user_id: str, max_requests: int = 100, window_minutes: int = 60) -> bool:
+        """فحص حدود المعدل"""
+        
+        current_time = datetime.utcnow()
+        window_start = current_time - timedelta(minutes=window_minutes)
+        
+        # إنشاء أو تحديث سجل المستخدم
+        if user_id not in self.rate_limits:
+            self.rate_limits[user_id] = []
+        
+        # إزالة الطلبات القديمة
+        self.rate_limits[user_id] = [
+            request_time for request_time in self.rate_limits[user_id]
+            if request_time > window_start
+        ]
+        
+        # فحص الحد الأقصى
+        if len(self.rate_limits[user_id]) >= max_requests:
+            return False
+        
+        # تسجيل الطلب الحالي
+        self.rate_limits[user_id].append(current_time)
+        return True
+    
+    def sanitize_user_input(self, user_input: str) -> str:
+        """تنظيف مدخلات المستخدم"""
+        
+        # إزالة المحارف الخطرة
+        dangerous_chars = ['<', '>', '&', '"', "'", '\\', '/', '\n', '\r']
+        
+        sanitized = user_input
+        for char in dangerous_chars:
+            sanitized = sanitized.replace(char, '')
+        
+        # تحديد الطول الأقصى
+        max_length = 5000
+        if len(sanitized) > max_length:
+            sanitized = sanitized[:max_length]
+        
+        return sanitized.strip()
+    
+    def secure_api_call(self, api_function, *args, **kwargs):
+        """استدعاء آمن لـ API مع معالجة الأخطاء"""
+        
+        try:
+            # تسجيل محاولة الاستدعاء
+            print(f"🔐 استدعاء آمن للـ API: {api_function.__name__}")
+            
+            # تنفيذ الاستدعاء
+            result = api_function(*args, **kwargs)
+            
+            print("✅ نجح الاستدعاء الآمن")
+            return {'success': True, 'result': result}
+            
+        except Exception as e:
+            # تسجيل الخطأ بدون كشف التفاصيل الحساسة
+            error_id = secrets.token_hex(8)
+            print(f"❌ خطأ في الاستدعاء الآمن (ID: {error_id})")
+            
+            # إرجاع رسالة عامة
+            return {
+                'success': False, 
+                'error': 'حدث خطأ في النظام',
+                'error_id': error_id
+            }
+    
+    def generate_security_report(self):
+        """تقرير حالة الأمان"""
+        
+        report = f"""
+🔒 تقرير حالة الأمان
+====================
+
+📅 التاريخ: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+🔐 التشفير:
+- مفتاح التشفير: {"✅ موجود" if self.encryption_key else "❌ مفقود"}
+- نوع التشفير: Fernet (AES 128)
+
+🎫 إدارة التوكنز:
+- توكنز نشطة: {len(self.access_tokens)}
+- نظام JWT: ✅ مفعل
+
+🚦 حدود المعدل:
+- مستخدمين مراقبين: {len(self.rate_limits)}
+- نظام Rate Limiting: ✅ مفعل
+
+💡 التوصيات الأمنية:
+- تغيير JWT_SECRET بانتظام
+- مراجعة logs الأمان يومياً  
+- تحديث مكتبات الأمان
+- فحص التوكنز المنتهية الصلاحية
+        """
+        
+        return report
+
+# إنشاء نظام الأمان
+security_manager = SecurityManager()
+
+print("🔒 نظام الأمان الشامل جاهز للحماية")
+
+# مثال على الاستخدام الآمن
+def secure_document_query_example():
+    """مثال على استعلام آمن للمستندات"""
+    
+    # إنشاء توكن وصول
+    token = security_manager.generate_access_token(
+        user_id="user123",
+        permissions=['read', 'query']
+    )
+    
+    print(f"🎫 تم إنشاء توكن الوصول")
+    
+    # فحص التوكن
+    validation = security_manager.validate_access_token(token)
+    if validation['valid']:
+        print("✅ توكن صالح - يمكن المتابعة")
+        
+        # فحص حدود المعدل
+        if security_manager.check_rate_limit("user123"):
+            print("✅ ضمن حدود المعدل المسموح")
+        else:
+            print("❌ تم تجاوز حدود المعدل")
+    
+    return validation['valid']
+
+# اختبار الأمان
+# is_secure = secure_document_query_example()
+                    </code>
+
+                    <div class="best-practice-box">
+                        <h4>🛡️ أفضل ممارسات الأمان</h4>
+                        <ul>
+                            <li><strong>مبدأ الحد الأدنى:</strong> أعط أقل صلاحيات ضرورية</li>
+                            <li><strong>التشفير الشامل:</strong> شفر البيانات في النقل والتخزين</li>
+                            <li><strong>المراقبة المستمرة:</strong> راقب المحاولات المشبوهة</li>
+                            <li><strong>التحديث المنتظم:</strong> حافظ على أحدث إصدارات الأمان</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 مراقبة الأداء والجودة</h2>
+                <div class="card-content">
+                    <div class="recommendation-box">
+                        <h4>📈 مؤشرات الأداء الرئيسية (KPIs)</h4>
+                        <ul>
+                            <li><strong>وقت الاستجابة:</strong> متوسط الوقت لكل استعلام</li>
+                            <li><strong>معدل النجاح:</strong> نسبة الاستعلامات الناجحة</li>
+                            <li><strong>جودة الإجابات:</strong> تقييم دقة المعلومات</li>
+                            <li><strong>استهلاك الموارد:</strong> CPU، RAM، التكلفة</li>
+                            <li><strong>رضا المستخدمين:</strong> تقييمات وملاحظات</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+# نظام شامل لمراقبة الأداء والجودة
+import time
+import statistics
+from collections import defaultdict, deque
+from datetime import datetime, timedelta
+import json
+
+class QualityPerformanceMonitor:
+    """نظام مراقبة شامل للأداء والجودة"""
+    
+    def __init__(self, max_history=10000):
+        self.max_history = max_history
+        
+        # مقاييس الأداء
+        self.response_times = deque(maxlen=max_history)
+        self.success_rates = deque(maxlen=max_history)
+        self.error_logs = []
+        
+        # مقاييس الجودة
+        self.quality_scores = deque(maxlen=max_history)
+        self.user_feedback = []
+        
+        # مقاييس الاستخدام
+        self.usage_stats = defaultdict(int)
+        self.daily_stats = defaultdict(lambda: defaultdict(int))
+        
+        # تنبيهات
+        self.alerts = []
+        self.thresholds = {
+            'max_response_time': 10.0,  # ثواني
+            'min_success_rate': 0.95,   # 95%
+            'min_quality_score': 0.8    # 80%
+        }
+    
+    def record_query_performance(self, query_time: float, success: bool, 
+                               quality_score: float = None, user_id: str = None):
+        """تسجيل أداء استعلام"""
+        
+        timestamp = datetime.now()
+        
+        # تسجيل وقت الاستجابة
+        self.response_times.append(query_time)
+        
+        # تسجيل معدل النجاح
+        self.success_rates.append(1.0 if success else 0.0)
+        
+        # تسجيل جودة الإجابة
+        if quality_score is not None:
+            self.quality_scores.append(quality_score)
+        
+        # إحصائيات الاستخدام
+        self.usage_stats['total_queries'] += 1
+        if success:
+            self.usage_stats['successful_queries'] += 1
+        
+        # إحصائيات يومية
+        date_key = timestamp.strftime('%Y-%m-%d')
+        self.daily_stats[date_key]['queries'] += 1
+        if success:
+            self.daily_stats[date_key]['successful'] += 1
+        
+        # فحص التنبيهات
+        self._check_performance_alerts(query_time, success, quality_score)
+        
+        # تسجيل مفصل
+        log_entry = {
+            'timestamp': timestamp.isoformat(),
+            'query_time': query_time,
+            'success': success,
+            'quality_score': quality_score,
+            'user_id': user_id
+        }
+        
+        return log_entry
+    
+    def record_user_feedback(self, rating: float, feedback_text: str = "", 
+                           query_id: str = None):
+        """تسجيل تقييم المستخدم"""
+        
+        feedback_entry = {
+            'timestamp': datetime.now().isoformat(),
+            'rating': rating,  # من 1 إلى 5
+            'feedback': feedback_text,
+            'query_id': query_id
+        }
+        
+        self.user_feedback.append(feedback_entry)
+        
+        # تحديث مقياس الجودة
+        normalized_score = rating / 5.0  # تحويل إلى 0-1
+        self.quality_scores.append(normalized_score)
+        
+        print(f"📝 تم تسجيل تقييم المستخدم: {rating}/5")
+        
+        return feedback_entry
+    
+    def _check_performance_alerts(self, query_time: float, success: bool, 
+                                quality_score: float = None):
+        """فحص وإرسال التنبيهات"""
+        
+        alerts_triggered = []
+        
+        # تنبيه بطء الاستجابة
+        if query_time > self.thresholds['max_response_time']:
+            alert = {
+                'type': 'slow_response',
+                'value': query_time,
+                'threshold': self.thresholds['max_response_time'],
+                'message': f'استجابة بطيئة: {query_time:.2f}s',
+                'timestamp': datetime.now().isoformat(),
+                'severity': 'warning' if query_time < 20 else 'critical'
+            }
+            alerts_triggered.append(alert)
+        
+        # تنبيه انخفاض معدل النجاح
+        if len(self.success_rates) >= 10:  # عينة كافية
+            recent_success_rate = statistics.mean(list(self.success_rates)[-10:])
+            if recent_success_rate < self.thresholds['min_success_rate']:
+                alert = {
+                    'type': 'low_success_rate',
+                    'value': recent_success_rate,
+                    'threshold': self.thresholds['min_success_rate'],
+                    'message': f'معدل نجاح منخفض: {recent_success_rate:.2%}',
+                    'timestamp': datetime.now().isoformat(),
+                    'severity': 'critical'
+                }
+                alerts_triggered.append(alert)
+        
+        # تنبيه جودة منخفضة
+        if quality_score is not None and quality_score < self.thresholds['min_quality_score']:
+            alert = {
+                'type': 'low_quality',
+                'value': quality_score,
+                'threshold': self.thresholds['min_quality_score'],
+                'message': f'جودة منخفضة: {quality_score:.2%}',
+                'timestamp': datetime.now().isoformat(),
+                'severity': 'warning'
+            }
+            alerts_triggered.append(alert)
+        
+        # حفظ التنبيهات
+        self.alerts.extend(alerts_triggered)
+        
+        # طباعة التنبيهات
+        for alert in alerts_triggered:
+            severity_icon = "🔴" if alert['severity'] == 'critical' else "🟡"
+            print(f"{severity_icon} تنبيه: {alert['message']}")
+    
+    def get_performance_summary(self, days: int = 7):
+        """ملخص الأداء للأيام الماضية"""
+        
+        if not self.response_times:
+            return "لا توجد بيانات أداء كافية"
+        
+        # حساب الإحصائيات
+        avg_response_time = statistics.mean(self.response_times)
+        median_response_time = statistics.median(self.response_times)
+        success_rate = statistics.mean(self.success_rates) if self.success_rates else 0
+        
+        quality_avg = statistics.mean(self.quality_scores) if self.quality_scores else 0
+        
+        # إحصائيات يومية حديثة
+        recent_days = []
+        for i in range(days):
+            date = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
+            if date in self.daily_stats:
+                recent_days.append(self.daily_stats[date])
+        
+        total_recent_queries = sum(day['queries'] for day in recent_days)
+        
+        summary = f"""
+📊 ملخص الأداء (آخر {days} أيام)
+{'='*45}
+
+⏱️ الأداء:
+- متوسط وقت الاستجابة: {avg_response_time:.2f} ثانية
+- الوسيط: {median_response_time:.2f} ثانية  
+- أسرع استجابة: {min(self.response_times):.2f}s
+- أبطأ استجابة: {max(self.response_times):.2f}s
+
+✅ معدل النجاح: {success_rate:.2%}
+
+⭐ متوسط الجودة: {quality_avg:.2%}
+
+📈 الاستخدام:
+- إجمالي الاستعلامات: {self.usage_stats['total_queries']}
+- آخر {days} أيام: {total_recent_queries} استعلام
+- متوسط يومي: {total_recent_queries/days:.1f} استعلام
+
+🔔 التنبيهات:
+- تنبيهات حديثة: {len([a for a in self.alerts if 
+                      datetime.now() - datetime.fromisoformat(a['timestamp']) < timedelta(hours=24)])}
+        """
+        
+        return summary
+    
+    def get_quality_insights(self):
+        """تحليلات الجودة المتقدمة"""
+        
+        if not self.user_feedback:
+            return "لا توجد تقييمات مستخدمين كافية"
+        
+        # تحليل التقييمات
+        ratings = [f['rating'] for f in self.user_feedback]
+        avg_rating = statistics.mean(ratings)
+        
+        # توزيع التقييمات
+        rating_distribution = {i: ratings.count(i) for i in range(1, 6)}
+        
+        # أحدث التقييمات
+        recent_feedback = sorted(self.user_feedback, 
+                               key=lambda x: x['timestamp'], 
+                               reverse=True)[:5]
+        
+        insights = f"""
+⭐ تحليل جودة متقدم
+===================
+
+📊 متوسط التقييم: {avg_rating:.2f}/5
+
+📈 توزيع التقييمات:
+"""
+        
+        for rating, count in rating_distribution.items():
+            percentage = (count / len(ratings)) * 100
+            stars = "⭐" * rating
+            bar = "█" * int(percentage / 5)  # شريط بصري
+            insights += f"   {stars} ({rating}): {count} ({percentage:.1f}%) {bar}\n"
+        
+        insights += f"""
+💬 آخر التقييمات:
+"""
+        
+        for feedback in recent_feedback:
+            timestamp = datetime.fromisoformat(feedback['timestamp'])
+            time_ago = datetime.now() - timestamp
+            insights += f"   {feedback['rating']}/5 - منذ {time_ago.days} أيام\n"
+            if feedback['feedback']:
+                insights += f"      \"{feedback['feedback'][:100]}...\"\n"
+        
+        return insights
+    
+    def export_analytics_data(self, filename: str = None):
+        """تصدير بيانات التحليل"""
+        
+        if filename is None:
+            filename = f"analytics_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        
+        analytics_data = {
+            'timestamp': datetime.now().isoformat(),
+            'performance_metrics': {
+                'response_times': list(self.response_times),
+                'success_rates': list(self.success_rates),
+                'quality_scores': list(self.quality_scores)
+            },
+            'usage_statistics': dict(self.usage_stats),
+            'daily_statistics': dict(self.daily_stats),
+            'user_feedback': self.user_feedback,
+            'alerts': self.alerts,
+            'thresholds': self.thresholds
+        }
+        
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(analytics_data, f, ensure_ascii=False, indent=2)
+        
+        print(f"📊 تم تصدير بيانات التحليل إلى: {filename}")
+        return filename
+
+# إنشاء نظام مراقبة الأداء والجودة
+performance_monitor = QualityPerformanceMonitor()
+
+print("📊 نظام مراقبة الأداء والجودة جاهز للتشغيل")
+
+# مثال على تسجيل أداء
+# performance_monitor.record_query_performance(
+#     query_time=2.5, 
+#     success=True, 
+#     quality_score=0.9,
+#     user_id="user123"
+# )
+
+# مثال على تقييم مستخدم
+# performance_monitor.record_user_feedback(
+#     rating=4.5,
+#     feedback_text="إجابة ممتازة ومفيدة جداً",
+#     query_id="query_456"
+# )
+                    </code>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 الخلاصة النهائية</h2>
+                <div class="card-content">
+                    <div class="best-practice-box">
+                        <h4>✅ أفضل الممارسات المحققة</h4>
+                        <ul>
+                            <li>تصميم نظام قابل للتوسع ومرن</li>
+                            <li>تطبيق معايير الأمان الشاملة</li>
+                            <li>نظام مراقبة وتحليل متقدم</li>
+                            <li>إعداد وتكوين منهجي ومنظم</li>
+                            <li>توثيق شامل وواضح</li>
+                        </ul>
+                    </div>
+
+                    <div class="guideline-box">
+                        <h4>🎯 التوصيات النهائية</h4>
+                        <ul>
+                            <li><strong>ابدأ بسيط:</strong> لا تعقد النظام من البداية</li>
+                            <li><strong>قيس باستمرار:</strong> راقب الأداء والجودة دائماً</li>
+                            <li><strong>حسن تدريجياً:</strong> طور النظام بناء على البيانات الفعلية</li>
+                            <li><strong>استمع للمستخدمين:</strong> تقييماتهم أهم مؤشر للنجاح</li>
+                            <li><strong>حافظ على الأمان:</strong> الحماية أولوية قصوى</li>
+                        </ul>
+                    </div>
+
+                    <div class="recommendation-box">
+                        <h4>🚀 رسالة ختامية</h4>
+                        <p>أفضل الممارسات ليست مجرد قواعد جامدة، بل دليل مرن يساعدك على بناء أنظمة قوية وموثوقة. استخدم هذه الإرشادات كنقطة انطلاق، وطورها بناء على احتياجاتك الخاصة وتجربتك العملية. النجاح يأتي من التطبيق العملي والتحسين المستمر!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

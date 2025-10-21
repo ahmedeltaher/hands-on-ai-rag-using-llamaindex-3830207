@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetrySourceQueryEngine - نظرة شاملة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #81ecec 0%, #74b9ff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #0984e3;
+        }
+        
+        .concept-explanation {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .difference-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 25px 0;
+        }
+        
+        .difference-card {
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .retry-query {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+        }
+        
+        .retry-source {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+        }
+        
+        .workflow-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .workflow-step {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 5px solid #74b9ff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .benefit-analysis {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .technical-insight {
+            background: #2d3436;
+            color: #ddd;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .example-scenario {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 RetrySourceQueryEngine - نظرة شاملة</h1>
+            <p>فهم عميق للنظام اللي بيحسن مصادر البيانات نفسها</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🎯 إيه هو الـ RetrySourceQueryEngine؟</div>
+            </div>
+            <div class="content">
+                <p>الـ RetrySourceQueryEngine ده نظام ذكي بطريقة مختلفة عن الـ Retry Query Engine العادي. بدل ما يحسن الاستعلام نفسه، بيركز على تحسين مصادر البيانات (Source Nodes) اللي بيعتمد عليها في توليد الإجابة.</p>
+                
+                <div class="highlight">
+                    <strong>🧠 الفكرة الأساسية:</strong> "المشكلة مش في طريقة السؤال، المشكلة في جودة المصادر اللي بنعتمد عليها!"
+                </div>
+                
+                <p>النظام ده بيشتغل على مبدأ إن لو الإجابة مش كويسة، يبقى المشكلة ممكن تكون في إن المصادر المستخدمة مش مناسبة أو مش عالية الجودة، فبيصفيها ويختار الأحسن منها بس.</p>
+            </div>
+        </div>
+
+        <div class="concept-explanation">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3>🔍 مفهوم تصفية المصادر</h3>
+            </div>
+            
+            <p>تخيل إن عندك مكتبة كبيرة فيها كتب كتير، بس مش كل الكتب مفيدة لسؤالك. بدل ما تاخد كل الكتب وتحاول تجاوب منها، النظام ده بيختار أحسن الكتب بس ويعيد ترتيب المكتبة بناء على الجودة.</p>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 15px 0;">
+                <h4>🎯 الهدف الرئيسي:</h4>
+                <p>تحسين جودة الإجابات عن طريق استخدام مصادر عالية الجودة فقط، وإهمال المصادر الضعيفة أو غير المناسبة.</p>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                <strong>💡 النتيجة:</strong> إجابات أكتر دقة لأنها معتمدة على أحسن المصادر الممكنة!
+            </div>
+        </div>
+
+        <div class="difference-grid">
+            <div class="difference-card retry-query">
+                <h4 style="margin-bottom: 15px;">🔄 Retry Query Engine</h4>
+                <ul style="padding-right: 25px; margin: 15px 0;">
+                    <li>يحسن طريقة السؤال</li>
+                    <li>يعيد صياغة الاستعلام</li>
+                    <li>نفس المصادر، أسلوب مختلف</li>
+                    <li>يركز على الـ Query نفسه</li>
+                </ul>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin: 10px 0;">
+                    <strong>المشكلة المعالجة:</strong> أسلوب السؤال مش مناسب
+                </div>
+            </div>
+            
+            <div class="difference-card retry-source">
+                <h4 style="margin-bottom: 15px;">📊 Retry Source Query Engine</h4>
+                <ul style="padding-right: 25px; margin: 15px 0;">
+                    <li>يحسن مصادر البيانات</li>
+                    <li>يصفي ويختار أحسن المصادر</li>
+                    <li>نفس السؤال، مصادر أحسن</li>
+                    <li>يركز على الـ Source Nodes</li>
+                </ul>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin: 10px 0;">
+                    <strong>المشكلة المعالجة:</strong> المصادر المستخدمة مش كويسة
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">⚙️ آلية العمل التفصيلية</div>
+            </div>
+            <div class="content">
+                <p>النظام بيشتغل بذكاء عالي - مش بس بيشيل المصادر الوحشة، كمان بيعيد بناء الفهرس كله بالمصادر الكويسة الجديدة.</p>
+                
+                <div class="workflow-container">
+                    <h4 style="text-align: center; margin-bottom: 20px; color: #2d3436;">🔄 مسار العمل الكامل</h4>
+                    
+                    <div class="workflow-step">
+                        <strong>1️⃣ استقبال الاستعلام:</strong> النظام يستقبل السؤال ويرسله للـ Base Query Engine
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>2️⃣ توليد الإجابة الأولى:</strong> الـ Base Query Engine يولد إجابة مع مصادرها
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>3️⃣ تقييم الإجابة:</strong> الـ Evaluator يفحص جودة الإجابة الكاملة
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>4️⃣ تقييم المصادر الفردية:</strong> إذا فشلت الإجابة، يتم فحص كل مصدر لوحده
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>5️⃣ تصفية المصادر:</strong> الاحتفاظ بالمصادر الممتازة فقط وحذف الضعيفة
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>6️⃣ إعادة بناء الفهرس:</strong> إنشاء فهرس جديد بالمصادر المفلترة
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>7️⃣ إنشاء محرك جديد:</strong> إنشاء RetrieverQueryEngine جديد بالفهرس المحسن
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>8️⃣ المحاولة المحسنة:</strong> إعادة المحاولة بالنظام الجديد والمحسن
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="benefit-analysis">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3>✨ فوائد هذا النهج</h3>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
+                    <div style="font-size: 2rem; text-align: center; margin-bottom: 10px;">🎯</div>
+                    <h4>دقة أعلى</h4>
+                    <p>إجابات معتمدة على أحسن المصادر فقط</p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
+                    <div style="font-size: 2rem; text-align: center; margin-bottom: 10px;">🧹</div>
+                    <h4>تنظيف البيانات</h4>
+                    <p>إزالة المصادر غير المفيدة أو المضللة</p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
+                    <div style="font-size: 2rem; text-align: center; margin-bottom: 10px;">⚡</div>
+                    <h4>كفاءة أحسن</h4>
+                    <p>تركيز على المحتوى المهم فقط</p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
+                    <div style="font-size: 2rem; text-align: center; margin-bottom: 10px;">🔄</div>
+                    <h4>تحسين مستمر</h4>
+                    <p>كل محاولة تخلي الفهرس أنظف وأحسن</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🤔 متى نستخدم RetrySourceQueryEngine؟</div>
+            </div>
+            <div class="content">
+                <div class="example-scenario">
+                    <h4 style="color: #856404; margin-bottom: 15px;">🎬 سيناريو مثالي للاستخدام</h4>
+                    <p><strong>المشكلة:</strong> عندك قاعدة بيانات ضخمة فيها محتوى كويس ومحتوى وحش مخلوط مع بعض. لما تسأل سؤال، النظام بيجيب مصادر مختلطة، فالإجابة بتطلع مشوشة أو غير دقيقة.</p>
+                    
+                    <p><strong>الحل:</strong> RetrySourceQueryEngine هيفحص كل مصدر ويشيل الوحش ويحتفظ بالكويس بس، وكده الإجابة هتطلع أنظف وأدق.</p>
+                </div>
+                
+                <div class="highlight">
+                    <strong>🎯 استخدم هذا النظام لو:</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>قاعدة البيانات بتاعتك فيها محتوى متنوع الجودة</li>
+                        <li>بتحصل على مصادر كتير بس مش كلها مفيدة</li>
+                        <li>عايز تضمن إن الإجابات معتمدة على أحسن المصادر</li>
+                        <li>محتاج تنظف وتحسن من جودة البيانات المستخدمة</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="technical-insight">
+            <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; color: #74b9ff;">⚡ التفاصيل التقنية المتقدمة</div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #81ecec;">🔧 إعادة بناء الفهرس (Index Reconstruction):</h4>
+                <p>عملية معقدة جداً بتتم تحت الغطاء - النظام مش بس بيشيل المصادر الوحشة، كمان بيعيد تنظيم وفهرسة المصادر الكويسة بطريقة محسنة.</p>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #81ecec;">🎯 RetrieverQueryEngine الجديد:</h4>
+                <p>مش مجرد تحديث للنظام الموجود، ده إنشاء محرك جديد كلياً بفهرس محسن ومصادر مختارة بعناية.</p>
+            </div>
+            
+            <div style="background: rgba(116,185,255,0.1); padding: 15px; border-radius: 8px;">
+                <strong>💡 نقطة مهمة:</strong> العملية دي مكلفة حاسوبياً لأن بتتطلب إعادة بناء كاملة للفهرس، بس النتايج بتستاهل الاستثمار!
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📋 المعاملات المطلوبة</div>
+            </div>
+            <div class="content">
+                <p>النظام بيحتاج تلات معاملات أساسية بس، أبسط من الـ Retry Query Engine:</p>
+                
+                <div class="highlight">
+                    <strong>🔧 query_engine:</strong> الـ Base Query Engine الأساسي
+                </div>
+                
+                <div class="highlight">
+                    <strong>📊 evaluator:</strong> المقيّم اللي هيحكم على جودة الإجابات والمصادر
+                </div>
+                
+                <div class="highlight">
+                    <strong>🔄 max_retries:</strong> عدد المحاولات المسموح بيها قبل التوقف
+                </div>
+                
+                <p style="margin-top: 20px; font-weight: bold; color: #0984e3;">البساطة في المعاملات تخفي تعقيد كبير في طريقة العمل والمعالجة!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Extraction - الجزء العاشر: إعداد البرومبت للمستخرجات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .prompt-showcase {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .prompt-example {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border: 2px solid #74b9ff;
+            transition: all 0.3s ease;
+        }
+
+        .prompt-example:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .prompt-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #00cec9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            overflow-x: auto;
+            border: 2px solid #636e72;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .template-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .template-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #fd79a8;
+            transition: all 0.3s ease;
+        }
+
+        .template-card:hover {
+            transform: translateY(-3px);
+            border-color: #e84393;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .template-header {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .best-practices {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #6c5ce7;
+        }
+
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .practice-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #a29bfe;
+            transition: transform 0.3s ease;
+        }
+
+        .practice-item:hover {
+            transform: translateY(-3px);
+            border-color: #6c5ce7;
+        }
+
+        .practice-icon {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-bottom: 1rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #e17055;
+            overflow-x: auto;
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .styled-table thead {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .styled-table tbody tr:hover {
+            background-color: rgba(225, 112, 85, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .template-gallery,
+            .practice-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ إعداد البرومبت للمستخرجات</h1>
+            <p>الجزء العاشر: كتابة برومبت مثالية لاستخراج Metadata عالي الجودة</p>
+        </div>
+
+        <div class="content">
+            <!-- أهمية البرومبت -->
+            <div class="card">
+                <h2>🎯 لماذا البرومبت مهم جداً؟</h2>
+                <div class="card-content">
+                    <p>البرومبت هو اللي بيحدد جودة ودقة الـ metadata المستخرج! برومبت سيء = نتايج سيئة، برومبت ممتاز = نتايج احترافية:</p>
+
+                    <div class="highlight-box">
+                        <h4>💡 قوة البرومبت الصحيح</h4>
+                        <ul>
+                            <li><strong>دقة أعلى:</strong> برومبت واضح بيدي نتايج أدق</li>
+                            <li><strong>اتساق النتائج:</strong> نفس البرومبت = نفس جودة النتايج</li>
+                            <li><strong>توفير الوقت:</strong> برومبت مضبوط من البداية يوفر ساعات تجريب</li>
+                            <li><strong>نتائج موجهة:</strong> نحصل على اللي نحتاجه بالضبط</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ أخطاء شائعة في البرومبت</h4>
+                        <ul>
+                            <li><strong>عدم الوضوح:</strong> "استخرج معلومات" (إيه نوع المعلومات؟)</li>
+                            <li><strong>التعقيد الزائد:</strong> برومبت طويل ومعقد</li>
+                            <li><strong>عدم إعطاء أمثلة:</strong> النموذج مش فاهم المطلوب بالضبط</li>
+                            <li><strong>تجاهل السياق:</strong> برومبت عام مش مخصص للمحتوى</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- برومبت Summary Extractor -->
+            <div class="card">
+                <h2>📄 برومبت Summary Extractor</h2>
+                <div class="card-content">
+                    <div class="prompt-showcase">
+                        <h4>🎯 برومبت أساسي للملخص</h4>
+                        
+                        <div class="prompt-example">
+                            <div class="prompt-header">
+                                <h5>برومبت بسيط ومباشر</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+You are an expert at creating concise and informative summaries.
+Given the following text, provide a summary that:
+- Captures the main points and key information
+- Is between 50-100 words
+- Uses clear and simple language
+- Focuses on facts and important details
+
+Text: {content}
+
+Summary:
+                                </pre>
+                            </div>
+                            <div class="info-box">
+                                <strong>مميزات البرومبت ده:</strong> واضح، محدد الطول، بيركز على الحقائق المهمة
+                            </div>
+                        </div>
+
+                        <div class="prompt-example">
+                            <div class="prompt-header">
+                                <h5>برومبت متقدم ومتخصص</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+You are a professional content analyst specializing in creating targeted summaries.
+
+Context: You're processing {document_type} content for a {target_audience} audience.
+
+Instructions:
+1. Read the text carefully and identify the core message
+2. Extract the top 3-5 most important points
+3. Create a summary that answers: What? Why? How? When? Where?
+4. Keep the summary between {min_words}-{max_words} words
+5. Use keywords that would help in search and categorization
+6. Maintain the original tone and style
+
+Text to summarize: {content}
+
+Summary:
+                                </pre>
+                            </div>
+                            <div class="technical-detail">
+                                <strong>قوة البرومبت المتقدم:</strong> مرن، قابل للتخصيص، يراعي السياق والجمهور المستهدف
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- برومبت Entity Extractor -->
+            <div class="card">
+                <h2>🏢 برومبت Entity Extractor</h2>
+                <div class="card-content">
+                    <div class="prompt-showcase">
+                        <h4>🔍 استخراج الكيانات بدقة</h4>
+                        
+                        <div class="template-gallery">
+                            <div class="template-card">
+                                <div class="template-header">
+                                    <h5>برومبت شامل للكيانات</h5>
+                                </div>
+                                <div class="code-block">
+                                    <pre>
+Extract the following entities from the text:
+
+PEOPLE: Names of individuals (First Name, Last Name)
+ORGANIZATIONS: Companies, institutions, agencies
+LOCATIONS: Cities, countries, regions, addresses
+DATES: Specific dates, time periods, years
+MONEY: Currency amounts, financial figures
+PRODUCTS: Brand names, product names, services
+
+Format your response as JSON:
+{
+  "people": [],
+  "organizations": [],
+  "locations": [],
+  "dates": [],
+  "money": [],
+  "products": []
+}
+
+Text: {content}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="template-card">
+                                <div class="template-header">
+                                    <h5>برومبت متخصص للمجال الطبي</h5>
+                                </div>
+                                <div class="code-block">
+                                    <pre>
+You are a medical information specialist. Extract entities specific to healthcare:
+
+MEDICAL_CONDITIONS: Diseases, symptoms, syndromes
+MEDICATIONS: Drug names, treatments, therapies
+MEDICAL_PROCEDURES: Surgeries, tests, examinations
+BODY_PARTS: Anatomical terms, organs, systems
+MEDICAL_PROFESSIONALS: Doctors, specialists, titles
+MEDICAL_FACILITIES: Hospitals, clinics, departments
+
+Be precise and use standard medical terminology.
+
+Text: {content}
+
+Medical Entities:
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="template-card">
+                                <div class="template-header">
+                                    <h5>برومبت للمحتوى التجاري</h5>
+                                </div>
+                                <div class="code-block">
+                                    <pre>
+Extract business-relevant entities:
+
+COMPANIES: Corporation names, subsidiaries
+EXECUTIVES: CEO, CTO, managers, board members
+FINANCIAL_METRICS: Revenue, profit, loss, percentages
+BUSINESS_TERMS: KPIs, strategies, market terms
+COMPETITORS: Rival companies, market players
+MARKET_SEGMENTS: Target audiences, demographics
+
+Focus on actionable business intelligence.
+
+Text: {content}
+
+Business Entities:
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- برومبت Questions Answered -->
+            <div class="card">
+                <h2>❓ برومبت Questions Answered Extractor</h2>
+                <div class="card-content">
+                    <div class="prompt-showcase">
+                        <h4>🤔 توليد أسئلة ذكية ومفيدة</h4>
+                        
+                        <div class="prompt-example">
+                            <div class="prompt-header">
+                                <h5>برومبت أساسي لتوليد الأسئلة</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+You are an expert at creating relevant questions from content.
+
+Given the following text, generate 5-8 questions that:
+- Can be directly answered by the content
+- Cover the main topics and key details
+- Use question words: What, Why, How, When, Where, Who
+- Are specific and actionable
+- Would be useful for search and Q&A systems
+
+Format: Return each question on a new line, numbered.
+
+Text: {content}
+
+Questions this text can answer:
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="prompt-example">
+                            <div class="prompt-header">
+                                <h5>برومبت متقدم بمستويات أسئلة مختلفة</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+Generate questions at different complexity levels:
+
+BASIC QUESTIONS (3-4 questions):
+- Simple factual questions about who, what, when, where
+- Can be answered directly from the text
+
+INTERMEDIATE QUESTIONS (2-3 questions):
+- Questions about how and why
+- Require some understanding of context
+
+ADVANCED QUESTIONS (1-2 questions):
+- Analytical or comparative questions
+- May require synthesis of multiple concepts
+
+Rules:
+- Questions must be answerable from the given text
+- Use natural, conversational language
+- Avoid yes/no questions
+- Make questions specific, not generic
+
+Text: {content}
+
+Generated Questions:
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أفضل الممارسات -->
+            <div class="card">
+                <h2>🎯 أفضل الممارسات لكتابة البرومبت</h2>
+                <div class="card-content">
+                    <div class="best-practices">
+                        <h4>✅ القواعد الذهبية لبرومبت ممتاز</h4>
+                        
+                        <div class="practice-grid">
+                            <div class="practice-item">
+                                <div class="practice-icon">1</div>
+                                <h5>كن واضحاً ومحدداً</h5>
+                                <p>اشرح بالضبط إيه المطلوب، وإيه الشكل المتوقع للنتيجة. استخدم أمثلة واضحة.</p>
+                            </div>
+
+                            <div class="practice-item">
+                                <div class="practice-icon">2</div>
+                                <h5>حدد القيود والضوابط</h5>
+                                <p>اذكر طول النص المطلوب، نوع البيانات، الشكل المطلوب (JSON, نص، قائمة).</p>
+                            </div>
+
+                            <div class="practice-item">
+                                <div class="practice-icon">3</div>
+                                <h5>اعطي سياق للمهمة</h5>
+                                <p>اشرح نوع المحتوى والهدف من استخراج البيانات عشان النموذج يفهم السياق.</p>
+                            </div>
+
+                            <div class="practice-item">
+                                <div class="practice-icon">4</div>
+                                <h5>استخدم أمثلة</h5>
+                                <p>ادي مثال على الـ input والـ output المتوقع عشان النموذج يفهم المطلوب بدقة.</p>
+                            </div>
+
+                            <div class="practice-item">
+                                <div class="practice-icon">5</div>
+                                <h5>اختبر وحسن</h5>
+                                <p>جرب البرومبت على عينات مختلفة وحسن الصياغة بناء على النتائج.</p>
+                            </div>
+
+                            <div class="practice-item">
+                                <div class="practice-icon">6</div>
+                                <h5>استخدم متغيرات</h5>
+                                <p>اجعل البرومبت مرن بـ placeholders زي {content}, {document_type} عشان سهولة إعادة الاستخدام.</p>
+                            </div>
+                        </div>
+
+                        <div class="comparison-table">
+                            <h4>📊 مقارنة بين البرومبت الضعيف والقوي</h4>
+                            
+                            <table class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th>العنصر</th>
+                                        <th>برومبت ضعيف ❌</th>
+                                        <th>برومبت قوي ✅</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>الوضوح</strong></td>
+                                        <td>"استخرج معلومات مفيدة"</td>
+                                        <td>"استخرج أسماء الأشخاص والشركات والتواريخ"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>التحديد</strong></td>
+                                        <td>"اعمل ملخص"</td>
+                                        <td>"اعمل ملخص من 50-100 كلمة يركز على النقاط الرئيسية"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>الشكل</strong></td>
+                                        <td>"ارجع النتيجة"</td>
+                                        <td>"ارجع النتيجة في شكل JSON مع مفاتيح محددة"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>السياق</strong></td>
+                                        <td>لا يوجد سياق</td>
+                                        <td>"أنت محلل محتوى متخصص في المحتوى الطبي"</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>الأمثلة</strong></td>
+                                        <td>لا توجد أمثلة</td>
+                                        <td>مثال واضح على الـ input والـ output</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>🚀 نصائح متقدمة للبرومبت</h4>
+                            <ul>
+                                <li><strong>استخدم Chain of Thought:</strong> "فكر خطوة بخطوة في تحليل النص"</li>
+                                <li><strong>اطلب التبرير:</strong> "اشرح ليه اخترت هذه المعلومات"</li>
+                                <li><strong>حدد مستوى الثقة:</strong> "ادي درجة ثقة لكل معلومة مستخرجة"</li>
+                                <li><strong>اطلب البدائل:</strong> "لو مش متأكد، ادي أكثر من احتمال"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

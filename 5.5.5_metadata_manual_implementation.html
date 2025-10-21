@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Extraction - الجزء الخامس: تطبيق الإضافة اليدوية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .implementation-flow {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #74b9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .code-card {
+            background: #2d3436;
+            color: #00cec9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            direction: ltr;
+            text-align: left;
+            border: 2px solid #636e72;
+        }
+
+        .code-comment {
+            color: #74b9ff;
+            font-style: italic;
+        }
+
+        .code-string {
+            color: #fd79a8;
+        }
+
+        .code-keyword {
+            color: #00b894;
+            font-weight: bold;
+        }
+
+        .result-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fdcb6e;
+        }
+
+        .metadata-showcase {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #e17055;
+            transition: transform 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-3px);
+            border-color: #d63031;
+        }
+
+        .benefit-header {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .step-grid,
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-card {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 تطبيق الإضافة اليدوية</h1>
+            <p>الجزء الخامس: الخطوات العملية لتنفيذ إضافة الـ Metadata يدوياً</p>
+        </div>
+
+        <div class="content">
+            <!-- عملية إنشاء Dictionary -->
+            <div class="card">
+                <h2>📋 إنشاء Dictionary للـ Metadata</h2>
+                <div class="card-content">
+                    <p>أول خطوة عملية هي إنشاء dictionary يحتوي على كل الـ metadata اللي عايزين نضيفها للوثائق:</p>
+
+                    <div class="implementation-flow">
+                        <h4>🏗️ بناء الهيكل الأساسي</h4>
+                        <p>المدرس شرح إزاي ننشئ dictionary منظم يحتوي على البيانات الوصفية لكل مؤلف. هنشوف الطريقة بالتفصيل:</p>
+
+                        <div class="code-card">
+<span class="code-comment"># إنشاء dictionary شامل للـ metadata</span>
+<span class="code-keyword">authors_metadata</span> = {
+    <span class="code-string">"Naval Ravikant"</span>: {
+        <span class="code-string">"known_for"</span>: <span class="code-string">"بناء الثروة وتحقيق السعادة"</span>,
+        <span class="code-string">"field"</span>: <span class="code-string">"ريادة الأعمال والاستثمار"</span>,
+        <span class="code-string">"content_type"</span>: <span class="code-string">"نصائح عملية ومفاهيم فلسفية"</span>,
+        <span class="code-string">"target_audience"</span>: <span class="code-string">"رجال الأعمال والمستثمرين"</span>
+    },
+    <span class="code-string">"Bruce Lee"</span>: {
+        <span class="code-string">"known_for"</span>: <span class="code-string">"تطوير الذات والنمو الشخصي"</span>,
+        <span class="code-string">"field"</span>: <span class="code-string">"الفلسفة والفنون القتالية"</span>,
+        <span class="code-string">"content_type"</span>: <span class="code-string">"حكم فلسفية ونصائح تطويرية"</span>,
+        <span class="code-string">"target_audience"</span>: <span class="code-string">"الباحثين عن التطوير الذاتي"</span>
+    }
+}
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>🎯 ليه الهيكل ده ذكي؟</h4>
+                            <ul>
+                                <li><strong>منظم:</strong> كل مؤلف له مجموعة واضحة من البيانات</li>
+                                <li><strong>شامل:</strong> يغطي جوانب مختلفة من المحتوى</li>
+                                <li><strong>قابل للتوسيع:</strong> سهل إضافة مؤلفين أو بيانات جديدة</li>
+                                <li><strong>متسق:</strong> نفس البنية لكل المؤلفين</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-grid">
+                        <div class="step-card">
+                            <div class="step-header">
+                                <h5>🔑 اختيار الـ Keys</h5>
+                            </div>
+                            <div>
+                                <p>اختار أسماء واضحة ومفهومة للمفاتيح:</p>
+                                <ul>
+                                    <li><strong>known_for:</strong> المؤلف مشهور بإيه</li>
+                                    <li><strong>field:</strong> مجال تخصصه</li>
+                                    <li><strong>content_type:</strong> نوع المحتوى</li>
+                                    <li><strong>target_audience:</strong> الجمهور المستهدف</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-header">
+                                <h5>💡 كتابة القيم</h5>
+                            </div>
+                            <div>
+                                <p>اكتب قيم وصفية ومفيدة:</p>
+                                <ul>
+                                    <li><strong>محددة:</strong> تركز على جانب واضح</li>
+                                    <li><strong>مفيدة:</strong> تساعد في البحث والتصنيف</li>
+                                    <li><strong>متسقة:</strong> نفس الأسلوب لكل المؤلفين</li>
+                                    <li><strong>شاملة:</strong> تغطي الجوانب المهمة</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- عملية إضافة الـ Metadata -->
+            <div class="card">
+                <h2>🔗 عملية إضافة الـ Metadata للوثائق</h2>
+                <div class="card-content">
+                    <p>بعد تحضير الـ dictionary، الخطوة التالية هي إضافة البيانات دي للوثائق الفعلية:</p>
+
+                    <div class="implementation-flow">
+                        <h4>⚙️ آلية الربط</h4>
+                        <p>هنربط كل وثيقة بالـ metadata المناسبة ليها بناء على اسم المؤلف:</p>
+
+                        <div class="code-card">
+<span class="code-comment"># المرور على كل الوثائق وإضافة الـ metadata</span>
+<span class="code-keyword">for</span> document <span class="code-keyword">in</span> documents:
+    <span class="code-comment"># جلب اسم المؤلف من metadata الموجودة</span>
+    author_name = document.metadata.get(<span class="code-string">"author"</span>)
+    
+    <span class="code-comment"># التأكد من وجود بيانات للمؤلف</span>
+    <span class="code-keyword">if</span> author_name <span class="code-keyword">in</span> authors_metadata:
+        <span class="code-comment"># إضافة الـ known_for tag</span>
+        document.metadata[<span class="code-string">"known_for"</span>] = authors_metadata[author_name][<span class="code-string">"known_for"</span>]
+        
+        <span class="code-comment"># إضافة باقي البيانات (اختياري)</span>
+        document.metadata.update(authors_metadata[author_name])
+
+<span class="code-comment"># فحص النتيجة على وثيقة عشوائية</span>
+random_document = documents[<span class="code-string">0</span>]
+<span class="code-keyword">print</span>(<span class="code-string">"Updated Metadata:"</span>)
+<span class="code-keyword">print</span>(random_document.metadata)
+                        </div>
+
+                        <div class="info-box">
+                            <h4>🔍 شرح الكود</h4>
+                            <ul>
+                                <li><strong>المرور على الوثائق:</strong> نتفحص كل document واحد واحد</li>
+                                <li><strong>جلب اسم المؤلف:</strong> نستخرج اسم المؤلف من الـ metadata الموجودة</li>
+                                <li><strong>التحقق من وجود البيانات:</strong> نتأكد إن عندنا معلومات للمؤلف ده</li>
+                                <li><strong>إضافة البيانات:</strong> نحط الـ metadata الجديدة في الوثيقة</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- النتيجة النهائية -->
+            <div class="card">
+                <h2>📊 النتيجة النهائية: شكل الـ Metadata</h2>
+                <div class="card-content">
+                    <p>بعد تطبيق العملية، هنشوف إزاي بقت الـ metadata في الوثائق:</p>
+
+                    <div class="result-section">
+                        <h4>📋 مثال على metadata كاملة</h4>
+                        <p>كده شكل الـ metadata بعد إضافة البيانات الجديدة:</p>
+
+                        <div class="metadata-showcase">
+{
+    "page_number": 1,
+    "file_name": "naval_ravikant_quotes.pdf",
+    "title": "Wisdom from Naval Ravikant",
+    "author": "Naval Ravikant",
+    "known_for": "بناء الثروة وتحقيق السعادة",
+    "field": "ريادة الأعمال والاستثمار",
+    "content_type": "نصائح عملية ومفاهيم فلسفية",
+    "target_audience": "رجال الأعمال والمستثمرين"
+}
+                        </div>
+
+                        <div class="benefits-grid">
+                            <div class="benefit-card">
+                                <div class="benefit-header">
+                                    <h5>🎯 دقة البحث</h5>
+                                </div>
+                                <div>
+                                    <p>لما حد يسأل عن "بناء الثروة"، النظام هايعرف يدور في محتوى Naval Ravikant فوراً.</p>
+                                </div>
+                            </div>
+
+                            <div class="benefit-card">
+                                <div class="benefit-header">
+                                    <h5>📚 تصنيف المحتوى</h5>
+                                </div>
+                                <div>
+                                    <p>النظام يقدر يجمع كل المحتوى المتعلق بـ "ريادة الأعمال" في مكان واحد.</p>
+                                </div>
+                            </div>
+
+                            <div class="benefit-card">
+                                <div class="benefit-header">
+                                    <h5>👥 استهداف الجمهور</h5>
+                                </div>
+                                <div>
+                                    <p>يقدر يختار المحتوى المناسب لكل نوع من الجمهور حسب اهتماماتهم.</p>
+                                </div>
+                            </div>
+
+                            <div class="benefit-card">
+                                <div class="benefit-header">
+                                    <h5>🔍 فهم السياق</h5>
+                                </div>
+                                <div>
+                                    <p>النظام بقى عنده فهم أعمق لطبيعة كل قطعة محتوى وخصائصها.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🚀 التحسن المتحقق</h4>
+                        <p>بالـ metadata الجديدة دي، النظام بقى أذكى بكتير في:</p>
+                        <ul>
+                            <li><strong>اختيار المحتوى:</strong> يختار الـ chunks الأكثر صلة</li>
+                            <li><strong>فهم السياق:</strong> يفهم طبيعة المحتوى ونوعه</li>
+                            <li><strong>تحسين النتائج:</strong> إجابات أدق وأشمل</li>
+                            <li><strong>تنظيم البيانات:</strong> هيكل أوضح ومنظم أكثر</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ ملاحظة مهمة</h4>
+                        <p>هذا مجرد البداية! الطريقة اليدوية ممتازة للفهم والمشاريع الصغيرة، لكن للمشاريع الكبيرة، هانحتاج طرق أتوماتيكية أكثر تطوراً.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

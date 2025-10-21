@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Extraction - الجزء السابع: أدوات LlamaIndex للاستخراج</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .tools-overview {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .extractor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .extractor-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #74b9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .extractor-card:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+        }
+
+        .extractor-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .extractor-card.summary {
+            border-color: #00b894;
+        }
+
+        .extractor-card.summary .extractor-header {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+
+        .extractor-card.qa {
+            border-color: #e17055;
+        }
+
+        .extractor-card.qa .extractor-header {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+        }
+
+        .extractor-card.title {
+            border-color: #fdcb6e;
+        }
+
+        .extractor-card.title .extractor-header {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+        }
+
+        .extractor-card.entity {
+            border-color: #6c5ce7;
+        }
+
+        .extractor-card.entity .extractor-header {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        }
+
+        .extractor-card.keyword {
+            border-color: #fd79a8;
+        }
+
+        .extractor-card.keyword .extractor-header {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+        }
+
+        .deep-dive-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fdcb6e;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #74b9ff;
+            margin: 1rem 0;
+        }
+
+        .feature-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            border-radius: 50%;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .extractor-grid,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛠️ أدوات LlamaIndex للاستخراج</h1>
+            <p>الجزء السابع: مجموعة شاملة من المستخرجات المتخصصة</p>
+        </div>
+
+        <div class="content">
+            <!-- نظرة عامة على الأدوات -->
+            <div class="card">
+                <h2>🎯 نظرة عامة على أدوات الاستخراج</h2>
+                <div class="card-content">
+                    <p>LlamaIndex مش بس منصة للـ RAG، ده مجموعة أدوات متقدمة ومتخصصة! المدرس وضح إن في مجموعة كبيرة من الـ extractors الجاهزة للاستخدام:</p>
+
+                    <div class="tools-overview">
+                        <h4>🏗️ البنية التحتية للأدوات</h4>
+                        <p>كل الـ extractors بتيجي من نفس المكان في المكتبة: <strong>llama_index.core.extractor</strong></p>
+
+                        <div class="feature-item">
+                            <span class="feature-icon">🧠</span>
+                            <h5>مبنية على نماذج اللغة الكبيرة</h5>
+                            <p>كل extractor بيستخدم قوة الـ LLM عشان يفهم ويحلل المحتوى بذكاء.</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <span class="feature-icon">📋</span>
+                            <h5>قوالب جاهزة ومحسنة</h5>
+                            <p>كل extractor عنده prompt template محسن ومجرب لأفضل النتايج.</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <span class="feature-icon">🔧</span>
+                            <h5>قابلة للتخصيص</h5>
+                            <p>تقدر تعدل الـ prompts وتخصصها حسب احتياجات مشروعك.</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <span class="feature-icon">⚡</span>
+                            <h5>محسنة للأداء</h5>
+                            <p>مصممة عشان تدي أفضل توازن بين الدقة والسرعة.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>💡 ليه الأدوات دي مهمة؟</h4>
+                        <p>بدل ما تبدأ من الصفر وتكتب prompts وتجرب، LlamaIndex بيدلك أدوات جاهزة ومجربة ومحسنة من خبراء في المجال!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مجموعة المستخرجات الأساسية -->
+            <div class="card">
+                <h2>🔧 مجموعة المستخرجات الأساسية</h2>
+                <div class="card-content">
+                    <p>هنتعرف على كل extractor بالتفصيل، وظيفته، وإزاي بيشتغل، ومتى نستخدمه:</p>
+
+                    <div class="extractor-grid">
+                        <div class="extractor-card summary">
+                            <div class="extractor-header">
+                                <h5>📄 Summary Extractor</h5>
+                            </div>
+                            <div>
+                                <p><strong>الوظيفة:</strong> يعمل ملخص مركز وشامل للمحتوى</p>
+                                <p><strong>مفيد لإيه؟</strong> فهم سريع لمحتوى الـ node بدون قراءة كل حاجة</p>
+                                <p><strong>مثال الاستخدام:</strong> "هذا النص يتحدث عن استراتيجيات الاستثمار طويل المدى"</p>
+                                <p><strong>الفائدة:</strong> بحث أسرع وفهم أعمق للمحتوى</p>
+                            </div>
+                        </div>
+
+                        <div class="extractor-card qa">
+                            <div class="extractor-header">
+                                <h5>❓ Questions Answered Extractor</h5>
+                            </div>
+                            <div>
+                                <p><strong>الوظيفة:</strong> يولد أسئلة يقدر الـ node يجاوب عليها</p>
+                                <p><strong>مفيد لإيه؟</strong> البحث بناء على الأسئلة المحتملة</p>
+                                <p><strong>مثال الاستخدام:</strong> "ما هي أفضل استراتيجيات الاستثمار؟"</p>
+                                <p><strong>الفائدة:</strong> ربط الاستفسارات بالمحتوى المناسب</p>
+                            </div>
+                        </div>
+
+                        <div class="extractor-card title">
+                            <div class="extractor-header">
+                                <h5>🏷️ Title Extractor</h5>
+                            </div>
+                            <div>
+                                <p><strong>الوظيفة:</strong> يضع عنوان مناسب ووصفي للمحتوى</p>
+                                <p><strong>مفيد لإيه؟</strong> تنظيم وفهرسة المحتوى بعناوين واضحة</p>
+                                <p><strong>مثال الاستخدام:</strong> "دليل المبتدئين للاستثمار في الأسهم"</p>
+                                <p><strong>الفائدة:</strong> تصنيف أوضح وبحث أسهل</p>
+                            </div>
+                        </div>
+
+                        <div class="extractor-card entity">
+                            <div class="extractor-header">
+                                <h5>🏢 Entity Extractor</h5>
+                            </div>
+                            <div>
+                                <p><strong>الوظيفة:</strong> يستخرج الكيانات المسماة (أشخاص، أماكن، شركات)</p>
+                                <p><strong>مفيد لإيه؟</strong> البحث بناء على أسماء محددة</p>
+                                <p><strong>مثال الاستخدام:</strong> "Apple, Warren Buffett, New York"</p>
+                                <p><strong>الفائدة:</strong> ربط المحتوى بشخصيات أو أماكن معينة</p>
+                            </div>
+                        </div>
+
+                        <div class="extractor-card keyword">
+                            <div class="extractor-header">
+                                <h5>🔑 Keyword Extractor</h5>
+                            </div>
+                            <div>
+                                <p><strong>الوظيفة:</strong> يحدد الكلمات المفتاحية الأساسية</p>
+                                <p><strong>مفيد لإيه؟</strong> البحث بالكلمات المفتاحية والتصنيف</p>
+                                <p><strong>مثال الاستخدام:</strong> "استثمار, أسهم, ربح, مخاطر"</p>
+                                <p><strong>الفائدة:</strong> فهرسة دقيقة وبحث متقدم</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 التكامل بين المستخرجات</h4>
+                        <p>الجمال في إن تقدر تستخدم أكتر من extractor في نفس الوقت! كل واحد يضيف طبقة معلومات مختلفة وثرية للـ metadata.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- التحليل العميق لكل أداة -->
+            <div class="card">
+                <h2>🔬 التحليل العميق: متى وإزاي نستخدم كل أداة؟</h2>
+                <div class="card-content">
+                    <p>المدرس ركز على نقطة مهمة: مش كل extractor مناسب لكل مشروع. هنشوف السيناريوهات المثلى لكل واحد:</p>
+
+                    <div class="deep-dive-section">
+                        <h4>🎯 دليل الاختيار الذكي</h4>
+                        
+                        <div class="comparison-grid">
+                            <div>
+                                <h5>📄 Summary Extractor - متى نستخدمه؟</h5>
+                                <ul>
+                                    <li><strong>النصوص الطويلة:</strong> مقالات، فصول، تقارير</li>
+                                    <li><strong>المحتوى المعقد:</strong> يحتاج تبسيط وتلخيص</li>
+                                    <li><strong>البحث السريع:</strong> فهم المحتوى بدون قراءة كاملة</li>
+                                    <li><strong>التصنيف:</strong> تجميع المحتوى المتشابه</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h5>❓ QA Extractor - متى نستخدمه؟</h5>
+                                <ul>
+                                    <li><strong>المحتوى التعليمي:</strong> يجاوب على أسئلة محددة</li>
+                                    <li><strong>الأدلة والمراجع:</strong> معلومات إرشادية</li>
+                                    <li><strong>FAQ Systems:</strong> أنظمة الأسئلة الشائعة</li>
+                                    <li><strong>البحث بالاستفسارات:</strong> ربط الأسئلة بالإجابات</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="comparison-grid">
+                            <div>
+                                <h5>🏷️ Title Extractor - متى نستخدمه؟</h5>
+                                <ul>
+                                    <li><strong>المحتوى بدون عناوين:</strong> نصوص مجردة</li>
+                                    <li><strong>تنظيم المكتبات:</strong> فهرسة وتصنيف</li>
+                                    <li><strong>العرض للمستخدمين:</strong> عناوين واضحة</li>
+                                    <li><strong>التصفح السريع:</strong> رؤية شاملة للمحتوى</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h5>🏢 Entity Extractor - متى نستخدمه؟</h5>
+                                <ul>
+                                    <li><strong>المحتوى الإخباري:</strong> أشخاص، شركات، أماكن</li>
+                                    <li><strong>البحث التاريخي:</strong> شخصيات وأحداث</li>
+                                    <li><strong>التحليل التجاري:</strong> شركات ومنتجات</li>
+                                    <li><strong>الجغرافيا:</strong> مواقع وأماكن</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>🧠 نصيحة الخبراء</h4>
+                            <p>المدرس نصح بالتركيز على اتنين من أقوى المستخرجات: <strong>Summary Extractor</strong> و <strong>QA Extractor</strong>. ليه؟</p>
+                            <ul>
+                                <li><strong>تكامل مثالي:</strong> الملخص يدي نظرة عامة، والأسئلة تدي تفاصيل</li>
+                                <li><strong>فائدة شاملة:</strong> يغطوا معظم احتياجات البحث والفهم</li>
+                                <li><strong>جودة عالية:</strong> الأكثر تطوراً ودقة في النتائج</li>
+                                <li><strong>استهلاك معقول:</strong> توازن جيد بين الفائدة والتكلفة</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ تحذيرات مهمة</h4>
+                        <ul>
+                            <li><strong>لا تستخدم كل الـ extractors:</strong> اختار اللي محتاجه فعلاً</li>
+                            <li><strong>راقب التكلفة:</strong> كل extractor بيستهلك API calls</li>
+                            <li><strong>اختبر الجودة:</strong> تأكد إن النتائج مفيدة وصحيحة</li>
+                            <li><strong>فكر في المستخدم:</strong> هايستفيد من الـ metadata دي إزاي؟</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 الاستراتيجية المثلى</h4>
+                        <p>ابدأ بـ Summary و QA extractors، شوف النتائج، وبعدين ضيف extractors تانية حسب الحاجة. ده هايدلك أفضل توازن بين الفائدة والتكلفة!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

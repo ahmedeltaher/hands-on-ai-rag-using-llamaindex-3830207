@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقدمة عن Keyword Node Postprocessor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .intro-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .function-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .parameters-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .scenarios-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .comparison-box { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 مقدمة عن Keyword Node Postprocessor</h1>
+            <p>الدرس السادس: فلترة ذكية بناءً على الكلمات المفتاحية</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 الوظيفة الأساسية</h2>
+            <div class="function-box">
+                <h3>💡 الفكرة الجوهرية:</h3>
+                <p>الـ Keyword Node Postprocessor بيفلتر العقد بناءً على <strong>وجود أو عدم وجود كلمات محددة</strong> في محتواها.</p>
+                
+                <h3>🔍 آلية العمل:</h3>
+                <ul>
+                    <li><strong>Required Keywords:</strong> كلمات لازم تكون موجودة</li>
+                    <li><strong>Excluded Keywords:</strong> كلمات لازم ما تكونش موجودة</li>
+                    <li><strong>الفلترة النهائية:</strong> العقد اللي بتحتوي على كل المطلوب ومفيهاش أي ممنوع</li>
+                </ul>
+                
+                <h3>⭐ القوة في البساطة:</h3>
+                <p>أداة بسيطة بس قوية جداً لما عايز تركز على موضوع معين أو تتجنب مواضيع معينة!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ المعاملات الأساسية</h2>
+            <div class="parameters-box">
+                <h3>🎯 required_keywords</h3>
+                <p><strong>النوع:</strong> قائمة من الكلمات أو العبارات</p>
+                <p><strong>الوظيفة:</strong> العقدة لازم تحتوي على <strong>كل</strong> الكلمات دي</p>
+                <p><strong>مثال:</strong> ["machine learning", "artificial intelligence"]</p>
+                
+                <h3>🚫 exclude_keywords</h3>
+                <p><strong>النوع:</strong> قائمة من الكلمات أو العبارات</p>
+                <p><strong>الوظيفة:</strong> العقدة <strong>ما تحتويش</strong> على أي من الكلمات دي</p>
+                <p><strong>مثال:</strong> ["deprecated", "obsolete", "outdated"]</p>
+                
+                <h3>🌍 lang (اختياري)</h3>
+                <p><strong>النوع:</strong> string</p>
+                <p><strong>الافتراضي:</strong> "en" (إنجليزي)</p>
+                <p><strong>الوظيفة:</strong> يحدد لغة النص للمعالجة الصحيحة</p>
+                <p><strong>ليه مهم:</strong> كل لغة لها قواعد مختلفة في تقسيم الكلمات</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 سيناريوهات الاستخدام العملية</h2>
+            <div class="scenarios-box">
+                <h3>📚 البحث الأكاديمي:</h3>
+                <p><strong>الهدف:</strong> أبحاث في الذكاء الاصطناعي فقط</p>
+                <p><strong>Required:</strong> ["AI", "artificial intelligence", "machine learning"]</p>
+                <p><strong>Excluded:</strong> ["science fiction", "movie", "game"]</p>
+                
+                <h3>🏥 البحث الطبي:</h3>
+                <p><strong>الهدف:</strong> معلومات طبية موثقة</p>
+                <p><strong>Required:</strong> ["clinical trial", "peer reviewed", "medical"]</p>
+                <p><strong>Excluded:</strong> ["rumor", "unverified", "blog post"]</p>
+                
+                <h3>💻 التوثيق التقني:</h3>
+                <p><strong>الهدف:</strong> حلول برمجية حديثة</p>
+                <p><strong>Required:</strong> ["Python", "2023", "solution"]</p>
+                <p><strong>Excluded:</strong> ["deprecated", "Python 2", "outdated"]</p>
+                
+                <h3>📰 الأخبار الحديثة:</h3>
+                <p><strong>الهدف:</strong> أخبار اليوم فقط</p>
+                <p><strong>Required:</strong> ["today", "latest", "breaking"]</p>
+                <p><strong>Excluded:</strong> ["historical", "archive", "yesterday"]</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚖️ مقارنة مع Similarity Postprocessor</h2>
+            <div class="comparison-box">
+                <h3>🎯 Keyword Postprocessor:</h3>
+                <ul>
+                    <li><strong>النهج:</strong> البحث عن كلمات محددة</li>
+                    <li><strong>الدقة:</strong> دقيق جداً للمواضيع المحددة</li>
+                    <li><strong>المرونة:</strong> أقل مرونة، أكثر تحديداً</li>
+                    <li><strong>الاستخدام:</strong> لما عارف بالضبط إيه اللي عايزه</li>
+                </ul>
+                
+                <h3>📊 Similarity Postprocessor:</h3>
+                <ul>
+                    <li><strong>النهج:</strong> حساب التشابه الدلالي</li>
+                    <li><strong>الدقة:</strong> يفهم المعنى حتى لو الكلمات مختلفة</li>
+                    <li><strong>المرونة:</strong> أكثر مرونة في فهم السياق</li>
+                    <li><strong>الاستخدام:</strong> للبحث العام والمفاهيمي</li>
+                </ul>
+                
+                <h3>🤝 الاستخدام المشترك:</h3>
+                <p>ممكن تستخدمهم مع بعض! مثلاً: Similarity للفلترة العامة، وKeyword للتخصص أكتر.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 نصائح للاستخدام الأمثل</h2>
+            <div class="intro-box">
+                <h3>🎯 اختيار الكلمات المفتاحية:</h3>
+                <ul>
+                    <li><strong>كن محدداً:</strong> كلمات واضحة ومحددة</li>
+                    <li><strong>فكر في المرادفات:</strong> ضيف كل الطرق اللي ممكن يتقال بيها الشيء</li>
+                    <li><strong>تجنب الكلمات الشائعة:</strong> زي "the", "and" مفيدة</li>
+                    <li><strong>اختبر مع بيانات حقيقية:</strong> شوف النتائج وعدل</li>
+                </ul>
+                
+                <h3>⚠️ احذر من:</h3>
+                <ul>
+                    <li><strong>الفلترة المفرطة:</strong> كلمات كتير أوي ممكن تخلي النتائج فاضية</li>
+                    <li><strong>حساسية الحروف:</strong> خلي بالك من الـ case sensitivity</li>
+                    <li><strong>الكلمات المركبة:</strong> "machine learning" غير "machine" + "learning"</li>
+                </ul>
+                
+                <h3>🔄 التطوير التدريجي:</h3>
+                <ul>
+                    <li><strong>ابدأ ببعض الكلمات:</strong> وشوف النتايج</li>
+                    <li><strong>ضيف تدريجياً:</strong> حسب الحاجة</li>
+                    <li><strong>راقب الأداء:</strong> عدد النتائج وجودتها</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🌟 متى نستخدم Keyword Postprocessor؟</h2>
+            <div class="function-box">
+                <h3>✅ الحالات المثالية:</h3>
+                <ul>
+                    <li><strong>البحث المتخصص:</strong> في مجال محدد</li>
+                    <li><strong>فلترة المحتوى:</strong> إزالة المحتوى غير المرغوب</li>
+                    <li><strong>التحقق من الجودة:</strong> ضمان وجود مصطلحات مهمة</li>
+                    <li><strong>البحث التاريخي:</strong> محدود بفترة زمنية</li>
+                </ul>
+                
+                <h3>❌ متى ممكن مايكونش مناسب:</h3>
+                <ul>
+                    <li><strong>البحث المفتوح:</strong> استكشاف عام بدون توجه محدد</li>
+                    <li><strong>المفاهيم المعقدة:</strong> اللي ممكن تتعبر عنها بطرق كتير</li>
+                    <li><strong>النصوص القصيرة:</strong> مفيهاش كلمات كفاية للفلترة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 Keyword Postprocessor أداة قوية للتحكم الدقيق في نوعية المحتوى اللي عايزه!</p>
+        </div>
+    </div>
+</body>
+</html>

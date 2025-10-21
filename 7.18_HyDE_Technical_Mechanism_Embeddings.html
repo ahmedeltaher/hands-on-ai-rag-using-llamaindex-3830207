@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الآلية التقنية وتوليد Embeddings في HyDE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; }
+        .technical-details { background: linear-gradient(120deg, #f3e5f5 0%, #e1bee7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 الآلية التقنية وتوليد Embeddings في HyDE</h1>
+            <p>الدرس الثامن عشر: التفاصيل التقنية لعملية توليد الـ Vector Embeddings</p>
+        </div>
+        <div class="card">
+            <h2>⚡ العملية التقنية المفصلة</h2>
+            <div class="technical-details">
+                <h3>توليد وإدارة Embeddings</h3>
+                <p>النقطة المهمة في HyDE هي أننا <strong>لا نحفظ المستند الافتراضي نفسه</strong>، بل نستخدم embedding vector فقط للبحث عن المستندات الحقيقية المشابهة.</p>
+                <h4>العملية التقنية:</h4>
+                <ul>
+                    <li>توليد النص الافتراضي بواسطة LLM</li>
+                    <li>تحويل النص إلى embedding vector</li>
+                    <li>البحث في قاعدة البيانات باستخدام هذا الـ vector</li>
+                    <li>استرجاع المستندات الحقيقية الأكثر تشابهاً</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer">
+            <p>🔧 انتهى الجزء الثامن عشر | الجزء التالي: الفكرة النظرية وراء التشابه الدلالي</p>
+        </div>
+    </div>
+</body>
+</html>

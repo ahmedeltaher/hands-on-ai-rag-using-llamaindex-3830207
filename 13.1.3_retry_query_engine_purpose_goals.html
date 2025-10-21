@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
+    <title>Retry Query Engine - الأهداف والغرض</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #ddd6fe 0%, #ede9fe 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #6c5ce7;
+        }
+        
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .process-step {
+            text-align: center;
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin: 0 10px;
+            border: 2px solid #6c5ce7;
+        }
+        
+        .process-arrow {
+            font-size: 2rem;
+            color: #6c5ce7;
+            margin: 0 10px;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .benefit-card {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .analogy-section {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .comparison-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .before-box {
+            background: #fff5f5;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .after-box {
+            background: #f0fff4;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+        
+        .technical-note {
+            background: #2d3436;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #fdcb6e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Retry Query Engine - الأهداف والغرض</h1>
+            <p>فهم عميق لإزاي النظام ده بيحسن الإجابات تدريجياً</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🎯 إيه هو الـ Retry Query Engine؟</div>
+            </div>
+            <div class="content">
+                <p>الـ Retry Query Engine ده نظام ذكي مصمم عشان يحسن جودة الإجابات عن طريق إعادة المحاولة. بدل ما ياخد أول إجابة ويمشي بيها، بيقيّم الإجابة الأولى ولو مش مرضية بيحاول تاني بطريقة محسنة.</p>
+                
+                <div class="highlight">
+                    <strong>🧠 الفكرة الأساسية:</strong> "مش كل إجابة أولى بتكون أحسن إجابة - خلينا نحاول كمان مرة!"
+                </div>
+                
+                <p>النظام ده بيعتمد على مبدأ التحسين التدريجي - كل محاولة بتكون أحسن من اللي قبلها، لحد ما نوصل لإجابة ترضي المعايير اللي احنا حددناها.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🔍 الغرض التفصيلي من النظام</div>
+            </div>
+            <div class="content">
+                <h3 style="color: #6c5ce7; margin-bottom: 15px;">1️⃣ تحسين استجابة الاستعلامات</h3>
+                <p>الهدف الرئيسي هو تحسين جودة الإجابات عن طريق إعادة محاولة الاستعلامات اللي فشلت في تحقيق معايير التقييم المطلوبة.</p>
+                
+                <div class="highlight">
+                    <strong>مثال عملي:</strong> لو سألت "إيه أحسن استراتيجية لتعلم الذكاء الاصطناعي؟" والإجابة الأولى كانت عامة وسطحية، النظام هيحاول تاني عشان يطلع إجابة أكتر تفصيلاً وفايدة.
+                </div>
+                
+                <h3 style="color: #6c5ce7; margin-bottom: 15px; margin-top: 25px;">2️⃣ التحسين التدريجي</h3>
+                <p>كل محاولة جديدة بتكون محسنة عن اللي قبلها. النظام مش بيحاول نفس الحاجة كذا مرة، لا، بيتعلم من الأخطاء ويحسن من أسلوبه.</p>
+                
+                <div class="process-flow">
+                    <div class="process-step">
+                        <div style="font-size: 2rem;">🎯</div>
+                        <strong>المحاولة الأولى</strong><br>
+                        إجابة أساسية
+                    </div>
+                    <div class="process-arrow">➜</div>
+                    <div class="process-step">
+                        <div style="font-size: 2rem;">📊</div>
+                        <strong>التقييم</strong><br>
+                        فحص الجودة
+                    </div>
+                    <div class="process-arrow">➜</div>
+                    <div class="process-step">
+                        <div style="font-size: 2rem;">🔄</div>
+                        <strong>المحاولة المحسنة</strong><br>
+                        إجابة أفضل
+                    </div>
+                </div>
+                
+                <h3 style="color: #6c5ce7; margin-bottom: 15px; margin-top: 25px;">3️⃣ الاستجابة التلقائية</h3>
+                <p>النظام بيشتغل بشكل تلقائي كامل - مش محتاج تدخل منك في كل خطوة. بيقيّم الإجابة ويقرر لوحده يعيد المحاولة ولا لأ.</p>
+            </div>
+        </div>
+
+        <div class="analogy-section">
+            <div class="card-title" style="color: white;">🎓 تشبيه يوضح الفكرة</div>
+            <div style="margin-top: 15px; line-height: 1.8;">
+                <p>تخيل إنك بتسأل طالب ذكي سؤال في امتحان. لو الإجابة الأولى مش مرضية، بدل ما تقبل بيها، بتقوله "فكر تاني، أكيد تقدر تجاوب أحسن من كده". الطالب بياخد الفيدباك بتاعك ويحاول تاني، وكل مرة بيحسن من إجابته لحد ما توصلوا لإجابة ممتازة.</p>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <strong>ده بالظبط اللي بيحصل هنا:</strong> النظام بيطلب من الـ AI يحسن إجابته لحد ما توصل للمستوى المطلوب!
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">⚖️ مقارنة: قبل وبعد استخدام Retry Query Engine</div>
+            </div>
+            <div class="content">
+                <div class="comparison-box">
+                    <div class="before-box">
+                        <h4 style="color: #e74c3c; margin-bottom: 15px;">❌ بدون Retry Query Engine</h4>
+                        <ul style="padding-right: 20px;">
+                            <li>إجابة واحدة بس وخلاص</li>
+                            <li>مافيش تقييم للجودة</li>
+                            <li>قبول بأي مستوى إجابة</li>
+                            <li>مافيش تحسين أو تطوير</li>
+                            <li>نتايج غير متسقة</li>
+                        </ul>
+                        
+                        <div style="background: #ffebee; padding: 10px; border-radius: 5px; margin-top: 15px;">
+                            <strong>النتيجة:</strong> إجابات ممكن تكون سطحية أو غير مفيدة
+                        </div>
+                    </div>
+                    
+                    <div class="after-box">
+                        <h4 style="color: #27ae60; margin-bottom: 15px;">✅ مع Retry Query Engine</h4>
+                        <ul style="padding-right: 20px;">
+                            <li>محاولات متعددة ومحسنة</li>
+                            <li>تقييم مستمر للجودة</li>
+                            <li>معايير واضحة للقبول</li>
+                            <li>تحسين تدريجي مستمر</li>
+                            <li>نتايج عالية الجودة</li>
+                        </ul>
+                        
+                        <div style="background: #e8f5e8; padding: 10px; border-radius: 5px; margin-top: 15px;">
+                            <strong>النتيجة:</strong> إجابات دقيقة وشاملة ومفيدة
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">💡 فوائد استخدام Retry Query Engine</div>
+            </div>
+            <div class="content">
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🎯</div>
+                        <h4>دقة أعلى</h4>
+                        <p>إجابات أكتر دقة وتفصيلاً لأن النظام مش بيقبل بأقل من المطلوب</p>
+                    </div>
+                    
+                    <div class="benefit-card" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">⚡</div>
+                        <h4>تحسين مستمر</h4>
+                        <p>كل محاولة أحسن من اللي قبلها، والنظام بيتعلم من أخطاؤه</p>
+                    </div>
+                    
+                    <div class="benefit-card" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
+                        <h4>شغل تلقائي</h4>
+                        <p>مش محتاج تدخل منك، النظام بيقيّم ويحسن لوحده</p>
+                    </div>
+                    
+                    <div class="benefit-card" style="background: linear-gradient(135deg, #e17055 0%, #d63031 100%);">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🛡️</div>
+                        <h4>ضمان الجودة</h4>
+                        <p>مافيش إجابة هتطلع غير لما تحقق المعايير المطلوبة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="technical-note">
+            <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">⚡ معلومة تقنية مهمة</div>
+            <p>النظام ده بيعتمد على كمية كبيرة من الـ Prompts اللي بتحصل تحت الغطاء. كل محاولة تحسين بتتطلب تفاعل مع الـ Language Model، وده معناه إن فيه شغل كتير بيحصل وراء الكواليس عشان نوصل للنتيجة المطلوبة.</p>
+            
+            <p style="margin-top: 15px;"><strong>الخلاصة:</strong> النظام ده مش بس بيدي إجابة، بيضمن إن الإجابة دي تكون على أعلى مستوى ممكن!</p>
+        </div>
+    </div>
+</body>
+</html>

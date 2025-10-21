@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small to Big Retrieval - الجزء الثاني: Recursive Retrieval والتقنيات الأساسية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .recursive-card {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .recursive-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .components-card {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .components-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .parser-card {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .parser-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #1976d2;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 30%);
+            border-left: 5px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #e65100;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #6a1b9a;
+        }
+
+        .process-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .component-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .component-item h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .parser-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            border-top: 3px solid #6c5ce7;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .components-grid,
+            .parser-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Recursive Retrieval</h1>
+            <p>الجزء الثاني: فهم التقنيات الأساسية والمكونات</p>
+        </div>
+
+        <div class="content">
+            <!-- مفهوم Recursive Retrieval -->
+            <div class="card recursive-card">
+                <h2>🔄 إيه هو Recursive Retrieval؟</h2>
+                <div class="card-content">
+                    <p>المدرس بيشرحلنا إن Small to Big Retrieval ده اسمه التاني هو "Recursive Retrieval" وده ميزة رائعة في LlamaIndex!</p>
+
+                    <div class="highlight-box">
+                        <h4>🎯 الهدف الأساسي - فهم عميق</h4>
+                        <p>الهدف هو "efficiently retrieve relevant context for a query" - يعني نجيب السياق المناسب للسؤال بكفاءة عالية.</p>
+                        
+                        <h5>🔬 التحليل التقني العميق:</h5>
+                        <ul>
+                            <li><strong>Efficiency:</strong> مش بس سرعة، لكن كمان استخدام أمثل للموارد المتاحة</li>
+                            <li><strong>Relevance:</strong> قياس دقيق لمدى صلة المحتوى بالسؤال المطروح</li>
+                            <li><strong>Context:</strong> مش بس المعلومة، لكن السياق الكامل اللي يخلي المعلومة مفهومة</li>
+                            <li><strong>Query-specific:</strong> كل بحث مخصص حسب طبيعة السؤال ومتطلباته</li>
+                        </ul>
+                        
+                        <h5>🧠 الأسس النظرية:</h5>
+                        <p>الطريقة دي مبنية على مبادئ الـ <strong>Information Theory</strong> وخاصة مفهوم الـ <strong>Information Gain</strong> - إزاي نزود المعلومات المفيدة ونقلل الـ noise بأقل تكلفة ممكنة.</p>
+                        
+                        <h5>🎭 الفلسفة وراء التصميم:</h5>
+                        <p>النظام مصمم على فلسفة <strong>"Progressive Disclosure"</strong> - نبدأ بأقل معلومات مطلوبة للفهم، وبعدين نوسع تدريجياً لحد ما نوصل للفهم الكامل.</p>
+                    </div>
+
+                    <div class="process-steps">
+                        <h4>📋 إزاي بيشتغل Recursive Retriever؟</h4>
+                        
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div>
+                                <h5>🔍 استرجاع القطع الصغيرة</h5>
+                                <p>بيبدأ بـ "retrieving smaller query specific chunks" - يعني بيجيب قطع نص صغيرة ومحددة تجاوب على السؤال</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div>
+                                <h5>🔗 تتبع المراجع</h5>
+                                <p>بعدين بـ "follow references to larger contextual chunks" - يعني بيتبع المراجع عشان يوصل للقطع الأكبر</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div>
+                                <h5>⚙️ معالجة لاحقة للعقد</h5>
+                                <p>بيعمل "node postprocessing" عشان يحسن من جودة وصلة المحتوى اللي هايتبعت للـ LLM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>💡 ليه الطريقة دي ذكية؟</h4>
+                        <p>لأنها بتجمع بين <strong>الدقة في البحث</strong> (من القطع الصغيرة) و <strong>الشمولية في السياق</strong> (من القطع الكبيرة). ده بيخلي الـ LLM يشتغل على معلومات مفيدة أكتر.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مكونات النظام -->
+            <div class="card components-card">
+                <h2>🧩 مكونات النظام الأساسية</h2>
+                <div class="card-content">
+                    <p>المدرس ذكر إن النظام محتاج مكونات مهمة عشان يشتغل صح:</p>
+
+                    <div class="components-grid">
+                        <div class="component-item">
+                            <h4>🔄 Response Synthesizer</h4>
+                            <p><strong>الوظيفة:</strong> يدمج القطع اللي اتجابت مع سؤال المستخدم عشان يولد إجابة متماسكة</p>
+                            <p><strong>أهميته:</strong> ده اللي بيخلي الإجابة منطقية ومفهومة بدل ما تكون قطع متناثرة</p>
+                        </div>
+
+                        <div class="component-item">
+                            <h4>⚙️ Node Postprocessor</h4>
+                            <p><strong>الوظيفة:</strong> بيحول ويحسن من المحتوى قبل ما يوصل للـ LLM</p>
+                            <p><strong>أهميته:</strong> بيضمن إن الـ LLM هايستقبل المعلومات بأفضل شكل ممكن</p>
+                        </div>
+
+                        <div class="component-item">
+                            <h4>🔍 Query Engine</h4>
+                            <p><strong>الوظيفة:</strong> بيربط كل المكونات مع بعض ويدير عملية البحث والاسترجاع</p>
+                            <p><strong>أهميته:</strong> ده القلب النابض لكل العملية</p>
+                        </div>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>🎯 التكامل بين المكونات</h4>
+                        <p>كل مكون ليه دور مهم، والسحر بيحصل لما كلهم يشتغلوا مع بعض بتناغم. الـ Response Synthesizer بيضمن الإجابة المتماسكة، والـ Node Postprocessor بيحسن جودة المحتوى، والـ Query Engine بيدير كل ده.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SentenceWindowNodeParser -->
+            <div class="card parser-card">
+                <h2>🪟 SentenceWindowNodeParser الجزء الأول</h2>
+                <div class="card-content">
+                    <p>ده أول مكون مهم هانتعلمه! المدرس بيقولنا إن الـ SentenceWindowNodeParser ده بيركز على الجمل الفردية بس مع الحفاظ على السياق المحيط بيها.</p>
+
+                    <div class="highlight-box">
+                        <h4>🎯 الهدف من SentenceWindowNodeParser</h4>
+                        <p>يركز على individual sentences بس مع capturing the surrounding context - يعني يجيب الجملة ومعاها السياق المحيط بيها.</p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>📊 متى نستخدمه؟</h4>
+                        <p><strong>المدرس قال:</strong> "This is useful for scenarios that require broad context" - يعني مفيد للحالات اللي محتاجة سياق واسع.</p>
+                    </div>
+
+                    <div class="parser-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">📝</div>
+                            <h5>تقسيم الجمل</h5>
+                            <p>بيقسم النص لجمل منفصلة</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">🪟</div>
+                            <h5>إنشاء نوافذ</h5>
+                            <p>بيعمل نافذة حول كل جملة</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">💾</div>
+                            <h5>حفظ المعلومات</h5>
+                            <p>بيحفظ النافذة في الـ metadata</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">⚙️</div>
+                            <h5>إدارة البيانات</h5>
+                            <p>بيدير النص الأصلي والنافذة</p>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نقطة مهمة</h4>
+                        <p>المدرس هايشرح في الجزء الجاي بالتفصيل إزاي بيشتغل وإيه هي الـ parameters المهمة. لحد دلوقتي إحنا عرفنا الفكرة العامة بس!</p>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>🧠 الفكرة الذكية</h4>
+                        <p>بدل ما نبعت للـ LLM جملة واحدة بس (قد تكون ناقصة المعنى)، بنبعتله الجملة مع الجمل اللي حواليها عشان يفهم السياق كامل. ده بيخلي الفهم أدق والإجابات أحسن!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الاستعداد للجزء التالي -->
+            <div class="card">
+                <h2>📋 اللي جاي في الجزء التالي</h2>
+                <div class="card-content">
+                    <div class="info-box">
+                        <h4>🔜 المواضيع القادمة</h4>
+                        <ul>
+                            <li>تفاصيل أكتر عن SentenceWindowNodeParser وإزاي بيشتغل</li>
+                            <li>الـ parameters المهمة زي window_size</li>
+                            <li>إزاي بيتم تقسيم الجمل باستخدام tokenizer</li>
+                            <li>إدارة الـ metadata والنوافذ</li>
+                            <li>الـ usage patterns والأمثلة العملية</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>💭 نقطة للتفكير</h4>
+                        <p>لحد دلوقتي إحنا فهمنا الصورة الكبيرة - إزاي Recursive Retrieval بيحل مشكلة البحث في النصوص الكبيرة. في الأجزاء الجاية هانغوص في التفاصيل التقنية اللي هاتخلينا نطبق الكلام ده عملياً!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

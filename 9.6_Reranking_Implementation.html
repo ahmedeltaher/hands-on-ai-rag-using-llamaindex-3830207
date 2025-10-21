@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التطبيق العملي لـ Re-ranking مع Query Engines</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .similarity-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .integration-box { background: linear-gradient(120deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .pipeline-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .response-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .advanced-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 التطبيق العملي لـ Re-ranking مع Query Engines</h1>
+            <p>الدرس السادس: من النظرية للتطبيق العملي والاستخدام المتقدم</p>
+        </div>
+
+        <div class="card">
+            <h2>🔄 التشابه مع Post-processors</h2>
+            <div class="similarity-box">
+                <h3>🎯 نفس النمط، نفس البساطة:</h3>
+                <p>المدرب أكد إن استخدام Re-rankers بيتبع <strong>نفس النمط</strong> اللي شوفناه مع Post-processors. ده يخلي التعلم أسهل والتطبيق أسرع.</p>
+                
+                <h3>📋 الخطوات الموحدة:</h3>
+                <ol>
+                    <li><strong>Import:</strong> استيراد المكتبة المطلوبة</li>
+                    <li><strong>Instantiate:</strong> إنشاء كائن من الـ re-ranker مع المعاملات</li>
+                    <li><strong>Configure:</strong> تمرير الكائن للـ query engine</li>
+                    <li><strong>Execute:</strong> تشغيل الاستعلام والحصول على النتائج</li>
+                </ol>
+                
+                <h3>💡 فوائد التوحيد:</h3>
+                <ul>
+                    <li><strong>Learning Curve أقل:</strong> تتعلم pattern واحد وتطبقه على كل شيء</li>
+                    <li><strong>Consistency:</strong> نفس الطريقة مع كل الأدوات</li>
+                    <li><strong>Maintainability:</strong> سهولة صيانة وتطوير الكود</li>
+                    <li><strong>Documentation:</strong> نفس النمط في التوثيق</li>
+                </ul>
+                
+                <h3>🔍 مقارنة مع Post-processors:</h3>
+                <ul>
+                    <li><strong>Post-processor:</strong> <code>SimilarityPostprocessor(similarity_cutoff=0.7)</code></li>
+                    <li><strong>Re-ranker:</strong> <code>CohereRerank(model="rerank-english-v3", top_n=5)</code></li>
+                </ul>
+                <p>شايف التشابه؟ نفس البنية، نفس الفلسفة!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏗️ إعداد Re-ranker مع Query Engine</h2>
+            <div class="integration-box">
+                <h3>⚙️ آلية التكامل:</h3>
+                <p>بعد إنشاء الـ re-ranker، بنمرره كـ argument للـ query engine في مكان محدد: <strong>node_postprocessors argument</strong>.</p>
+                
+                <h3>🎯 ليه node_postprocessors؟</h3>
+                <p>رغم إن Re-ranking تقنياً مش post-processing، إلا إن LlamaIndex بيتعامل معاه كـ post-processor من ناحية المكان في الـ pipeline. ده يخلي الـ API موحد وسهل.</p>
+                
+                <h3>📋 ترتيب العمليات داخلياً:</h3>
+                <ol>
+                    <li><strong>Vector Search:</strong> البحث الأولي في الفهرس</li>
+                    <li><strong>Re-ranking:</strong> إعادة ترتيب النتائج</li>
+                    <li><strong>Post-processing:</strong> معالجة إضافية لو موجودة</li>
+                    <li><strong>LLM Generation:</strong> توليد الإجابة</li>
+                </ol>
+                
+                <h3>🔧 المرونة في التكوين:</h3>
+                <ul>
+                    <li><strong>Re-ranker بس:</strong> يمكن استخدام re-ranker لوحده</li>
+                    <li><strong>مع Post-processors:</strong> يمكن الجمع بينهما</li>
+                    <li><strong>Multiple Re-rankers:</strong> استخدام أكثر من re-ranker</li>
+                    <li><strong>Custom Pipelines:</strong> إنشاء مسارات مخصصة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔗 بناء Chain والـ Pipeline</h2>
+            <div class="pipeline-box">
+                <h3>🏗️ مفهوم الـ Chain:</h3>
+                <p>المدرب اتكلم عن بناء "chain" أو "pipeline" - ده يعني ترتيب العمليات في تسلسل منطقي لتحقيق أفضل نتيجة.</p>
+                
+                <h3>⛓️ مكونات الـ Pipeline النموذجي:</h3>
+                <ol>
+                    <li><strong>Data Ingestion:</strong> تحميل البيانات</li>
+                    <li><strong>Indexing:</strong> إنشاء الفهرس</li>
+                    <li><strong>Query Processing:</strong> معالجة الاستعلام</li>
+                    <li><strong>Initial Retrieval:</strong> البحث الأولي</li>
+                    <li><strong>Re-ranking:</strong> إعادة ترتيب النتائج ← هنا</li>
+                    <li><strong>Post-processing:</strong> معالجة نهائية</li>
+                    <li><strong>Response Generation:</strong> إنتاج الإجابة</li>
+                </ol>
+                
+                <h3>🎯 تحسين الـ Pipeline:</h3>
+                <ul>
+                    <li><strong>Optimize Each Step:</strong> تحسين كل خطوة لوحدها</li>
+                    <li><strong>Monitor Performance:</strong> قياس أداء كل مرحلة</li>
+                    <li><strong>A/B Testing:</strong> اختبار إعدادات مختلفة</li>
+                    <li><strong>Error Handling:</strong> التعامل مع الأخطاء في كل مرحلة</li>
+                </ul>
+                
+                <h3>📊 قياس فعالية الـ Pipeline:</h3>
+                <ul>
+                    <li><strong>End-to-end Latency:</strong> الوقت الكامل للاستجابة</li>
+                    <li><strong>Accuracy Metrics:</strong> دقة النتائج النهائية</li>
+                    <li><strong>User Satisfaction:</strong> رضا المستخدمين</li>
+                    <li><strong>Cost Analysis:</strong> تحليل التكلفة لكل مرحلة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💬 استخدام Query Engine مباشرة</h2>
+            <div class="response-box">
+                <h3>🎯 الطريقة المباشرة:</h3>
+                <p>المدرب أكد إنه هيوضح كيفية الاستخدام المباشر للـ query engine، اللي هو الطريقة الأساسية والأسهل للمبتدئين.</p>
+                
+                <h3>✨ مميزات الاستخدام المباشر:</h3>
+                <ul>
+                    <li><strong>البساطة:</strong> أقل عدد من السطور المطلوبة</li>
+                    <li><strong>الوضوح:</strong> سهولة فهم التدفق</li>
+                    <li><strong>السرعة:</strong> تطوير أسرع للنماذج الأولية</li>
+                    <li><strong>Debugging:</strong> أسهل في تتبع المشاكل</li>
+                </ul>
+                
+                <h3>📋 النتائج المتوقعة:</h3>
+                <p>المدرب ذكر إن النتيجة هتبقى <strong>زي اللي اتعودنا نشوفها</strong> - يعني نفس structure الاستجابة، بس بجودة أعلى.</p>
+                
+                <h3>🔍 مكونات الاستجابة:</h3>
+                <ul>
+                    <li><strong>Response Text:</strong> الإجابة الأساسية من الـ LLM</li>
+                    <li><strong>Source Nodes:</strong> المصادر المستخدمة</li>
+                    <li><strong>NodeWithScore Objects:</strong> العقد مع درجات الصلة</li>
+                    <li><strong>Metadata:</strong> معلومات إضافية عن العملية</li>
+                </ul>
+                
+                <h3>💡 نصائح للاستخدام الأمثل:</h3>
+                <ul>
+                    <li><strong>ابدأ بالإعدادات الافتراضية:</strong> وعدل تدريجياً</li>
+                    <li><strong>اختبر مع أسئلة متنوعة:</strong> تأكد من الأداء العام</li>
+                    <li><strong>راقب الـ source nodes:</strong> شوف هل المصادر منطقية</li>
+                    <li><strong>قارن مع البحث العادي:</strong> اقيس التحسن</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 الاستخدام المتقدم: Query Pipeline</h2>
+            <div class="advanced-box">
+                <h3>🚀 ايه هو Query Pipeline؟</h3>
+                <p>ده مستوى أعلى من التحكم، بيخليك تبني مسار معقد ومخصص للاستعلامات، مع تحكم دقيق في كل خطوة.</p>
+                
+                <h3>⚙️ متى تستخدم Query Pipeline؟</h3>
+                <ul>
+                    <li><strong>Complex Workflows:</strong> عندك احتياجات معقدة</li>
+                    <li><strong>Multiple Data Sources:</strong> تتعامل مع مصادر متعددة</li>
+                    <li><strong>Custom Logic:</strong> محتاج منطق خاص بمجالك</li>
+                    <li><strong>Advanced Optimization:</strong> تحسينات متقدمة</li>
+                </ul>
+                
+                <h3>🎯 مميزات Query Pipeline:</h3>
+                <ul>
+                    <li><strong>Flexibility:</strong> مرونة كاملة في التصميم</li>
+                    <li><strong>Reusability:</strong> إعادة استخدام المكونات</li>
+                    <li><strong>Modularity:</strong> كل جزء منفصل ومستقل</li>
+                    <li><strong>Scalability:</strong> قابلية التوسع</li>
+                </ul>
+                
+                <h3>🔧 مكونات Pipeline المتقدم:</h3>
+                <ul>
+                    <li><strong>Query Transformers:</strong> تحويل الاستعلام</li>
+                    <li><strong>Multiple Retrievers:</strong> محركات بحث متعددة</li>
+                    <li><strong>Fusion Techniques:</strong> دمج النتائج</li>
+                    <li><strong>Custom Re-rankers:</strong> إعادة ترتيب مخصصة</li>
+                    <li><strong>Response Synthesis:</strong> تكوين الإجابة النهائية</li>
+                </ul>
+                
+                <h3>⚡ الخلاصة:</h3>
+                <p>ابدأ بالـ query engine المباشر للتعلم والاختبار، وبعدين انتقل للـ pipeline المتقدم لما تحتاج تحكم أكبر ومميزات إضافية.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 من البساطة للتعقيد: رحلة تدريجية نحو إتقان Re-ranking!</p>
+        </div>
+    </div>
+</body>
+</html>

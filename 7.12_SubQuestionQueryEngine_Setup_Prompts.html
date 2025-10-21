@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد SubQuestionQueryEngine وتخصيص الـ Prompts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .setup-process {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+
+        .prompt-customization {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        ul {
+            padding-right: 30px;
+            margin: 15px 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ إعداد SubQuestionQueryEngine وتخصيص الـ Prompts</h1>
+            <p>الدرس الثاني عشر: التكوين النهائي والتخصيص المتقدم</p>
+        </div>
+
+        <div class="card">
+            <h2>🔧 إعداد SubQuestionQueryEngine</h2>
+            
+            <div class="setup-process">
+                <h3>خطوات الإعداد الأساسي</h3>
+                <p>بعد ما جهزت Query Engine Tools، دلوقتي وقت تجمع كل حاجة مع بعض في نظام متكامل.</p>
+                
+                <div class="example-box">
+                    <h5>الخطوات العملية:</h5>
+                    <ul>
+                        <li>تجميع كل Query Engine Tools في مكان واحد</li>
+                        <li>إنشاء SubQuestionQueryEngine object</li>
+                        <li>ربط الأدوات بالمحرك الرئيسي</li>
+                        <li>ضبط إعدادات التشغيل</li>
+                        <li>اختبار التكوين</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="prompt-customization">
+                <h3>تخصيص الـ Prompts المتقدمة</h3>
+                <p>ده الجزء المهم اللي بيحدد جودة النتائج - تصميم prompts مخصصة لاحتياجاتك.</p>
+                
+                <div class="example-box">
+                    <h5>أنواع الـ Prompts القابلة للتخصيص:</h5>
+                    <ul>
+                        <li><strong>Question Generation Prompt:</strong> للتحكم في كيفية تقسيم الأسئلة</li>
+                        <li><strong>Answer Synthesis Prompt:</strong> للتحكم في كيفية دمج النتائج</li>
+                        <li><strong>Tool Selection Prompt:</strong> للتحكم في اختيار الأدوات المناسبة</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚙️ انتهى الجزء الثاني عشر من Query Transformation | الجزء التالي: تشغيل مثال عملي مع SubQuestionQueryEngine</p>
+        </div>
+    </div>
+</body>
+</html>

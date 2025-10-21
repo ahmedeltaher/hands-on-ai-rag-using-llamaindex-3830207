@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small to Big Retrieval - الجزء السادس: المثال العملي والكود</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-card {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .code-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .example-card {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .example-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .metadata-card {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .metadata-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            direction: ltr;
+            text-align: left;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #1976d2;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 30%);
+            border-left: 5px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #e65100;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #6a1b9a;
+        }
+
+        .metadata-structure {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px solid #6c5ce7;
+            text-align: left;
+            direction: ltr;
+            font-family: 'Courier New', monospace;
+        }
+
+        .parameter-explanation {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .param-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .param-item h5 {
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .parameter-explanation {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💻 المثال العملي والكود</h1>
+            <p>الجزء السادس: تطبيق عملي لـ SentenceWindowNodeParser</p>
+        </div>
+
+        <div class="content">
+            <!-- إنشاء sentence_window_splitter -->
+            <div class="card code-card">
+                <h2>🛠️ إنشاء sentence_window_splitter - تحليل تقني شامل</h2>
+                <div class="card-content">
+                    <p>المدرس بيبدأ يورينا الكود الحقيقي! هانشوف إزاي نعمل sentence_window_splitter.</p>
+
+                    <div class="code-block">
+def sentence_window_splitter():
+    # Wrapper function لإنشاء SentenceWindowNodeParser
+    from llama_index.core.node_parser import SentenceWindowNodeParser
+    
+    return SentenceWindowNodeParser.from_defaults(
+        window_size=5,  # حجم النافذة 5 جمل قبل و 5 بعد
+        window_metadata_key="window",
+        original_text_metadata_key="original_text",
+    )</div>
+
+                    <div class="success-box">
+                        <h4>� التحليل العميق للكود</h4>
+                        
+                        <h5>🏗️ هندسة البرمجيات:</h5>
+                        <ul>
+                            <li><strong>Factory Pattern:</strong> تطبيق نمط المصنع لإنشاء كائنات معقدة</li>
+                            <li><strong>Configuration Encapsulation:</strong> تغليف الإعدادات في دالة منفصلة</li>
+                            <li><strong>Dependency Injection:</strong> حقن التبعية للمكونات الخارجية</li>
+                            <li><strong>Separation of Concerns:</strong> فصل منطق الإنشاء عن منطق الاستخدام</li>
+                        </ul>
+                        
+                        <h5>⚙️ تحليل المعاملات التقني:</h5>
+                        <ul>
+                            <li><strong>window_size=5:</strong> Mathematical optimization - النافذة 5+1+5=11 جملة للتوازن الأمثل</li>
+                            <li><strong>window_metadata_key:</strong> String identifier for context storage</li>
+                            <li><strong>original_text_metadata_key:</strong> Reference pointer for original content</li>
+                        </ul>
+                        
+                        <h5>🧠 الذكاء في التصميم:</h5>
+                        <ul>
+                            <li><strong>Memory Management:</strong> إدارة ذكية للذاكرة مع تجنب التكرار</li>
+                            <li><strong>Performance Optimization:</strong> تحسين الأداء عبر التخزين المؤقت</li>
+                            <li><strong>Scalability Consideration:</strong> تصميم قابل للتوسع</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>📝 شرح الكود - تحليل مفصل</h4>
+                        <ul>
+                            <li><strong>wrapper function:</strong> دالة تغليف تطبق مبدأ Single Responsibility وتبسط الاستخدام</li>
+                            <li><strong>window_size=5:</strong> تحسين مبني على تجارب - 11 جملة تقدم سياق كافي بدون إرباك</li>
+                            <li><strong>window_metadata_key:</strong> مفتاح تخزين النافذة في البيانات الوصفية بكفاءة</li>
+                            <li><strong>original_text_metadata_key:</strong> مرجع للنص الأصلي للمقارنة والتحليل</li>
+                        </ul>
+                        
+                        <h5>📊 تحليل الأداء:</h5>
+                        <ul>
+                            <li><strong>Space Complexity:</strong> O(n×w) حيث n عدد الجمل و w حجم النافذة</li>
+                            <li><strong>Time Complexity:</strong> O(n) للمعالجة الخطية</li>
+                            <li><strong>Memory Footprint:</strong> محسن للاستخدام الأمثل للذاكرة</li>
+                            <li><strong>Cache Efficiency:</strong> تصميم محسن للذاكرة المؤقتة</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نقطة مهمة - اعتبارات التصميم</h4>
+                        <p>المدرس اختار window_size = 5 في المثال ده، يعني كل جملة هاتكون محاطة بـ 10 جمل تانية! ده هايدي سياق كبير جداً للـ LLM.</p>
+                        
+                        <h5>🔬 تحليل اختيار الحجم:</h5>
+                        <ul>
+                            <li><strong>Cognitive Science:</strong> 11 جملة تقع في النطاق الأمثل للفهم البشري</li>
+                            <li><strong>Information Theory:</strong> توازن بين المعلومات الكافية وتجنب الضوضاء</li>
+                            <li><strong>Computational Efficiency:</strong> حجم محسوب لا يرهق الذاكرة أو المعالجة</li>
+                            <li><strong>Context Window Optimization:</strong> يتماشى مع حدود السياق في النماذج اللغوية</li>
+                        </ul>
+                        
+                        <h5>⚖️ Trade-offs Analysis:</h5>
+                        <ul>
+                            <li><strong>Benefit:</strong> سياق غني وشامل للفهم العميق</li>
+                            <li><strong>Cost:</strong> استهلاك أكبر للذاكرة والمعالجة</li>
+                            <li><strong>Optimization:</strong> الفائدة تفوق التكلفة في معظم الحالات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إنشاء الـ nodes -->
+            <div class="card example-card">
+                <h2>📋 إنشاء الـ Nodes - تحليل العمليات</h2>
+                <div class="card-content">
+                    <p>بعد إنشاء الـ splitter، المدرس بيورينا إزاي نعمل nodes من النصوص:</p>
+
+                    <div class="code-block">
+# إنشاء الـ splitter
+splitter = sentence_window_splitter()
+
+# إنشاء nodes من المستندات
+nodes = splitter.get_nodes_from_documents(documents)
+
+# مثال على node واحد
+example_node = nodes[0]  # أول node</div>
+
+                    <div class="success-box">
+                        <h4>✅ إيه اللي حصل؟ - تحليل عميق للعملية</h4>
+                        <p>الـ splitter أخد المستندات وقسمها لـ nodes، كل node فيه:</p>
+                        
+                        <h5>🏗️ هيكل البيانات المتقدم:</h5>
+                        <ul>
+                            <li><strong>Primary Content:</strong> جملة واحدة أساسية كنواة المحتوى</li>
+                            <li><strong>Context Window:</strong> نافذة من 10 جمل حواليها للسياق الكامل</li>
+                            <li><strong>Structured Metadata:</strong> بيانات وصفية منظمة للتحكم والتتبع</li>
+                            <li><strong>Relational Links:</strong> علاقات محسوبة مع الـ nodes الأخرى</li>
+                        </ul>
+                        
+                        <h5>⚙️ عمليات المعالجة الداخلية:</h5>
+                        <ul>
+                            <li><strong>Document Parsing:</strong> تحليل المستندات وتقسيمها</li>
+                            <li><strong>Sentence Segmentation:</strong> تقسيم الجمل بدقة عالية</li>
+                            <li><strong>Window Calculation:</strong> حساب النوافذ السياقية</li>
+                            <li><strong>Metadata Generation:</strong> توليد البيانات الوصفية تلقائياً</li>
+                            <li><strong>Node Construction:</strong> بناء هياكل البيانات النهائية</li>
+                        </ul>
+                        
+                        <h5>📊 مقاييس الجودة:</h5>
+                        <ul>
+                            <li><strong>Content Fidelity:</strong> الحفاظ على سلامة المحتوى الأصلي</li>
+                            <li><strong>Context Richness:</strong> ثراء السياق المحيط</li>
+                            <li><strong>Processing Efficiency:</strong> كفاءة المعالجة والتخزين</li>
+                            <li><strong>Retrieval Readiness:</strong> الجاهزية للبحث والاسترجاع</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 مثال على المحتوى - استكشاف البيانات</h4>
+                        <p>المدرس ورانا مثال على شكل الـ node. تعالوا نشوف البيانات اللي فيه...</p>
+                        
+                        <h5>🔍 تحليل محتوى الـ Node:</h5>
+                        <ul>
+                            <li><strong>text:</strong> الجملة الأساسية المفهرسة</li>
+                            <li><strong>metadata.window:</strong> النافذة السياقية الكاملة</li>
+                            <li><strong>metadata.original_text:</strong> النص الأصلي للمرجعية</li>
+                            <li><strong>id:</strong> معرف فريد للتتبع والفهرسة</li>
+                            <li><strong>relationships:</strong> الروابط مع العقد الأخرى</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شرح metadata_mode -->
+            <div class="card metadata-card">
+                <h2>🗂️ فهم metadata_mode - تحليل نظم إدارة البيانات</h2>
+                <div class="card-content">
+                    <p>المدرس لفت نظرنا لحاجة مهمة جداً اسمها metadata_mode. ده بيتحكم في إيه اللي يوصل للـ LLM!</p>
+
+                    <div class="metadata-structure">
+# مثال على metadata الموجودة في node
+metadata = {
+    "original_text": "الجملة الأساسية هنا",
+    "window": "5 جمل قبل + الجملة الأساسية + 5 جمل بعد",
+    "excluded_embed_metadata_keys": ["window", "original_text"],
+    "excluded_llm_metadata_keys": ["window", "original_text"]
+}</div>
+
+                    <div class="success-box">
+                        <h4>🔬 علم إدارة البيانات الوصفية</h4>
+                        
+                        <h5>🎯 مبادئ التحكم في التدفق:</h5>
+                        <ul>
+                            <li><strong>Selective Data Exposure:</strong> تعرض انتقائي للبيانات حسب السياق</li>
+                            <li><strong>Context-Aware Processing:</strong> معالجة واعية بالسياق</li>
+                            <li><strong>Information Filtering:</strong> تصفية المعلومات للأغراض المختلفة</li>
+                            <li><strong>Computational Efficiency:</strong> كفاءة حاسوبية عبر التحكم الدقيق</li>
+                        </ul>
+                        
+                        <h5>⚙️ هندسة التحكم:</h5>
+                        <ul>
+                            <li><strong>Pipeline Segmentation:</strong> تقسيم مسار المعالجة لمراحل متخصصة</li>
+                            <li><strong>Adaptive Content Delivery:</strong> توصيل محتوى تكيفي حسب الغرض</li>
+                            <li><strong>Resource Optimization:</strong> تحسين استخدام الموارد</li>
+                            <li><strong>Quality Control:</strong> ضبط جودة المعلومات المرسلة</li>
+                        </ul>
+                    </div>
+
+                    <div class="parameter-explanation">
+                        <div class="param-item">
+                            <h5>📤 excluded_embed_metadata_keys - تحسين البحث</h5>
+                            <p><strong>الوظيفة:</strong> البيانات دي مش هاتدخل في الـ embedding. عشان نركز بس على الجملة الأساسية في البحث</p>
+                            
+                            <h6>🎯 الفوائد التقنية:</h6>
+                            <ul>
+                                <li><strong>Vector Purity:</strong> نظافة المتجهات من الضوضاء</li>
+                                <li><strong>Search Precision:</strong> دقة أعلى في البحث الدلالي</li>
+                                <li><strong>Computational Speed:</strong> سرعة في العمليات</li>
+                                <li><strong>Memory Efficiency:</strong> كفاءة في الذاكرة</li>
+                            </ul>
+                        </div>
+
+                        <div class="param-item">
+                            <h5>🤖 excluded_llm_metadata_keys</h5>
+                            <p>البيانات دي مش هاتوصل للـ LLM بشكل افتراضي. بس نقدر نغير ده!</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h5>⚙️ metadata_mode</h5>
+                            <p>ده اللي بيتحكم في إيه اللي يوصل للـ LLM. ممكن نقول "LLM" أو نغيره</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h5>🔧 التحكم المرن</h5>
+                            <p>نقدر نضيف أو نشيل مفاتيح من اللي يوصل للـ LLM حسب احتياجاتنا</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>💡 مثال عملي</h4>
+                        <p>المدرس ورانا إن لو عندنا node رقم 5، نقدر نشوف إيه اللي هايوصل للـ LLM:</p>
+                        <ul>
+                            <li><strong>metadata_mode="LLM":</strong> هايجيب كل البيانات المسموحة للـ LLM</li>
+                            <li><strong>metadata_mode="EMBED":</strong> هايجيب بس البيانات المسموحة للـ embedding</li>
+                        </ul>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>🧠 الفكرة الذكية</h4>
+                        <p>النظام بيدينا مرونة كاملة في التحكم في البيانات:</p>
+                        <ul>
+                            <li><strong>للبحث:</strong> نركز على الجملة الأساسية بس</li>
+                            <li><strong>للفهم:</strong> نقدر نبعت النافذة الكاملة أو جزء منها</li>
+                            <li><strong>للتخصيص:</strong> نقدر نغير البيانات حسب الحاجة</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 هنا هايدخل PostProcessor</h4>
+                        <p>هنا بالظبط هايدخل دور MetadataReplacementPostProcessor! هو اللي هايضمن إن النافذة الكاملة توصل للـ LLM بدل الجملة الصغيرة.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الاستعداد للجزء التالي -->
+            <div class="card">
+                <h2>📋 اللي جاي في الجزء التالي</h2>
+                <div class="card-content">
+                    <div class="info-box">
+                        <h4>🔜 المواضيع القادمة</h4>
+                        <ul>
+                            <li>إعداد قاعدة البيانات Qdrant</li>
+                            <li>عملية الفهرسة والتخزين</li>
+                            <li>كيفية بناء vector store</li>
+                            <li>إعداد embedding model</li>
+                            <li>الوقت المطلوب للفهرسة</li>
+                        </ul>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>✅ ملخص ما تعلمناه</h4>
+                        <p>النهارده فهمنا:</p>
+                        <ul>
+                            <li>إزاي نكتب wrapper function للـ SentenceWindowNodeParser</li>
+                            <li>كيفية إنشاء nodes من المستندات</li>
+                            <li>مفهوم metadata_mode ومرونة التحكم</li>
+                            <li>الفرق بين البيانات للـ embedding والـ LLM</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎓 النقطة الأساسية</h4>
+                        <p>الكود مش معقد، بس الفكرة ذكية جداً! إحنا بنبني نظام يقدر يفصل بين البحث (دقيق) والفهم (شامل). والـ metadata_mode بيدينا سيطرة كاملة على البيانات!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Node Postprocessor - المقدمة والمفهوم</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .concept-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .keyword-demo { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .parameters-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .use-cases { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .examples-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .examples-table th, .examples-table td { border: 1px solid #ddd; padding: 12px; text-align: right; }
+        .examples-table th { background: #3498db; color: white; }
+        .include { background: #d4edda; color: #155724; }
+        .exclude { background: #f8d7da; color: #721c24; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 Keyword Node Postprocessor - المقدمة والمفهوم</h1>
+            <p>الدرس السادس: فلترة النودز بناء على الكلمات المفتاحية</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 إيه هو Keyword Node Postprocessor؟</h2>
+            <div class="concept-box">
+                <p>ده نوع من الـ postprocessors بيفلتر النودز بناء على وجود أو عدم وجود كلمات معينة. تخيل إنك عايز تدور على مقالات عن "الذكاء الاصطناعي" بس، أو عايز تتجنب أي محتوى فيه كلمة "سياسة".</p>
+                
+                <h3>🔍 المبدأ الأساسي:</h3>
+                <ul>
+                    <li><strong>Required Keywords:</strong> كلمات لازم تكون موجودة</li>
+                    <li><strong>Excluded Keywords:</strong> كلمات مايجوزش تكون موجودة</li>
+                    <li><strong>النود بيفضل لو:</strong> فيه كل الـ required keywords ومافيهوش أي excluded keywords</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ الـ Parameters الأساسية</h2>
+            <div class="parameters-box">
+                <h3>🔧 required_keywords (List[str]):</h3>
+                <p>قائمة بالكلمات اللي لازم تكون موجودة في النود. لو النود مافيهوش واحدة من الكلمات دي، بيتشال.</p>
+                
+                <h3>🚫 exclude_keywords (List[str]):</h3>
+                <p>قائمة بالكلمات اللي مايجوزش تكون موجودة. لو النود فيه أي كلمة من دي، بيتشال.</p>
+                
+                <h3>🌍 lang (str, optional):</h3>
+                <p>لغة النص في النودز. الافتراضي إنجليزي، بس ممكن تغيره لعربي أو أي لغة تانية. ده بيأثر على طريقة معالجة النص.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 مثال عملي مفصل</h2>
+            <div class="keyword-demo">
+                <h3>🎯 السيناريو:</h3>
+                <p>عايز تدور على محتوى عن "machine learning" في "healthcare" بس، ومش عايز أي حاجة عن "marketing".</p>
+                
+                <table class="examples-table">
+                    <thead>
+                        <tr>
+                            <th>النود</th>
+                            <th>المحتوى</th>
+                            <th>Required Found?</th>
+                            <th>Excluded Found?</th>
+                            <th>النتيجة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="include">
+                            <td>Node 1</td>
+                            <td>Machine learning في تشخيص أمراض القلب</td>
+                            <td>✅ نعم</td>
+                            <td>❌ لا</td>
+                            <td>✅ مقبول</td>
+                        </tr>
+                        <tr class="exclude">
+                            <td>Node 2</td>
+                            <td>استخدام AI في marketing للمنتجات الطبية</td>
+                            <td>❌ لا</td>
+                            <td>✅ نعم</td>
+                            <td>❌ مرفوض</td>
+                        </tr>
+                        <tr class="exclude">
+                            <td>Node 3</td>
+                            <td>تطوير تطبيقات الويب باستخدام Python</td>
+                            <td>❌ لا</td>
+                            <td>❌ لا</td>
+                            <td>❌ مرفوض</td>
+                        </tr>
+                        <tr class="include">
+                            <td>Node 4</td>
+                            <td>Healthcare applications of deep learning</td>
+                            <td>✅ نعم</td>
+                            <td>❌ لا</td>
+                            <td>✅ مقبول</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 حالات الاستخدام العملية</h2>
+            <div class="use-cases">
+                <h3>📚 في التعليم:</h3>
+                <ul>
+                    <li>دور على محتوى عن "رياضيات" و "فيزياء" بس</li>
+                    <li>تجنب المحتوى اللي فيه "امتحانات قديمة"</li>
+                </ul>
+                
+                <h3>🏥 في الطب:</h3>
+                <ul>
+                    <li>دور على "أمراض القلب" و "العلاج"</li>
+                    <li>تجنب أي محتوى فيه "تجارب على الحيوانات"</li>
+                </ul>
+                
+                <h3>💼 في الأعمال:</h3>
+                <ul>
+                    <li>دور على "استراتيجيات التسويق" في "التكنولوجيا"</li>
+                    <li>تجنب المحتوى اللي فيه "منافسين محددين"</li>
+                </ul>
+                
+                <h3>🔬 في البحث العلمي:</h3>
+                <ul>
+                    <li>دور على "machine learning" و "computer vision"</li>
+                    <li>تجنب "أوراق ما قبل 2020"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🤔 مقارنة مع Similarity Postprocessor</h2>
+            <div class="concept-box">
+                <h3>📊 Keyword vs Similarity:</h3>
+                <ul>
+                    <li><strong>Keyword:</strong> فلترة دقيقة بناء على كلمات محددة</li>
+                    <li><strong>Similarity:</strong> فلترة بناء على التشابه الدلالي</li>
+                </ul>
+                
+                <h3>🎯 متى نستخدم أيهما؟</h3>
+                <ul>
+                    <li><strong>استخدم Keyword لو:</strong> عندك كلمات محددة مهمة جداً</li>
+                    <li><strong>استخدم Similarity لو:</strong> عايز فلترة بناء على المعنى العام</li>
+                    <li><strong>استخدم الاتنين لو:</strong> عايز دقة عالية جداً</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚠️ نقاط مهمة للانتباه</h2>
+            <div class="use-cases">
+                <ul>
+                    <li><strong>Case Sensitivity:</strong> انتبه للحروف الكبيرة والصغيرة</li>
+                    <li><strong>الكلمات المركبة:</strong> "machine learning" مختلفة عن "machinelearning"</li>
+                    <li><strong>التصريفات:</strong> "learn", "learning", "learned" كلمات مختلفة</li>
+                    <li><strong>المرادفات:</strong> "AI" و "artificial intelligence" مختلفين</li>
+                    <li><strong>اللغة:</strong> تأكد إن الـ lang parameter مظبوط</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🔑 انتهى الجزء السادس | الجزء التالي: Keyword Postprocessor - التنفيذ مع spaCy</p>
+        </div>
+    </div>
+</body>
+</html>

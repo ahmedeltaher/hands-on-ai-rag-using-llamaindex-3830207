@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary Index - الجزء العاشر: أنواع الـ Retrieval المختلفة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .retrieval-types {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .type-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #74b9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .type-card:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+        }
+
+        .type-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #ddd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 5px solid #00b894;
+        }
+
+        .comparison-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fd79a8;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            border: 2px solid #ddd;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(116, 185, 255, 0.1);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .type-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 أنواع الـ Retrieval في Document Summary</h1>
+            <p>الجزء العاشر: فهم عميق للطرق المختلفة لاسترجاع المعلومات</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>🎯 نظرة عامة على أنواع الـ Retrieval</h2>
+                <div class="card-content">
+                    <p>في Document Summary Index، عندنا طريقتين أساسيتين لاسترجاع المعلومات:</p>
+
+                    <div class="retrieval-types">
+                        <h4>🔧 الأنواع الأساسية</h4>
+                        
+                        <div class="type-grid">
+                            <div class="type-card">
+                                <div class="type-header">
+                                    <h5>🧮 Embedding-based Retrieval</h5>
+                                </div>
+                                <div>
+                                    <p><strong>الطريقة:</strong> استخدام vector similarity للبحث في embeddings الملخصات</p>
+                                    
+                                    <p><strong>المميزات:</strong></p>
+                                    <ul>
+                                        <li>سرعة عالية في البحث</li>
+                                        <li>كفاءة في استهلاك الموارد</li>
+                                        <li>قابلية توسع ممتازة</li>
+                                        <li>نتائج متسقة ومتوقعة</li>
+                                    </ul>
+
+                                    <p><strong>الاستخدام:</strong></p>
+                                    <ul>
+                                        <li>المجموعات الكبيرة من المستندات</li>
+                                        <li>الاستعلامات البسيطة والمباشرة</li>
+                                        <li>عندما السرعة أهم من الدقة المطلقة</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="type-card">
+                                <div class="type-header">
+                                    <h5>🤖 LLM-based Retrieval</h5>
+                                </div>
+                                <div>
+                                    <p><strong>الطريقة:</strong> استخدام LLM لفهم الاستعلام وتقييم الملخصات منطقياً</p>
+                                    
+                                    <p><strong>المميزات:</strong></p>
+                                    <ul>
+                                        <li>فهم عميق للسياق والمعنى</li>
+                                        <li>قدرة على التعامل مع الاستعلامات المعقدة</li>
+                                        <li>مرونة في التفسير والتحليل</li>
+                                        <li>نتائج عالية الجودة</li>
+                                    </ul>
+
+                                    <p><strong>الاستخدام:</strong></p>
+                                    <ul>
+                                        <li>الاستعلامات المعقدة والتحليلية</li>
+                                        <li>عندما الجودة أهم من السرعة</li>
+                                        <li>المحتوى الذي يحتاج فهم سياقي عميق</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🧮 تطبيق Embedding-based Retrieval</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# إعداد embedding-based retrieval
+from llama_index.core import DocumentSummaryIndex
+
+# إنشاء index مع embedding retrieval (الافتراضي)
+index = DocumentSummaryIndex.from_documents(documents)
+
+# إعداد query engine للـ embedding-based retrieval
+embedding_query_engine = index.as_query_engine(
+    retriever_mode="embedding",  # استخدام embedding للبحث
+    similarity_top_k=5,          # أفضل 5 نتائج
+    response_mode="compact"       # استجابة مدمجة
+)
+
+# تجربة استعلام
+query = "ما هي تطبيقات الذكاء الاصطناعي في التعليم؟"
+response = embedding_query_engine.query(query)
+
+print("Embedding-based Response:")
+print(response.response)
+                    </div>
+
+                    <div class="code-block">
+# تخصيص embedding model
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.core import Settings
+
+# استخدام embedding model محدد
+Settings.embed_model = OpenAIEmbedding(
+    model="text-embedding-3-large",  # نموذج أكبر للدقة الأعلى
+    dimensions=1536                  # أبعاد الـ vector
+)
+
+# إنشاء index مع embedding model مخصص
+custom_index = DocumentSummaryIndex.from_documents(
+    documents,
+    show_progress=True
+)
+
+# query engine مع إعدادات محسنة
+optimized_engine = custom_index.as_query_engine(
+    retriever_mode="embedding",
+    similarity_top_k=3,
+    similarity_cutoff=0.7,  # حد أدنى للتشابه
+    response_mode="tree_summarize"
+)
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>⚙️ معاملات Embedding-based Retrieval</h4>
+                        <ul>
+                            <li><strong>similarity_top_k:</strong> عدد أفضل النتائج (1-20 عادة)</li>
+                            <li><strong>similarity_cutoff:</strong> حد أدنى للتشابه (0.0-1.0)</li>
+                            <li><strong>embedding_model:</strong> نموذج تحويل النص لـ vectors</li>
+                            <li><strong>dimensions:</strong> عدد أبعاد الـ vector</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🤖 تطبيق LLM-based Retrieval</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# إعداد LLM-based retrieval
+llm_query_engine = index.as_query_engine(
+    retriever_mode="llm",           # استخدام LLM للبحث
+    choice_batch_size=10,           # عدد الملخصات للمقارنة في كل دفعة
+    response_mode="tree_summarize", # طريقة تجميع النتائج
+    verbose=True                    # عرض تفاصيل العملية
+)
+
+# استعلام معقد
+complex_query = """
+قارن بين استخدامات الذكاء الاصطناعي في:
+1. التعليم
+2. الطب  
+3. الأعمال
+
+وحدد أيها أكثر تأثيراً على المجتمع؟
+"""
+
+response = llm_query_engine.query(complex_query)
+print("LLM-based Response:")
+print(response.response)
+                    </div>
+
+                    <div class="code-block">
+# تخصيص LLM للـ retrieval
+from llama_index.llms.openai import OpenAI
+
+# استخدام LLM قوي للتحليل
+powerful_llm = OpenAI(
+    model="gpt-4",                  # نموذج قوي للفهم العميق
+    temperature=0.1,                # ثبات في النتائج
+    max_tokens=1000                 # مساحة كافية للتحليل
+)
+
+# إنشاء index مع LLM مخصص
+from llama_index.core import Settings
+Settings.llm = powerful_llm
+
+llm_index = DocumentSummaryIndex.from_documents(
+    documents,
+    show_progress=True
+)
+
+# query engine متقدم
+advanced_llm_engine = llm_index.as_query_engine(
+    retriever_mode="llm",
+    choice_batch_size=5,            # تقليل الدفعات للدقة الأعلى
+    choice_top_k=3,                 # أفضل 3 نتائج فقط
+    response_mode="tree_summarize",
+    verbose=True
+)
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 معاملات LLM-based Retrieval</h4>
+                        <ul>
+                            <li><strong>choice_batch_size:</strong> عدد الملخصات للمقارنة معاً (5-20)</li>
+                            <li><strong>choice_top_k:</strong> عدد النتائج النهائية (1-10)</li>
+                            <li><strong>llm_model:</strong> نموذج اللغة المستخدم للتحليل</li>
+                            <li><strong>temperature:</strong> مستوى العشوائية في الاختيار</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚖️ مقارنة شاملة بين الطريقتين</h2>
+                <div class="card-content">
+                    <div class="comparison-section">
+                        <h4>📊 مقارنة تفصيلية</h4>
+                        
+                        <div class="comparison-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>المعيار</th>
+                                        <th>Embedding-based</th>
+                                        <th>LLM-based</th>
+                                        <th>التوصية</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>السرعة</strong></td>
+                                        <td>فائق (مللي ثواني)</td>
+                                        <td>متوسط (ثواني)</td>
+                                        <td>Embedding للسرعة</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>التكلفة</strong></td>
+                                        <td>منخفضة جداً</td>
+                                        <td>متوسطة إلى عالية</td>
+                                        <td>Embedding للميزانية المحدودة</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>دقة النتائج البسيطة</strong></td>
+                                        <td>ممتازة</td>
+                                        <td>ممتازة</td>
+                                        <td>متعادل</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>فهم الاستعلامات المعقدة</strong></td>
+                                        <td>محدود</td>
+                                        <td>ممتاز</td>
+                                        <td>LLM للتعقيد</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>قابلية التوسع</strong></td>
+                                        <td>ممتازة</td>
+                                        <td>محدودة</td>
+                                        <td>Embedding للحجم الكبير</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>الفهم السياقي</strong></td>
+                                        <td>جيد</td>
+                                        <td>ممتاز</td>
+                                        <td>LLM للسياق المعقد</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>الاستقرار</strong></td>
+                                        <td>عالي جداً</td>
+                                        <td>متوسط</td>
+                                        <td>Embedding للاستقرار</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>سهولة التطبيق</strong></td>
+                                        <td>بسيطة</td>
+                                        <td>متوسطة</td>
+                                        <td>Embedding للبداية</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="code-block">
+# مقارنة عملية بين الطريقتين
+def compare_retrieval_methods(index, query):
+    # Embedding-based
+    embedding_engine = index.as_query_engine(
+        retriever_mode="embedding",
+        similarity_top_k=3
+    )
+    
+    # LLM-based  
+    llm_engine = index.as_query_engine(
+        retriever_mode="llm",
+        choice_top_k=3
+    )
+    
+    import time
+    
+    # اختبار السرعة والجودة
+    start_time = time.time()
+    embedding_response = embedding_engine.query(query)
+    embedding_time = time.time() - start_time
+    
+    start_time = time.time() 
+    llm_response = llm_engine.query(query)
+    llm_time = time.time() - start_time
+    
+    print(f"Embedding Time: {embedding_time:.2f}s")
+    print(f"LLM Time: {llm_time:.2f}s")
+    print(f"Speed Difference: {llm_time/embedding_time:.1f}x")
+    
+    print("\n--- Embedding Response ---")
+    print(embedding_response.response[:300] + "...")
+    
+    print("\n--- LLM Response ---") 
+    print(llm_response.response[:300] + "...")
+    
+    return embedding_response, llm_response
+
+# تشغيل المقارنة
+test_query = "ما هي أحدث تطبيقات الذكاء الاصطناعي؟"
+emb_resp, llm_resp = compare_retrieval_methods(index, test_query)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 متى تستخدم كل طريقة؟</h2>
+                <div class="card-content">
+                    <div class="retrieval-types">
+                        <h4>📋 دليل الاختيار العملي</h4>
+                        
+                        <div class="type-grid">
+                            <div class="type-card">
+                                <div class="type-header">
+                                    <h5>🧮 استخدم Embedding-based عندما:</h5>
+                                </div>
+                                <div>
+                                    <ul>
+                                        <li><strong>السرعة أولوية:</strong> تطبيقات real-time</li>
+                                        <li><strong>حجم كبير:</strong> آلاف أو ملايين المستندات</li>
+                                        <li><strong>استعلامات بسيطة:</strong> بحث عن مفاهيم محددة</li>
+                                        <li><strong>ميزانية محدودة:</strong> تقليل تكاليف API</li>
+                                        <li><strong>استقرار مطلوب:</strong> نتائج متسقة</li>
+                                        <li><strong>تطبيق إنتاجي:</strong> نظام يعمل 24/7</li>
+                                    </ul>
+
+                                    <div class="highlight-box">
+                                        <h4>💡 أمثلة مثالية</h4>
+                                        <ul>
+                                            <li>محرك بحث داخلي للشركة</li>
+                                            <li>نظام FAQ تلقائي</li>
+                                            <li>تصنيف المستندات</li>
+                                            <li>البحث في قواعد المعرفة الكبيرة</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="type-card">
+                                <div class="type-header">
+                                    <h5>🤖 استخدم LLM-based عندما:</h5>
+                                </div>
+                                <div>
+                                    <ul>
+                                        <li><strong>استعلامات معقدة:</strong> تحليل ومقارنة</li>
+                                        <li><strong>فهم عميق مطلوب:</strong> السياق والمعنى الضمني</li>
+                                        <li><strong>جودة عالية:</strong> دقة أهم من السرعة</li>
+                                        <li><strong>محتوى متنوع:</strong> أنواع مختلفة من المستندات</li>
+                                        <li><strong>قرارات مهمة:</strong> تطبيقات حرجة</li>
+                                        <li><strong>تحليل متقدم:</strong> استنتاجات وتوصيات</li>
+                                    </ul>
+
+                                    <div class="highlight-box">
+                                        <h4>💡 أمثلة مثالية</h4>
+                                        <ul>
+                                            <li>البحث الأكاديمي والعلمي</li>
+                                            <li>التحليل القانوني والطبي</li>
+                                            <li>مساعد الاستشارات الاستراتيجية</li>
+                                            <li>تحليل التقارير المعقدة</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="warning-box">
+                            <h4>⚠️ استراتيجية الاختيار الذكي</h4>
+                            <ul>
+                                <li><strong>ابدأ بـ Embedding:</strong> اختبر الأداء والنتائج</li>
+                                <li><strong>اقيم الحاجة:</strong> هل النتائج كافية؟</li>
+                                <li><strong>انتقل لـ LLM:</strong> إذا احتجت دقة أعلى</li>
+                                <li><strong>فكر في الهجين:</strong> استخدم الاثنين معاً</li>
+                                <li><strong>راقب التكاليف:</strong> احسب العائد على الاستثمار</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔄 الاستراتيجية الهجينة المتقدمة</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# نهج هجين ذكي يجمع بين الطريقتين
+class HybridDocumentSummaryRetriever:
+    def __init__(self, index):
+        self.index = index
+        
+        # إعداد المحركين
+        self.embedding_engine = index.as_query_engine(
+            retriever_mode="embedding",
+            similarity_top_k=10,  # نتائج أكثر للفلترة الأولى
+            response_mode="compact"
+        )
+        
+        self.llm_engine = index.as_query_engine(
+            retriever_mode="llm", 
+            choice_top_k=3,       # نتائج أقل للتحليل العميق
+            response_mode="tree_summarize"
+        )
+    
+    def query(self, question, complexity_threshold=0.5):
+        # تحديد تعقيد السؤال
+        complexity = self.assess_query_complexity(question)
+        
+        if complexity < complexity_threshold:
+            # سؤال بسيط: استخدم embedding
+            print("🧮 Using Embedding-based Retrieval")
+            return self.embedding_engine.query(question)
+        else:
+            # سؤال معقد: استخدم LLM
+            print("🤖 Using LLM-based Retrieval") 
+            return self.llm_engine.query(question)
+    
+    def assess_query_complexity(self, question):
+        # مؤشرات التعقيد
+        complexity_indicators = [
+            "قارن", "حلل", "اشرح العلاقة", "ما الفرق",
+            "كيف يؤثر", "لماذا", "ما السبب", "استنتج"
+        ]
+        
+        question_lower = question.lower()
+        complexity_score = sum(1 for indicator in complexity_indicators 
+                             if indicator in question_lower)
+        
+        # تطبيع النتيجة (0-1)
+        return min(complexity_score / 3, 1.0)
+
+# استخدام النظام الهجين
+hybrid_retriever = HybridDocumentSummaryRetriever(index)
+
+# اختبار أسئلة مختلفة
+simple_query = "ما هو الذكاء الاصطناعي؟"
+complex_query = "قارن بين تأثير الذكاء الاصطناعي والتعلم الآلي على سوق العمل وحدد أيهما أكثر أهمية للمستقبل؟"
+
+print("=== اختبار السؤال البسيط ===")
+simple_response = hybrid_retriever.query(simple_query)
+
+print("\n=== اختبار السؤال المعقد ===") 
+complex_response = hybrid_retriever.query(complex_query)
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🎯 مميزات الاستراتيجية الهجينة</h4>
+                        <ul>
+                            <li><strong>تحسين تلقائي:</strong> اختيار الطريقة الأنسب لكل سؤال</li>
+                            <li><strong>توازن التكلفة:</strong> استخدام LLM فقط عند الحاجة</li>
+                            <li><strong>جودة محسنة:</strong> أفضل النتائج لكل نوع استعلام</li>
+                            <li><strong>مرونة عالية:</strong> تكيف مع أنماط مختلفة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 الخلاصة والتوصيات</h2>
+                <div class="card-content">
+                    <div class="highlight-box">
+                        <h4>✅ النقاط المهمة</h4>
+                        <ul>
+                            <li>Embedding-based سريع وكفء، مناسب للاستعلامات البسيطة</li>
+                            <li>LLM-based ذكي ودقيق، مناسب للتحليل المعقد</li>
+                            <li>الاختيار يعتمد على نوع التطبيق والمتطلبات</li>
+                            <li>الاستراتيجية الهجينة تحقق أفضل النتائج</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 التوصيات العملية</h4>
+                        <ul>
+                            <li><strong>للمبتدئين:</strong> ابدأ بـ embedding-based</li>
+                            <li><strong>للتطبيقات الإنتاجية:</strong> جرب الاثنين واقيس</li>
+                            <li><strong>للميزانية المحدودة:</strong> embedding-based أولاً</li>
+                            <li><strong>للجودة العالية:</strong> LLM-based أو هجين</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ تذكر دائماً</h4>
+                        <p>أفضل استراتيجية هي اللي تناسب احتياجاتك المحددة. اختبر، قيس، وطور باستمرار لتحصل على أفضل النتائج!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

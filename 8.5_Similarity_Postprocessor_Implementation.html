@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Similarity Postprocessor - التنفيذ والآلية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .algorithm-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .step-by-step { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-card { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 15px; margin: 20px 0; direction: ltr; text-align: left; }
+        .flowchart { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .decision-tree { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Similarity Postprocessor - التنفيذ والآلية</h1>
+            <p>الدرس الخامس: فهم إزاي الكود بيشتغل تحت الغطاء</p>
+        </div>
+
+        <div class="card">
+            <h2>🔍 إيه اللي بيحصل "Under the Hood"؟</h2>
+            <div class="algorithm-box">
+                <p>خلينا نشوف إزاي الـ Similarity Postprocessor بيشتغل من جوا، step by step:</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 الخطوات التفصيلية</h2>
+            <div class="step-by-step">
+                <h3>🎯 Step 1: فحص الـ similarity_cutoff</h3>
+                <p>أول حاجة، النظام بيشوف إنت حددت similarity_cutoff ولا لأ. القيمة الافتراضية هي None.</p>
+                
+                <h3>🔄 Step 2: التكرار على كل node</h3>
+                <p>بيمر على كل node في الـ input list واحد واحد.</p>
+                
+                <h3>⚖️ Step 3: مقارنة الـ score</h3>
+                <p>لكل node، بيشوف الـ similarity score بتاعه ويقارنه بالـ cutoff.</p>
+                
+                <h3>✅❌ Step 4: اتخاذ القرار</h3>
+                <p>بناء على المقارنة، بيقرر يخلي الـ node أو يشيله.</p>
+                
+                <h3>📤 Step 5: إرجاع النتيجة</h3>
+                <p>في النهاية، بيرجع قائمة مفلترة من NodeWithScore objects.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🌊 Flow Chart للعملية</h2>
+            <div class="flowchart">
+                <div style="text-align: center; font-family: monospace;">
+                    <p>📥 Input: List of NodeWithScore</p>
+                    <p>⬇️</p>
+                    <p>🔍 Check: similarity_cutoff set?</p>
+                    <p>⬇️</p>
+                    <p>🔄 For each node in list:</p>
+                    <p>⬇️</p>
+                    <p>⚖️ Compare node.score with cutoff</p>
+                    <p>⬇️</p>
+                    <p>✅ Include if score ≥ cutoff</p>
+                    <p>❌ Exclude if score < cutoff</p>
+                    <p>⬇️</p>
+                    <p>📤 Output: Filtered NodeWithScore list</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🤖 شجرة القرارات</h2>
+            <div class="decision-tree">
+                <h3>📊 Decision Logic:</h3>
+                <ul>
+                    <li><strong>إذا similarity_cutoff = None:</strong>
+                        <ul>
+                            <li>✅ كل النودز بتفضل (لا توجد فلترة)</li>
+                        </ul>
+                    </li>
+                    <li><strong>إذا node.score = None:</strong>
+                        <ul>
+                            <li>❌ النود ده بيتشال (لأن مافيش score)</li>
+                        </ul>
+                    </li>
+                    <li><strong>إذا node.score < cutoff:</strong>
+                        <ul>
+                            <li>❌ النود ده بيتشال (score ضعيف)</li>
+                        </ul>
+                    </li>
+                    <li><strong>إذا node.score ≥ cutoff:</strong>
+                        <ul>
+                            <li>✅ النود ده بيفضل (score كويس)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💻 طريقة الإنشاء</h2>
+            <div class="code-card">
+                <h3>How to instantiate:</h3>
+                <pre><code>from llama_index.core.postprocessor import SimilarityPostprocessor
+
+# Create with specific cutoff
+similarity_postprocessor = SimilarityPostprocessor(
+    similarity_cutoff=0.7
+)
+
+# Or create without cutoff (no filtering)
+no_filter_postprocessor = SimilarityPostprocessor()
+
+# Use with query engine
+query_engine = index.as_query_engine(
+    node_postprocessors=[similarity_postprocessor]
+)</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧠 فهم الـ NodeWithScore Objects</h2>
+            <div class="algorithm-box">
+                <h3>🔍 إيه هو NodeWithScore؟</h3>
+                <p>ده object بيحتوي على:</p>
+                <ul>
+                    <li><strong>node:</strong> النود اللي فيه المحتوى (text, metadata, etc.)</li>
+                    <li><strong>score:</strong> الـ similarity score مع الـ query</li>
+                </ul>
+                
+                <h3>🎯 ليه بيرجع نفس الـ type؟</h3>
+                <p>عشان يحافظ على الـ consistency في الـ pipeline. كل مرحلة بتاخد NodeWithScore وترجع NodeWithScore.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ مميزات التصميم ده</h2>
+            <div class="step-by-step">
+                <h3>🎯 البساطة:</h3>
+                <ul>
+                    <li>خوارزمية بسيطة ومفهومة</li>
+                    <li>parameter واحد بس (similarity_cutoff)</li>
+                    <li>منطق واضح ومباشر</li>
+                </ul>
+                
+                <h3>🚀 الكفاءة:</h3>
+                <ul>
+                    <li>O(n) time complexity - بيمر على كل node مرة واحدة</li>
+                    <li>مافيش sorting أو operations معقدة</li>
+                    <li>memory efficient</li>
+                </ul>
+                
+                <h3>🔧 المرونة:</h3>
+                <ul>
+                    <li>cutoff قابل للتخصيص</li>
+                    <li>يشتغل مع أي نوع nodes</li>
+                    <li>سهل الدمج مع postprocessors تانية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 مثال تطبيقي</h2>
+            <div class="decision-tree">
+                <h3>📝 لو عندك 5 nodes بالـ scores دي:</h3>
+                <ul>
+                    <li>Node A: score = 0.85 ✅</li>
+                    <li>Node B: score = 0.45 ❌</li>
+                    <li>Node C: score = None ❌</li>
+                    <li>Node D: score = 0.72 ✅</li>
+                    <li>Node E: score = 0.68 ❌</li>
+                </ul>
+                
+                <p><strong>مع cutoff = 0.7:</strong> هيفضل بس Node A و Node D</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚙️ انتهى الجزء الخامس | الجزء التالي: Keyword Node Postprocessor - المقدمة</p>
+        </div>
+    </div>
+</body>
+</html>

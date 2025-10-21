@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Extraction - الجزء الحادي عشر: التنفيذ العملي والكود</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-showcase {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .code-example {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border: 2px solid #74b9ff;
+            transition: all 0.3s ease;
+        }
+
+        .code-example:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .code-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #00cec9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            overflow-x: auto;
+            border: 2px solid #636e72;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .step-by-step {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fd79a8;
+        }
+
+        .step-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 5px solid #e84393;
+            position: relative;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+        }
+
+        .implementation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .implementation-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #6c5ce7;
+            transition: all 0.3s ease;
+        }
+
+        .implementation-card:hover {
+            transform: translateY(-3px);
+            border-color: #5f3dc4;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .implementation-header {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .troubleshooting {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #e17055;
+        }
+
+        .trouble-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 2px solid #fab1a0;
+        }
+
+        .trouble-header {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .implementation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💻 التنفيذ العملي والكود</h1>
+            <p>الجزء الحادي عشر: خطوات عملية لتطبيق Metadata Extraction في مشروعك</p>
+        </div>
+
+        <div class="content">
+            <!-- إعداد البيئة -->
+            <div class="card">
+                <h2>🔧 إعداد البيئة والمكتبات</h2>
+                <div class="card-content">
+                    <p>أول خطوة هي تجهيز البيئة البرمجية وتنزيل المكتبات المطلوبة:</p>
+
+                    <div class="code-showcase">
+                        <h4>📦 تنصيب المكتبات الأساسية</h4>
+                        
+                        <div class="code-example">
+                            <div class="code-header">
+                                <h5>تنصيب LlamaIndex والمكتبات المطلوبة</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+# تنصيب LlamaIndex الأساسي
+pip install llama-index
+
+# تنصيب مكتبات إضافية للـ metadata extraction
+pip install llama-index-extractors-entity
+
+# تنصيب OpenAI للـ LLM
+pip install openai
+
+# مكتبات مساعدة
+pip install python-dotenv
+pip install pandas
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+                            <div class="code-header">
+                                <h5>إعداد متغيرات البيئة</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+# ملف .env
+OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here  # اختياري
+                                </pre>
+                            </div>
+                            <div class="warning-box">
+                                <strong>⚠️ أمان المفاتيح:</strong> لا تضع المفاتيح في الكود مباشرة! استخدم ملف .env دائماً.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- خطوات التنفيذ -->
+            <div class="card">
+                <h2>📋 خطوات التنفيذ خطوة بخطوة</h2>
+                <div class="card-content">
+                    <div class="step-by-step">
+                        <h4>🚀 الدليل الشامل للتطبيق</h4>
+                        
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <h5>استيراد المكتبات وإعداد الـ LLM</h5>
+                            <div class="code-block">
+                                <pre>
+import os
+from dotenv import load_dotenv
+from llama_index.core import Document, VectorStoreIndex
+from llama_index.core.extractors import (
+    SummaryExtractor,
+    QuestionsAnsweredExtractor,
+    TitleExtractor,
+    KeywordExtractor
+)
+from llama_index.extractors.entity import EntityExtractor
+from llama_index.core.ingestion import IngestionPipeline
+from llama_index.llms.openai import OpenAI
+
+# تحميل متغيرات البيئة
+load_dotenv()
+
+# إعداد الـ LLM
+llm = OpenAI(
+    model="gpt-3.5-turbo",
+    temperature=0.1,  # للحصول على نتائج أكثر اتساقاً
+    api_key=os.getenv("OPENAI_API_KEY")
+)
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <h5>إنشاء المستخرجات مع برومبت مخصص</h5>
+                            <div class="code-block">
+                                <pre>
+# إنشاء مستخرج الملخص
+summary_extractor = SummaryExtractor(
+    llm=llm,
+    summaries=["prev", "self"],  # ملخص الجزء السابق والحالي
+    prompt_template="""
+    قم بإنشاء ملخص مفيد ومركز للنص التالي:
+    - ركز على النقاط الرئيسية والمعلومات المهمة
+    - استخدم 50-100 كلمة
+    - اكتب بوضوح وبساطة
+    
+    النص: {context_str}
+    
+    الملخص:
+    """
+)
+
+# إنشاء مستخرج الأسئلة
+questions_extractor = QuestionsAnsweredExtractor(
+    llm=llm,
+    questions=5,  # عدد الأسئلة المطلوبة
+    prompt_template="""
+    ولد 5 أسئلة مفيدة يمكن للنص التالي الإجابة عليها:
+    - استخدم كلمات استفهام مختلفة (ما، كيف، لماذا، متى، أين)
+    - اجعل الأسئلة محددة ومفيدة للبحث
+    - تأكد أن النص يحتوي على إجابات واضحة
+    
+    النص: {context_str}
+    
+    الأسئلة:
+    """
+)
+
+# إنشاء مستخرج الكيانات
+entity_extractor = EntityExtractor(
+    prediction_threshold=0.5,
+    label_entities=False,  # لا نريد تصنيف نوع الكيان
+    device="cpu"  # أو "cuda" إذا كان لديك GPU
+)
+
+# إنشاء مستخرج العنوان
+title_extractor = TitleExtractor(
+    llm=llm,
+    nodes=5,  # عدد العقد للاعتبار
+    prompt_template="""
+    أنشئ عنواناً مناسباً ووصفياً للنص التالي:
+    - العنوان يجب أن يكون واضحاً ومختصراً
+    - يعكس المحتوى الرئيسي للنص
+    - مفيد للفهرسة والبحث
+    
+    النص: {context_str}
+    
+    العنوان:
+    """
+)
+
+# إنشاء مستخرج الكلمات المفتاحية
+keyword_extractor = KeywordExtractor(
+    llm=llm,
+    keywords=10,  # عدد الكلمات المفتاحية
+    prompt_template="""
+    استخرج 10 كلمات مفتاحية من النص التالي:
+    - ركز على المصطلحات المهمة والمفاهيم الرئيسية
+    - استخدم كلمات مفردة أو عبارات قصيرة
+    - مناسبة للبحث والتصنيف
+    
+    النص: {context_str}
+    
+    الكلمات المفتاحية:
+    """
+)
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <h5>إنشاء pipeline الاستخراج</h5>
+                            <div class="code-block">
+                                <pre>
+# إنشاء pipeline متكامل
+pipeline = IngestionPipeline(
+    transformations=[
+        summary_extractor,
+        questions_extractor,
+        entity_extractor,
+        title_extractor,
+        keyword_extractor
+    ]
+)
+
+print("✅ تم إنشاء pipeline الاستخراج بنجاح!")
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <h5>تحضير البيانات وتشغيل الاستخراج</h5>
+                            <div class="code-block">
+                                <pre>
+# تحضير نص تجريبي
+sample_text = """
+الذكاء الاصطناعي يغير طريقة عملنا في القرن الواحد والعشرين. 
+شركات مثل OpenAI وGoogle تطور نماذج لغوية متقدمة يمكنها فهم النص 
+وإنتاج محتوى عالي الجودة. هذه التقنيات تستخدم في مجالات متنوعة 
+مثل الطب والتعليم والأعمال. من المتوقع أن تحقق صناعة الذكاء 
+الاصطناعي إيرادات تزيد عن 100 مليار دولار بحلول عام 2025.
+"""
+
+# إنشاء Document
+document = Document(text=sample_text)
+
+# تشغيل عملية الاستخراج
+print("🔄 بدء عملية استخراج الـ metadata...")
+processed_nodes = pipeline.run(documents=[document])
+
+print(f"✅ تم معالجة {len(processed_nodes)} عقدة بنجاح!")
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="step-item">
+                            <div class="step-number">5</div>
+                            <h5>عرض النتائج المستخرجة</h5>
+                            <div class="code-block">
+                                <pre>
+# عرض النتائج
+for i, node in enumerate(processed_nodes):
+    print(f"\n{'='*50}")
+    print(f"📄 العقدة رقم: {i+1}")
+    print(f"{'='*50}")
+    
+    # عرض المحتوى الأصلي (مقتطف)
+    print(f"📝 المحتوى: {node.text[:100]}...")
+    
+    # عرض الـ metadata المستخرج
+    if hasattr(node, 'metadata'):
+        metadata = node.metadata
+        
+        if 'document_title' in metadata:
+            print(f"🏷️  العنوان: {metadata['document_title']}")
+        
+        if 'section_summary' in metadata:
+            print(f"📋 الملخص: {metadata['section_summary']}")
+        
+        if 'questions_this_excerpt_can_answer' in metadata:
+            print(f"❓ الأسئلة:")
+            questions = metadata['questions_this_excerpt_can_answer']
+            for j, question in enumerate(questions.split('\n'), 1):
+                if question.strip():
+                    print(f"   {j}. {question.strip()}")
+        
+        if 'extract_keywords' in metadata:
+            print(f"🔑 الكلمات المفتاحية: {metadata['extract_keywords']}")
+        
+        if 'entities' in metadata:
+            print(f"🏢 الكيانات: {metadata['entities']}")
+        
+        print(f"\n{'='*50}")
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أمثلة متقدمة -->
+            <div class="card">
+                <h2>🚀 أمثلة متقدمة ومتخصصة</h2>
+                <div class="card-content">
+                    <div class="implementation-grid">
+                        <div class="implementation-card">
+                            <div class="implementation-header">
+                                <h5>💊 تطبيق طبي متخصص</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+# مستخرج متخصص للمحتوى الطبي
+medical_entity_extractor = EntityExtractor(
+    prediction_threshold=0.7,  # دقة أعلى للمجال الطبي
+    label_entities=True,
+)
+
+medical_summary_extractor = SummaryExtractor(
+    llm=llm,
+    prompt_template="""
+    أنشئ ملخصاً طبياً دقيقاً للنص التالي:
+    - ركز على الأعراض والتشخيص والعلاج
+    - استخدم المصطلحات الطبية المناسبة
+    - اذكر أي معلومات مهمة للمريض أو الطبيب
+    
+    النص الطبي: {context_str}
+    
+    الملخص الطبي:
+    """
+)
+
+# pipeline طبي متخصص
+medical_pipeline = IngestionPipeline(
+    transformations=[
+        medical_summary_extractor,
+        medical_entity_extractor
+    ]
+)
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="implementation-card">
+                            <div class="implementation-header">
+                                <h5>📰 تطبيق إخباري</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+# مستخرج متخصص للأخبار
+news_extractor = SummaryExtractor(
+    llm=llm,
+    prompt_template="""
+    أنشئ ملخصاً إخبارياً للنص التالي:
+    - اذكر الحدث الرئيسي والأطراف المعنية
+    - حدد الزمان والمكان
+    - ركز على الحقائق المهمة
+    - استخدم أسلوب إخباري موضوعي
+    
+    النص الإخباري: {context_str}
+    
+    الملخص الإخباري:
+    """
+)
+
+# مستخرج أسئلة إخبارية
+news_qa_extractor = QuestionsAnsweredExtractor(
+    llm=llm,
+    questions=7,
+    prompt_template="""
+    ولد أسئلة إخبارية للنص التالي:
+    - من؟ ماذا؟ متى؟ أين؟ لماذا؟ كيف؟
+    - أسئلة حول تفاصيل الحدث
+    - أسئلة حول التأثير والنتائج
+    
+    النص: {context_str}
+    
+    الأسئلة الإخبارية:
+    """
+)
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="implementation-card">
+                            <div class="implementation-header">
+                                <h5>📚 تطبيق تعليمي</h5>
+                            </div>
+                            <div class="code-block">
+                                <pre>
+# مستخرج للمحتوى التعليمي
+educational_qa_extractor = QuestionsAnsweredExtractor(
+    llm=llm,
+    questions=10,
+    prompt_template="""
+    أنشئ أسئلة تعليمية متدرجة الصعوبة:
+    
+    أسئلة أساسية (3-4 أسئلة):
+    - حقائق مباشرة من النص
+    
+    أسئلة متوسطة (3-4 أسئلة):
+    - فهم وتطبيق المفاهيم
+    
+    أسئلة متقدمة (2-3 أسئلة):
+    - تحليل وربط وتقييم
+    
+    النص التعليمي: {context_str}
+    
+    الأسئلة التعليمية:
+    """
+)
+
+# مستخرج المفاهيم الرئيسية
+concepts_extractor = KeywordExtractor(
+    llm=llm,
+    keywords=15,
+    prompt_template="""
+    استخرج المفاهيم والمصطلحات التعليمية:
+    - المفاهيم الأساسية في الدرس
+    - المصطلحات المهمة للطالب
+    - الكلمات المفتاحية للفهم
+    
+    النص: {context_str}
+    
+    المفاهيم الرئيسية:
+    """
+)
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- استكشاف الأخطاء -->
+            <div class="card">
+                <h2>🔧 استكشاف الأخطاء وحلولها</h2>
+                <div class="card-content">
+                    <div class="troubleshooting">
+                        <h4>🚨 المشاكل الشائعة وحلولها</h4>
+                        
+                        <div class="trouble-item">
+                            <div class="trouble-header">❌ مشكلة: API Key غير صحيح</div>
+                            <p><strong>الخطأ:</strong> AuthenticationError: Incorrect API key provided</p>
+                            <p><strong>الحل:</strong></p>
+                            <div class="code-block">
+                                <pre>
+# تأكد من صحة الـ API key
+import os
+print("API Key:", os.getenv("OPENAI_API_KEY")[:10] + "...")
+
+# تأكد من تحميل ملف .env
+from dotenv import load_dotenv
+load_dotenv()
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="trouble-item">
+                            <div class="trouble-header">❌ مشكلة: بطء في المعالجة</div>
+                            <p><strong>السبب:</strong> معالجة ملفات كبيرة أو برومبت معقد</p>
+                            <p><strong>الحل:</strong></p>
+                            <div class="code-block">
+                                <pre>
+# تقسيم النص لأجزاء أصغر
+from llama_index.core.text_splitter import SentenceSplitter
+
+text_splitter = SentenceSplitter(
+    chunk_size=500,  # حجم أصغر للقطع
+    chunk_overlap=50
+)
+
+# أو استخدام نموذج أسرع
+llm = OpenAI(model="gpt-3.5-turbo")  # بدلاً من gpt-4
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="trouble-item">
+                            <div class="trouble-header">❌ مشكلة: نتائج غير دقيقة</div>
+                            <p><strong>السبب:</strong> برومبت غير واضح أو درجة حرارة عالية</p>
+                            <p><strong>الحل:</strong></p>
+                            <div class="code-block">
+                                <pre>
+# تحسين إعدادات الـ LLM
+llm = OpenAI(
+    model="gpt-3.5-turbo",
+    temperature=0.0,  # للحصول على نتائج أكثر ثباتاً
+    max_tokens=500,   # تحديد طول الإجابة
+)
+
+# تحسين البرومبت
+better_prompt = """
+أنت خبير في استخراج المعلومات. اتبع التعليمات بدقة:
+1. اقرأ النص بعناية
+2. استخرج فقط المعلومات المطلوبة
+3. لا تضيف معلومات من خارج النص
+4. استخدم تنسيق واضح ومحدد
+
+النص: {context_str}
+"""
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="trouble-item">
+                            <div class="trouble-header">❌ مشكلة: نفاد الـ tokens</div>
+                            <p><strong>السبب:</strong> النص طويل جداً أو البرومبت معقد</p>
+                            <p><strong>الحل:</strong></p>
+                            <div class="code-block">
+                                <pre>
+# تقسيم النص وحساب الـ tokens
+import tiktoken
+
+def count_tokens(text, model="gpt-3.5-turbo"):
+    encoding = tiktoken.encoding_for_model(model)
+    return len(encoding.encode(text))
+
+# تقسيم النص إذا كان طويلاً
+def split_if_needed(text, max_tokens=3000):
+    if count_tokens(text) > max_tokens:
+        # تقسيم النص
+        chunks = text_splitter.split_text(text)
+        return chunks
+    return [text]
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>💡 نصائح لتحسين الأداء</h4>
+                        <ul>
+                            <li><strong>استخدم Caching:</strong> احفظ النتائج لتجنب الاستدعاءات المتكررة</li>
+                            <li><strong>راقب الاستهلاك:</strong> تتبع عدد الـ tokens ووقت المعالجة</li>
+                            <li><strong>اختبر البرومبت:</strong> جرب على عينات صغيرة أولاً</li>
+                            <li><strong>استخدم Batching:</strong> عالج عدة نصوص معاً</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

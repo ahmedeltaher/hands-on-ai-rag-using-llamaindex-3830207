@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد Pipeline شامل لـ FLARE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #ff6b6b; padding-bottom: 10px; }
+        .pipeline-box { background: linear-gradient(120deg, #ff6b6b 0%, #ee5a24 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .setup-box { background: linear-gradient(120deg, #fd79a8 0%, #fdcb6e 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .optimization-box { background: linear-gradient(120deg, #74b9ff 0%, #0984e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .monitoring-box { background: linear-gradient(120deg, #00b894 0%, #00cec9 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .best-practices-box { background: linear-gradient(120deg, #6c5ce7 0%, #a29bfe 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+        .code-block { background: rgba(0, 0, 0, 0.8); color: #fff; padding: 15px; border-radius: 10px; font-family: 'Courier New', monospace; margin: 10px 0; overflow-x: auto; }
+        .step-item { background: rgba(255, 255, 255, 0.2); padding: 15px; margin: 10px 0; border-radius: 10px; border-right: 4px solid #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏗️ إعداد Pipeline شامل لـ FLARE</h1>
+            <p>الدرس العاشر: بناء نظام متكامل ومتقدم</p>
+        </div>
+
+        <div class="card">
+            <h2>🚀 بناء Pipeline متكامل</h2>
+            <div class="pipeline-box">
+                <h3>🎯 نظرة شاملة على Pipeline:</h3>
+                <p>إعداد نظام FLARE كامل يتطلب تنسيق عدة مكونات للعمل معاً بسلاسة.</p>
+                
+                <div class="step-item">
+                    <h4>1️⃣ إعداد البيئة الأساسية</h4>
+                    <div class="code-block">
+# تثبيت المكتبات المطلوبة
+pip install llama-index openai chromadb
+
+# الاستيرادات الأساسية
+from llama_index import (
+    VectorStoreIndex,
+    Document,
+    ServiceContext,
+    StorageContext
+)
+from llama_index.query_engine import FLAREInstructQueryEngine
+from llama_index.llms import OpenAI
+from llama_index.embeddings import OpenAIEmbedding
+from llama_index.vector_stores import ChromaVectorStore
+from llama_index.storage.docstore import SimpleDocumentStore
+from llama_index.storage.index_store import SimpleIndexStore
+import chromadb
+import os
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <h4>2️⃣ تحضير البيانات</h4>
+                    <div class="code-block">
+# إعداد متغيرات البيئة
+os.environ["OPENAI_API_KEY"] = "your-api-key-here"
+
+# تحضير المستندات
+def prepare_documents():
+    documents = []
+    
+    # مثال: قراءة ملفات من مجلد
+    import glob
+    for file_path in glob.glob("data/*.txt"):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            documents.append(Document(
+                text=content,
+                metadata={
+                    "source": file_path,
+                    "type": "text"
+                }
+            ))
+    
+    return documents
+
+documents = prepare_documents()
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <h4>3️⃣ إعداد Vector Store</h4>
+                    <div class="code-block">
+# إعداد ChromaDB
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+chroma_collection = chroma_client.get_or_create_collection("flare_collection")
+vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+
+# إعداد Storage Context
+storage_context = StorageContext.from_defaults(
+    vector_store=vector_store,
+    docstore=SimpleDocumentStore(),
+    index_store=SimpleIndexStore()
+)
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <h4>4️⃣ تكوين Service Context</h4>
+                    <div class="code-block">
+# إعداد LLM وEmbedding
+llm = OpenAI(
+    model="gpt-4",
+    temperature=0.1,
+    max_tokens=2048
+)
+
+embed_model = OpenAIEmbedding(
+    model="text-embedding-ada-002"
+)
+
+# إعداد Service Context
+service_context = ServiceContext.from_defaults(
+    llm=llm,
+    embed_model=embed_model,
+    chunk_size=512,
+    chunk_overlap=50,
+    system_prompt="أنت مساعد ذكي يقدم إجابات دقيقة ومفصلة."
+)
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <h4>5️⃣ بناء الفهرس وإعداد FLARE</h4>
+                    <div class="code-block">
+# بناء VectorStoreIndex
+index = VectorStoreIndex.from_documents(
+    documents,
+    storage_context=storage_context,
+    service_context=service_context,
+    show_progress=True
+)
+
+# حفظ الفهرس للاستخدام المستقبلي
+index.storage_context.persist("./storage")
+
+# إعداد FLARE Query Engine
+flare_query_engine = FLAREInstructQueryEngine(
+    query_engine=index.as_query_engine(
+        similarity_top_k=5,
+        response_mode="compact"
+    ),
+    llm=llm,
+    max_iterations=5,
+    verbose=True
+)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ إعدادات متقدمة وتحسينات</h2>
+            <div class="setup-box">
+                <h3>🔧 ضبط معاملات FLARE المتقدمة:</h3>
+                
+                <h4>📊 إعدادات الثقة:</h4>
+                <div class="code-block">
+# إعداد FLARE مع معاملات مخصصة
+from llama_index.query_engine import FLAREInstructQueryEngine
+
+flare_query_engine = FLAREInstructQueryEngine(
+    query_engine=index.as_query_engine(
+        similarity_top_k=3,
+        response_mode="tree_summarize"
+    ),
+    llm=llm,
+    max_iterations=7,
+    # معاملات إضافية للتحكم
+    num_lookahead_tokens=5,
+    max_function_calls=10,
+    verbose=True
+)
+                </div>
+                
+                <h4>🎯 Prompt مخصص لمجال محدد:</h4>
+                <div class="code-block">
+# إعداد prompt مخصص للمجال الطبي مثلاً
+medical_prompt = """
+أنت طبيب استشاري متخصص. عند الإجابة على الأسئلة الطبية:
+
+1. إذا احتجت معلومات طبية محدثة أو إحصائيات دقيقة، استخدم [SEARCH: موضوع البحث]
+2. اذكر مصادر المعلومات الطبية
+3. نبه على ضرورة استشارة طبيب مختص
+4. كن دقيقاً في المصطلحات الطبية
+
+مثال:
+السؤال: ما أعراض مرض السكري؟
+الإجابة: أعراض مرض السكري تشمل [SEARCH: أعراض مرض السكري الحديثة] العطش المفرط...
+
+ابدأ إجابتك:
+"""
+
+# تطبيق الprompt المخصص
+service_context_medical = ServiceContext.from_defaults(
+    llm=llm,
+    embed_model=embed_model,
+    system_prompt=medical_prompt
+)
+                </div>
+                
+                <h3>🔍 إعدادات البحث المتقدمة:</h3>
+                <div class="code-block">
+# إعداد retriever مخصص
+from llama_index.retrievers import VectorIndexRetriever
+from llama_index.query_engine import RetrieverQueryEngine
+from llama_index.postprocessor import SimilarityPostprocessor
+
+# إعداد retriever مع فلترة
+retriever = VectorIndexRetriever(
+    index=index,
+    similarity_top_k=10
+)
+
+# إعداد post-processor للفلترة
+postprocessor = SimilarityPostprocessor(
+    similarity_cutoff=0.7
+)
+
+# query engine مخصص
+custom_query_engine = RetrieverQueryEngine(
+    retriever=retriever,
+    node_postprocessors=[postprocessor]
+)
+
+# FLARE مع query engine مخصص
+advanced_flare = FLAREInstructQueryEngine(
+    query_engine=custom_query_engine,
+    llm=llm,
+    max_iterations=5
+)
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 تحسين الأداء</h2>
+            <div class="optimization-box">
+                <h3>⚡ استراتيجيات التحسين:</h3>
+                
+                <div class="step-item">
+                    <h4>💾 Caching والذاكرة المؤقتة</h4>
+                    <div class="code-block">
+from llama_index.cache import SimpleCache
+
+# إعداد cache للاستعلامات
+cache = SimpleCache()
+
+# إعداد service context مع cache
+service_context_cached = ServiceContext.from_defaults(
+    llm=llm,
+    embed_model=embed_model,
+    cache=cache
+)
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <h4>🔄 معالجة مجمعة (Batch Processing)</h4>
+                    <div class="code-block">
+# معالجة عدة استعلامات معاً
+def batch_query(queries, flare_engine):
+    results = []
+    for query in queries:
+        print(f"معالجة: {query}")
+        response = flare_engine.query(query)
+        results.append({
+            "query": query,
+            "response": str(response),
+            "metadata": response.metadata if hasattr(response, 'metadata') else {}
+        })
+    return results
+
+# مثال على الاستخدام
+test_queries = [
+    "ما هو الذكاء الاصطناعي؟",
+    "كيف يعمل التعلم العميق؟",
+    "ما مستقبل الذكاء الاصطناعي؟"
+]
+
+batch_results = batch_query(test_queries, flare_query_engine)
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <h4>📊 مراقبة الاستخدام</h4>
+                    <div class="code-block">
+import time
+from typing import Dict, Any
+
+class FLAREMonitor:
+    def __init__(self):
+        self.stats = {
+            "total_queries": 0,
+            "total_searches": 0,
+            "avg_response_time": 0,
+            "error_count": 0
+        }
+    
+    def query_with_monitoring(self, flare_engine, query: str) -> Dict[str, Any]:
+        start_time = time.time()
+        try:
+            response = flare_engine.query(query)
+            end_time = time.time()
+            
+            # تحديث الإحصائيات
+            self.stats["total_queries"] += 1
+            response_time = end_time - start_time
+            self.stats["avg_response_time"] = (
+                (self.stats["avg_response_time"] * (self.stats["total_queries"] - 1) + response_time) 
+                / self.stats["total_queries"]
+            )
+            
+            return {
+                "response": str(response),
+                "response_time": response_time,
+                "success": True
+            }
+        except Exception as e:
+            self.stats["error_count"] += 1
+            return {
+                "response": None,
+                "error": str(e),
+                "success": False
+            }
+    
+    def get_stats(self):
+        return self.stats
+
+# استخدام المراقب
+monitor = FLAREMonitor()
+result = monitor.query_with_monitoring(flare_query_engine, "ما هو FLARE؟")
+print(monitor.get_stats())
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 المراقبة والتقييم</h2>
+            <div class="monitoring-box">
+                <h3>🔍 نظام مراقبة شامل:</h3>
+                
+                <div class="step-item">
+                    <h4>📈 مؤشرات الأداء الرئيسية</h4>
+                    <div class="code-block">
+import json
+from datetime import datetime
+
+class PerformanceTracker:
+    def __init__(self, log_file="flare_performance.json"):
+        self.log_file = log_file
+        self.session_data = []
+    
+    def log_query(self, query, response, metadata):
+        log_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "query": query,
+            "response_length": len(str(response)),
+            "search_count": metadata.get("search_count", 0),
+            "confidence_scores": metadata.get("confidence_scores", []),
+            "response_time": metadata.get("response_time", 0)
+        }
+        self.session_data.append(log_entry)
+        
+        # حفظ في ملف
+        with open(self.log_file, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+    
+    def generate_report(self):
+        if not self.session_data:
+            return "لا توجد بيانات للتقرير"
+        
+        total_queries = len(self.session_data)
+        avg_response_time = sum(entry["response_time"] for entry in self.session_data) / total_queries
+        avg_search_count = sum(entry["search_count"] for entry in self.session_data) / total_queries
+        
+        return f"""
+تقرير أداء FLARE:
+================
+إجمالي الاستعلامات: {total_queries}
+متوسط وقت الاستجابة: {avg_response_time:.2f} ثانية
+متوسط عدد البحثات: {avg_search_count:.2f}
+        """
+
+tracker = PerformanceTracker()
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <h4>🎯 تقييم جودة الإجابات</h4>
+                    <div class="code-block">
+def evaluate_response_quality(query, response, expected_keywords=None):
+    """تقييم جودة الإجابة بناء على معايير محددة"""
+    score = 0
+    feedback = []
+    
+    # طول الإجابة
+    response_text = str(response)
+    if len(response_text) > 100:
+        score += 20
+        feedback.append("الإجابة مفصلة")
+    else:
+        feedback.append("الإجابة قصيرة")
+    
+    # وجود كلمات مفتاحية مطلوبة
+    if expected_keywords:
+        found_keywords = sum(1 for keyword in expected_keywords 
+                           if keyword.lower() in response_text.lower())
+        keyword_score = (found_keywords / len(expected_keywords)) * 30
+        score += keyword_score
+        feedback.append(f"وجود {found_keywords}/{len(expected_keywords)} كلمات مفتاحية")
+    
+    # تماسك النص
+    sentences = response_text.split('.')
+    if len(sentences) > 2:
+        score += 25
+        feedback.append("النص متماسك")
+    
+    # وجود مصادر أو معلومات محددة
+    if any(indicator in response_text.lower() 
+           for indicator in ['وفقاً لـ', 'بحسب', 'تشير الدراسات', 'الإحصائيات']):
+        score += 25
+        feedback.append("يحتوي على مراجع")
+    
+    return {
+        "score": min(score, 100),
+        "feedback": feedback
+    }
+
+# مثال على الاستخدام
+evaluation = evaluate_response_quality(
+    "ما هو الذكاء الاصطناعي؟",
+    response,
+    ["ذكاء اصطناعي", "تعلم آلي", "خوارزميات"]
+)
+print(evaluation)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏆 أفضل الممارسات</h2>
+            <div class="best-practices-box">
+                <h3>💡 نصائح للنجاح:</h3>
+                
+                <h4>🎯 إعداد البيانات:</h4>
+                <ul>
+                    <li><strong>جودة المصادر:</strong> استخدم مصادر موثوقة ومحدثة</li>
+                    <li><strong>تنويع المحتوى:</strong> اشمل أنواع مختلفة من المستندات</li>
+                    <li><strong>تنظيم الmetadata:</strong> أضف معلومات وصفية مفيدة</li>
+                    <li><strong>تحديث دوري:</strong> حديث البيانات بانتظام</li>
+                </ul>
+                
+                <h4>⚙️ ضبط المعاملات:</h4>
+                <ul>
+                    <li><strong>ابدأ بالافتراضي:</strong> استخدم القيم الافتراضية ثم حسن</li>
+                    <li><strong>اختبر تدريجياً:</strong> غير معامل واحد في المرة</li>
+                    <li><strong>راقب الأداء:</strong> تتبع تأثير كل تغيير</li>
+                    <li><strong>وازن بين السرعة والدقة:</strong> اختر حسب احتياجك</li>
+                </ul>
+                
+                <h4>📊 المراقبة المستمرة:</h4>
+                <ul>
+                    <li><strong>سجل كل شيء:</strong> احتفظ بسجلات مفصلة</li>
+                    <li><strong>حلل الأخطاء:</strong> افهم أسباب الفشل</li>
+                    <li><strong>قيس الرضا:</strong> اجمع تقييمات المستخدمين</li>
+                    <li><strong>حسن باستمرار:</strong> طور النظام بناء على التعلم</li>
+                </ul>
+                
+                <h4>🔧 الصيانة والتطوير:</h4>
+                <div class="code-block">
+# نسخة احتياطية دورية
+def backup_system():
+    import shutil
+    from datetime import datetime
+    
+    backup_dir = f"backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    shutil.copytree("./storage", f"./{backup_dir}/storage")
+    shutil.copytree("./chroma_db", f"./{backup_dir}/chroma_db")
+    print(f"تم إنشاء نسخة احتياطية: {backup_dir}")
+
+# تشغيل backup دوري
+import schedule
+schedule.every().day.at("02:00").do(backup_system)
+                </div>
+                
+                <h3>🚀 نصائح للإنتاج:</h3>
+                <ul>
+                    <li><strong>أمان البيانات:</strong> احم المعلومات الحساسة</li>
+                    <li><strong>قابلية التوسع:</strong> صمم للنمو المستقبلي</li>
+                    <li><strong>موثوقية عالية:</strong> اضمن استمرارية الخدمة</li>
+                    <li><strong>تجربة مستخدم ممتازة:</strong> اجعل النظام سهل الاستخدام</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🏗️ Pipeline متكامل: من الفكرة إلى نظام إنتاج قوي!</p>
+        </div>
+    </div>
+</body>
+</html>

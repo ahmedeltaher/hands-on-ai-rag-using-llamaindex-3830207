@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معاملات FLAREinstruct وآلية العمل الداخلية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .parameters-box { background: linear-gradient(120deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .mechanics-box { background: linear-gradient(120deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .workflow-box { background: linear-gradient(120deg, #4facfe 0%, #00f2fe 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .optimization-box { background: linear-gradient(120deg, #43e97b 0%, #38f9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .example-box { background: linear-gradient(120deg, #fa709a 0%, #fee140 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+        .parameter-item { background: rgba(255, 255, 255, 0.2); padding: 15px; margin: 10px 0; border-radius: 10px; border-right: 4px solid #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ معاملات FLAREinstruct وآلية العمل الداخلية</h1>
+            <p>الدرس السابع: التفاصيل التقنية والضبط الدقيق</p>
+        </div>
+
+        <div class="card">
+            <h2>🎛️ معاملات FLAREinstruct الأساسية</h2>
+            <div class="parameters-box">
+                <h3>🔧 المعاملات الرئيسية:</h3>
+                <p>FLAREinstruct بيحتاج ضبط معاملات محددة عشان يشتغل بكفاءة عالية.</p>
+                
+                <div class="parameter-item">
+                    <h4>📏 max_generation_length</h4>
+                    <ul>
+                        <li><strong>الوصف:</strong> أقصى طول للنص المولد في كل دورة</li>
+                        <li><strong>القيمة النموذجية:</strong> 32-128 tokens</li>
+                        <li><strong>التأثير:</strong> يحدد كمية النص قبل البحث</li>
+                        <li><strong>الضبط:</strong> أقل للبحث المكثف، أكتر للسرعة</li>
+                    </ul>
+                </div>
+                
+                <div class="parameter-item">
+                    <h4>🎯 confidence_threshold</h4>
+                    <ul>
+                        <li><strong>الوصف:</strong> العتبة المحددة لقرار البحث</li>
+                        <li><strong>القيمة النموذجية:</strong> 0.6-0.8</li>
+                        <li><strong>التأثير:</strong> يقرر متى نحتاج بحث إضافي</li>
+                        <li><strong>الضبط:</strong> أعلى لبحث أقل، أقل لبحث أكتر</li>
+                    </ul>
+                </div>
+                
+                <div class="parameter-item">
+                    <h4>🔍 max_search_queries</h4>
+                    <ul>
+                        <li><strong>الوصف:</strong> أقصى عدد استعلامات بحث لكل إجابة</li>
+                        <li><strong>القيمة النموذجية:</strong> 3-5 queries</li>
+                        <li><strong>التأثير:</strong> يمنع البحث المفرط</li>
+                        <li><strong>الضبط:</strong> حسب تعقيد الأسئلة المتوقعة</li>
+                    </ul>
+                </div>
+                
+                <div class="parameter-item">
+                    <h4>📊 retrieval_top_k</h4>
+                    <ul>
+                        <li><strong>الوصف:</strong> عدد النتائج المسترجعة في كل بحث</li>
+                        <li><strong>القيمة النموذجية:</strong> 3-10 documents</li>
+                        <li><strong>التأثير:</strong> كمية المعلومات المتاحة</li>
+                        <li><strong>الضبط:</strong> حسب حجم knowledge base</li>
+                    </ul>
+                </div>
+                
+                <div class="parameter-item">
+                    <h4>⏱️ max_iterations</h4>
+                    <ul>
+                        <li><strong>الوصف:</strong> أقصى عدد دورات generate-search</li>
+                        <li><strong>القيمة النموذجية:</strong> 5-10 iterations</li>
+                        <li><strong>التأثير:</strong> يمنع اللوب اللانهائي</li>
+                        <li><strong>الضبط:</strong> حسب تعقيد المهام</li>
+                    </ul>
+                </div>
+                
+                <div class="parameter-item">
+                    <h4>🎭 prompt_template</h4>
+                    <ul>
+                        <li><strong>الوصف:</strong> قالب التوجيهات للنموذج</li>
+                        <li><strong>المحتوى:</strong> تعليمات واضحة للسلوك</li>
+                        <li><strong>التأثير:</strong> يحدد طريقة عمل النموذج</li>
+                        <li><strong>الضبط:</strong> تخصيص حسب المجال</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 آلية العمل الداخلية</h2>
+            <div class="mechanics-box">
+                <h3>⚙️ خطوات المعالجة التفصيلية:</h3>
+                
+                <h4>1️⃣ التهيئة الأولية:</h4>
+                <ul>
+                    <li><strong>إعداد الprompt:</strong> تحضير التوجيهات الأساسية</li>
+                    <li><strong>تحديد المعاملات:</strong> ضبط القيم المطلوبة</li>
+                    <li><strong>تهيئة المتغيرات:</strong> إعداد counters والflags</li>
+                    <li><strong>تحضير البحث:</strong> إعداد retrieval system</li>
+                </ul>
+                
+                <h4>2️⃣ دورة التوليد الأولى:</h4>
+                <ul>
+                    <li><strong>توليد جزئي:</strong> إنتاج max_generation_length tokens</li>
+                    <li><strong>تحليل المحتوى:</strong> فحص النص المولد</li>
+                    <li><strong>اكتشاف الشك:</strong> البحث عن markers أو uncertainty</li>
+                    <li><strong>تقييم الثقة:</strong> قياس confidence level</li>
+                </ul>
+                
+                <h4>3️⃣ قرار البحث:</h4>
+                <ul>
+                    <li><strong>مقارنة العتبة:</strong> confidence vs threshold</li>
+                    <li><strong>تحديد الحاجة:</strong> هل البحث ضروري؟</li>
+                    <li><strong>استخراج Query:</strong> تكوين استعلام البحث</li>
+                    <li><strong>تحديث الCounter:</strong> عد عمليات البحث</li>
+                </ul>
+                
+                <h4>4️⃣ عملية البحث:</h4>
+                <ul>
+                    <li><strong>تنفيذ البحث:</strong> استخدام retrieval system</li>
+                    <li><strong>ترتيب النتائج:</strong> ranking حسب الصلة</li>
+                    <li><strong>اختيار المناسب:</strong> أخذ top_k results</li>
+                    <li><strong>تحضير السياق:</strong> إعداد context للدورة القادمة</li>
+                </ul>
+                
+                <h4>5️⃣ دمج المعلومات:</h4>
+                <ul>
+                    <li><strong>تحديث الprompt:</strong> إضافة المعلومات الجديدة</li>
+                    <li><strong>إعادة صياغة:</strong> تنظيم السياق</li>
+                    <li><strong>الاستمرار:</strong> متابعة التوليد</li>
+                    <li><strong>مراقبة الطول:</strong> تتبع إجمالي الطول</li>
+                </ul>
+                
+                <h4>6️⃣ شروط التوقف:</h4>
+                <ul>
+                    <li><strong>اكتمال الإجابة:</strong> وصول لنهاية طبيعية</li>
+                    <li><strong>حد الطول:</strong> وصول للحد الأقصى</li>
+                    <li><strong>حد البحث:</strong> استنفاد عدد البحثات</li>
+                    <li><strong>حد التكرار:</strong> وصول لmax_iterations</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 سير العمل المفصل</h2>
+            <div class="workflow-box">
+                <h3>📋 خطوات العملية خطوة بخطوة:</h3>
+                
+                <h4>🚀 البداية:</h4>
+                <p><strong>Input:</strong> "ما هي عاصمة فرنسا وما أهم معالمها السياحية؟"</p>
+                
+                <h4>1️⃣ الدورة الأولى:</h4>
+                <ul>
+                    <li><strong>التوليد:</strong> "عاصمة فرنسا هي باريس. وهي مدينة"</li>
+                    <li><strong>التحليل:</strong> النص عام ويحتاج تفاصيل أكتر</li>
+                    <li><strong>القرار:</strong> confidence < threshold → بحث مطلوب</li>
+                    <li><strong>البحث:</strong> "معالم باريس السياحية الشهيرة"</li>
+                </ul>
+                
+                <h4>2️⃣ بعد البحث الأول:</h4>
+                <ul>
+                    <li><strong>النتائج:</strong> معلومات عن برج إيفل، اللوفر، شانزليزيه</li>
+                    <li><strong>الدمج:</strong> إضافة المعلومات للسياق</li>
+                    <li><strong>الاستمرار:</strong> "تشتهر بمعالم عديدة مثل برج إيفل"</li>
+                    <li><strong>التقييم:</strong> معلومات كافية؟ لا → بحث إضافي</li>
+                </ul>
+                
+                <h4>3️⃣ الدورة الثانية:</h4>
+                <ul>
+                    <li><strong>البحث:</strong> "متاحف باريس المشهورة"</li>
+                    <li><strong>الإضافة:</strong> معلومات عن متحف اللوفر</li>
+                    <li><strong>التوليد:</strong> "ومتحف اللوفر الذي يحتوي على الموناليزا"</li>
+                    <li><strong>التقييم:</strong> confidence عالي → لا حاجة لبحث</li>
+                </ul>
+                
+                <h4>🏁 النهاية:</h4>
+                <ul>
+                    <li><strong>الإجابة النهائية:</strong> معلومات شاملة ودقيقة</li>
+                    <li><strong>التوقف:</strong> اكتمال طبيعي للإجابة</li>
+                    <li><strong>النتيجة:</strong> إجابة محسنة بمعلومات إضافية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 استراتيجيات التحسين</h2>
+            <div class="optimization-box">
+                <h3>⚡ تحسين الأداء:</h3>
+                
+                <h4>🔧 ضبط المعاملات:</h4>
+                <ul>
+                    <li><strong>لدقة أعلى:</strong> قلل max_generation_length، اخفض threshold</li>
+                    <li><strong>لسرعة أعلى:</strong> زود max_generation_length، ارفع threshold</li>
+                    <li><strong>للتوازن:</strong> استخدم القيم الوسطية</li>
+                    <li><strong>للضبط الدقيق:</strong> جرب قيم مختلفة وقيس النتائج</li>
+                </ul>
+                
+                <h4>📝 تحسين الprompt:</h4>
+                <ul>
+                    <li><strong>وضوح التعليمات:</strong> تعليمات صريحة وواضحة</li>
+                    <li><strong>أمثلة توضيحية:</strong> إعطاء أمثلة للسلوك المطلوب</li>
+                    <li><strong>تحديد المخرجات:</strong> وصف واضح للمخرجات المتوقعة</li>
+                    <li><strong>معالجة الحالات الخاصة:</strong> توجيهات للمواقف الاستثنائية</li>
+                </ul>
+                
+                <h4>🔍 تحسين البحث:</h4>
+                <ul>
+                    <li><strong>جودة الاستعلامات:</strong> تحسين query generation</li>
+                    <li><strong>دقة الترتيب:</strong> تحسين ranking algorithm</li>
+                    <li><strong>تنويع النتائج:</strong> ضمان تنوع المصادر</li>
+                    <li><strong>سرعة الاستجابة:</strong> تحسين retrieval speed</li>
+                </ul>
+                
+                <h4>📊 مراقبة الأداء:</h4>
+                <ul>
+                    <li><strong>معدل البحث:</strong> كم مرة يحدث البحث</li>
+                    <li><strong>جودة الإجابات:</strong> قياس دقة وشمولية النتائج</li>
+                    <li><strong>زمن الاستجابة:</strong> السرعة الإجمالية للنظام</li>
+                    <li><strong>استهلاك الموارد:</strong> تكلفة العملية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 مثال عملي مفصل</h2>
+            <div class="example-box">
+                <h3>🎯 تطبيق FLAREinstruct على سؤال معقد:</h3>
+                
+                <h4>❓ السؤال:</h4>
+                <p>"اشرح لي تأثير التغير المناخي على الزراعة في منطقة الشرق الأوسط وما الحلول المقترحة؟"</p>
+                
+                <h4>⚙️ إعدادات المعاملات:</h4>
+                <ul>
+                    <li><strong>max_generation_length:</strong> 64 tokens</li>
+                    <li><strong>confidence_threshold:</strong> 0.7</li>
+                    <li><strong>max_search_queries:</strong> 4</li>
+                    <li><strong>retrieval_top_k:</strong> 5</li>
+                </ul>
+                
+                <h4>🔄 مسار التنفيذ:</h4>
+                
+                <p><strong>الدورة 1:</strong></p>
+                <ul>
+                    <li><strong>توليد:</strong> "التغير المناخي يؤثر بشكل كبير على الزراعة في الشرق الأوسط من خلال"</li>
+                    <li><strong>تقييم:</strong> confidence = 0.6 < 0.7</li>
+                    <li><strong>بحث:</strong> "تأثير التغير المناخي الزراعة الشرق الأوسط"</li>
+                </ul>
+                
+                <p><strong>الدورة 2:</strong></p>
+                <ul>
+                    <li><strong>إضافة السياق:</strong> معلومات عن ارتفاع درجات الحرارة والجفاف</li>
+                    <li><strong>توليد:</strong> "ارتفاع درجات الحرارة والجفاف المتزايد، مما يؤدي إلى انخفاض الإنتاج"</li>
+                    <li><strong>تقييم:</strong> confidence = 0.8 > 0.7 ✓</li>
+                </ul>
+                
+                <p><strong>الدورة 3:</strong></p>
+                <ul>
+                    <li><strong>توليد:</strong> "الحلول المقترحة تشمل"</li>
+                    <li><strong>تقييم:</strong> confidence = 0.5 < 0.7</li>
+                    <li><strong>بحث:</strong> "حلول مقترحة مواجهة التغير المناخي الزراعة"</li>
+                </ul>
+                
+                <p><strong>النتيجة النهائية:</strong></p>
+                <p>إجابة شاملة تغطي التأثيرات والحلول بناء على معلومات دقيقة ومحدثة.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚙️ FLAREinstruct: قوة التحكم الدقيق في كل معامل وخطوة!</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقدمة عن SentenceEmbeddingOptimizer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .concept-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .purpose-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .method-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .benefit-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 مقدمة عن SentenceEmbeddingOptimizer</h1>
+            <p>الدرس الثاني عشر: تحسين المحتوى على مستوى الجمل</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 الهدف الأساسي</h2>
+            <div class="concept-box">
+                <h3>💡 المفهوم الجوهري:</h3>
+                <p>SentenceEmbeddingOptimizer بيحسن محتوى النص في العقد بناءً على مدى صلته بالاستعلام، وده بيحصل على مستوى الجمل مش العقد كاملة.</p>
+                
+                <h3>🔍 الفكرة الأساسية:</h3>
+                <ul>
+                    <li><strong>تحليل على مستوى الجمل:</strong> مش العقدة كاملة</li>
+                    <li><strong>قياس الصلة:</strong> كل جملة تتقيم منفردة</li>
+                    <li><strong>اختيار الأفضل:</strong> الجمل الأكثر صلة بس</li>
+                    <li><strong>تقصير ذكي:</strong> للنص المدخل</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ آلية العمل</h2>
+            <div class="method-box">
+                <h3>🧮 استخدام Embedding-based Similarity:</h3>
+                <p>بيستخدم الـ embeddings لحساب similarity score بين كل جملة والاستعلام.</p>
+                
+                <h3>🎯 الهدف من التحسين:</h3>
+                <ul>
+                    <li><strong>إزالة الجمل غير المتعلقة:</strong> باستخدام embeddings</li>
+                    <li><strong>تركيز على المهم:</strong> الجمل عالية الصلة بس</li>
+                    <li><strong>تقليل الضوضاء:</strong> في المحتوى المرسل للـ LLM</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 طرق الاختيار</h2>
+            <div class="purpose-box">
+                <h3>🎯 Percentile Cutoff:</h3>
+                <p>تحديد النسبة المئوية العليا من الجمل الأكثر صلة.</p>
+                
+                <h3>⚖️ Threshold Cutoff:</h3>
+                <p>تحديد حد أدنى لدرجة التشابه لقبول الجملة.</p>
+                
+                <h3>🤝 الجمع بين الطريقتين:</h3>
+                <p>يمكن استخدام كلا المعيارين معاً لتحكم أدق في عملية الاختيار.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🌟 الفوائد الأساسية</h2>
+            <div class="benefit-box">
+                <h3>🎯 دقة أعلى:</h3>
+                <ul>
+                    <li><strong>فلترة دقيقة:</strong> على مستوى الجمل</li>
+                    <li><strong>صلة مباشرة:</strong> بالاستعلام</li>
+                    <li><strong>تقليل التشتت:</strong> المعلومات غير المهمة</li>
+                </ul>
+                
+                <h3>⚡ كفاءة أفضل:</h3>
+                <ul>
+                    <li><strong>نص أقصر:</strong> أقل tokens للـ LLM</li>
+                    <li><strong>معالجة أسرع:</strong> محتوى مركز</li>
+                    <li><strong>تكلفة أقل:</strong> استهلاك أقل للموارد</li>
+                </ul>
+                
+                <h3>🧠 فهم أفضل:</h3>
+                <ul>
+                    <li><strong>سياق مركز:</strong> كل جملة مهمة</li>
+                    <li><strong>وضوح أكبر:</strong> بدون تشتت</li>
+                    <li><strong>إجابات أدق:</strong> بناء على محتوى محسن</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 SentenceEmbeddingOptimizer - التحسين الذكي على مستوى الجمل!</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Postprocessor - التنفيذ مع spaCy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .spacy-explanation { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .algorithm-steps { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .phrase-matcher-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .logic-flow { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .technical-deep-dive { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Keyword Postprocessor - التنفيذ مع spaCy</h1>
+            <p>الدرس السابع: فهم آلية العمل الداخلية مع مكتبة spaCy</p>
+        </div>
+
+        <div class="card">
+            <h2>🐍 ليه spaCy؟</h2>
+            <div class="spacy-explanation">
+                <p>spaCy مكتبة NLP قوية جداً ومتخصصة في معالجة النصوص. LlamaIndex بيستخدمها في Keyword Postprocessor عشان:</p>
+                
+                <h3>💪 القوة والدقة:</h3>
+                <ul>
+                    <li><strong>PhraseMatcher:</strong> بيقدر يدور على كلمات وعبارات معقدة</li>
+                    <li><strong>Language Models:</strong> عنده models مدربة لكل اللغات</li>
+                    <li><strong>Tokenization:</strong> بيقسم النص بذكاء مش بس بالمسافات</li>
+                    <li><strong>Speed:</strong> سريع جداً مقارنة بمكتبات تانية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 إيه هو PhraseMatcher؟</h2>
+            <div class="phrase-matcher-box">
+                <p>PhraseMatcher ده زي المحقق الذكي اللي بيدور على الأدلة في النص. مش بس بيدور على كلمة واحدة، لكن بيقدر يدور على:</p>
+                
+                <h3>🎯 أنواع البحث:</h3>
+                <ul>
+                    <li><strong>Single Words:</strong> كلمات منفردة زي "AI"</li>
+                    <li><strong>Phrases:</strong> عبارات زي "machine learning"</li>
+                    <li><strong>Pattern Matching:</strong> أنماط معقدة</li>
+                    <li><strong>Case Variations:</strong> بيتعامل مع الحروف الكبيرة والصغيرة</li>
+                </ul>
+                
+                <h3>🔧 ليه أحسن من البحث العادي؟</h3>
+                <ul>
+                    <li>بيفهم حدود الكلمات (word boundaries)</li>
+                    <li>مش بيلخبط بين "learning" و "elearning"</li>
+                    <li>بيتعامل مع علامات الترقيم صح</li>
+                    <li>أسرع من الـ regex للأشياء المعقدة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ خطوات التنفيذ تحت الغطاء</h2>
+            <div class="algorithm-steps">
+                <h3>🔄 Step 1: Iteration على النودز</h3>
+                <p>النظام بيمر على كل NodeWithScore object في الـ input list واحد واحد.</p>
+                
+                <h3>📝 Step 2: استخراج المحتوى</h3>
+                <p>لكل node، بيستخرج الـ text content (node.text أو node.content).</p>
+                
+                <h3>🧠 Step 3: معالجة مع spaCy</h3>
+                <p>بيمرر النص لـ spaCy language model عشان يحلله ويحضره للبحث.</p>
+                
+                <h3>🔍 Step 4: تطبيق PhraseMatcher</h3>
+                <p>بيستخدم PhraseMatcher عشان يدور على الـ required و excluded keywords.</p>
+                
+                <h3>✅❌ Step 5: اتخاذ القرار</h3>
+                <p>بناء على النتايج، بيقرر يخلي النود أو يشيله من القائمة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 منطق اتخاذ القرار</h2>
+            <div class="logic-flow">
+                <h3>🔍 فحص Required Keywords:</h3>
+                <p>لو في required keywords محددة:</p>
+                <ul>
+                    <li><strong>إذا النود مافيهوش أي منها:</strong> ❌ يتشال فوراً</li>
+                    <li><strong>إذا النود فيه كلها:</strong> ✅ ينتقل للخطوة التالية</li>
+                </ul>
+                
+                <h3>🚫 فحص Excluded Keywords:</h3>
+                <p>لو في excluded keywords محددة:</p>
+                <ul>
+                    <li><strong>إذا النود فيه أي منها:</strong> ❌ يتشال فوراً</li>
+                    <li><strong>إذا النود مافيهوش أي منها:</strong> ✅ يفضل</li>
+                </ul>
+                
+                <h3>🎉 النتيجة النهائية:</h3>
+                <p>النود يفضل لو نجح في كل الاختبارات ويرجع كـ NodeWithScore object.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔬 التفاصيل التقنية العميقة</h2>
+            <div class="technical-deep-dive">
+                <h3>🧠 Language Model Processing:</h3>
+                <p>spaCy مش بس بيدور على النص كده، لكن بيعمل:</p>
+                <ul>
+                    <li><strong>Tokenization:</strong> بيقسم النص لـ tokens ذكية</li>
+                    <li><strong>Lemmatization:</strong> بيرجع الكلمات لجذورها (learning → learn)</li>
+                    <li><strong>Stop Word Removal:</strong> بيتجاهل كلمات زي "the", "and"</li>
+                    <li><strong>Part-of-Speech Tagging:</strong> بيحدد نوع كل كلمة</li>
+                </ul>
+                
+                <h3>⚡ تحسينات الأداء:</h3>
+                <ul>
+                    <li>PhraseMatcher بيستخدم hash tables للبحث السريع</li>
+                    <li>spaCy models محسنة بـ Cython للسرعة</li>
+                    <li>Batch processing للنودز الكتيرة</li>
+                    <li>Memory efficient للنصوص الطويلة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 مثال تطبيقي معمق</h2>
+            <div class="algorithm-steps">
+                <h3>📝 النص المراد فحصه:</h3>
+                <p>"Machine learning is revolutionizing healthcare by enabling AI-powered diagnostic tools that can detect diseases early."</p>
+                
+                <h3>🔍 Required: ["machine learning", "healthcare"]</h3>
+                <h3>🚫 Excluded: ["expensive", "complicated"]</h3>
+                
+                <h3>⚙️ عملية المعالجة:</h3>
+                <ol>
+                    <li><strong>spaCy Processing:</strong> النص يتحلل ويتقسم</li>
+                    <li><strong>PhraseMatcher Search:</strong> البحث عن العبارات</li>
+                    <li><strong>Found "machine learning":</strong> ✅ موجود</li>
+                    <li><strong>Found "healthcare":</strong> ✅ موجود</li>
+                    <li><strong>No excluded words found:</strong> ✅ مافيش كلمات ممنوعة</li>
+                    <li><strong>Result:</strong> النود يفضل ✅</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 مميزات التصميم مع spaCy</h2>
+            <div class="phrase-matcher-box">
+                <h3>🎯 الدقة:</h3>
+                <ul>
+                    <li>بيتعامل مع اللغات المختلفة صح</li>
+                    <li>مش بيلخبط بين الكلمات المتشابهة</li>
+                    <li>بيفهم السياق اللغوي</li>
+                </ul>
+                
+                <h3>🚀 الأداء:</h3>
+                <ul>
+                    <li>أسرع من الطرق التقليدية</li>
+                    <li>يقدر يشتغل على نصوص كبيرة</li>
+                    <li>استهلاك memory محسن</li>
+                </ul>
+                
+                <h3>🔧 المرونة:</h3>
+                <ul>
+                    <li>يدعم لغات كتيرة</li>
+                    <li>قابل للتخصيص</li>
+                    <li>سهل الدمج مع باقي النظام</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🔧 انتهى الجزء السابع | الجزء التالي: Keyword Postprocessor - المثال العملي</p>
+        </div>
+    </div>
+</body>
+</html>

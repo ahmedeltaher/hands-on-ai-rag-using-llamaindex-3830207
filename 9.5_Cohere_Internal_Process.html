@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آلية عمل Cohere Rerank تحت الغطاء</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .extraction-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .api-box { background: linear-gradient(120deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .scoring-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .objects-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .synthesis-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .process-steps { background: linear-gradient(120deg, #c3ec52 0%, #0ba360 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ آلية عمل Cohere Rerank تحت الغطاء</h1>
+            <p>الدرس الخامس: رحلة البيانات من النص الخام إلى النتائج المرتبة</p>
+        </div>
+
+        <div class="card">
+            <h2>🔬 الخطوات التفصيلية للعملية</h2>
+            <div class="process-steps">
+                <h3>📋 ملخص العملية الكاملة:</h3>
+                <ol>
+                    <li><strong>Text Extraction:</strong> استخراج النص من كل node</li>
+                    <li><strong>API Call:</strong> إرسال البيانات لـ Cohere</li>
+                    <li><strong>Re-ranking Processing:</strong> معالجة وترتيب النتائج</li>
+                    <li><strong>Score Assignment:</strong> إعطاء درجات الصلة</li>
+                    <li><strong>Object Creation:</strong> إنشاء NodeWithScore objects</li>
+                    <li><strong>LLM Synthesis:</strong> إرسال النتائج للـ LLM</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 الخطوة الأولى: استخراج النص</h2>
+            <div class="extraction-box">
+                <h3>🎯 ايه اللي بيحصل في المرحلة دي؟</h3>
+                <p>النظام بياخد كل node من الـ nodes اللي رجعت من عملية البحث الأولي، ويستخرج النص الخام منها.</p>
+                
+                <h3>🔍 تفاصيل الاستخراج:</h3>
+                <ul>
+                    <li><strong>Node Content:</strong> النص الأساسي للـ document</li>
+                    <li><strong>Metadata Filtering:</strong> إزالة المعلومات الإضافية غير المهمة</li>
+                    <li><strong>Text Cleaning:</strong> تنظيف النص من الرموز الغريبة</li>
+                    <li><strong>Format Standardization:</strong> توحيد شكل النص</li>
+                </ul>
+                
+                <h3>📊 مثال عملي:</h3>
+                <p><strong>Node الأصلي:</strong> يمكن يحتوي على metadata زي file path، timestamps، etc.</p>
+                <p><strong>النص المستخرج:</strong> "أسعار السيارات في مصر ارتفعت بنسبة 15% في 2024 بسبب التضخم العالمي..."</p>
+                
+                <h3>⚡ ليه المرحلة دي مهمة؟</h3>
+                <ul>
+                    <li><strong>Focus على المحتوى:</strong> الـ re-ranking model يركز على النص بس</li>
+                    <li><strong>Noise Reduction:</strong> إزالة المعلومات اللي ممكن تشوش على النموذج</li>
+                    <li><strong>Consistency:</strong> ضمان إن كل النصوص بنفس الـ format</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🌐 الخطوة الثانية: استخدام Cohere API</h2>
+            <div class="api-box">
+                <h3>📡 عملية الإرسال:</h3>
+                <p>LlamaIndex بيجمع كل النصوص المستخرجة مع الاستعلام الأصلي، ويبعتهم لـ Cohere API في استدعاء واحد.</p>
+                
+                <h3>📦 هيكل البيانات المرسلة:</h3>
+                <ul>
+                    <li><strong>Query:</strong> الاستعلام الأصلي من المستخدم</li>
+                    <li><strong>Documents:</strong> مصفوفة من النصوص المراد ترتيبها</li>
+                    <li><strong>Model:</strong> اسم النموذج (rerank-english-v2/v3)</li>
+                    <li><strong>Top_n:</strong> عدد النتائج المطلوبة</li>
+                </ul>
+                
+                <h3>⚡ التحسينات التقنية:</h3>
+                <ul>
+                    <li><strong>Batch Processing:</strong> معالجة عدة نصوص في مرة واحدة</li>
+                    <li><strong>Connection Pooling:</strong> إعادة استخدام الاتصالات</li>
+                    <li><strong>Error Handling:</strong> التعامل مع الأخطاء والإعادة</li>
+                    <li><strong>Rate Limiting:</strong> احترام حدود الـ API</li>
+                </ul>
+                
+                <h3>🔒 الأمان والخصوصية:</h3>
+                <ul>
+                    <li><strong>HTTPS Encryption:</strong> تشفير البيانات أثناء النقل</li>
+                    <li><strong>No Data Storage:</strong> Cohere ما بيحفظش بياناتك</li>
+                    <li><strong>API Authentication:</strong> التحقق من الهوية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧠 الخطوة الثالثة: معالجة Re-ranking</h2>
+            <div class="scoring-box">
+                <h3>⚙️ السحر بيحصل هنا:</h3>
+                <p>نموذج Cohere الذكي بيحلل العلاقة بين كل نص والاستعلام، ويحسب درجة صلة دقيقة.</p>
+                
+                <h3>🧮 آلية الحساب:</h3>
+                <ul>
+                    <li><strong>Semantic Understanding:</strong> فهم معنى النص والاستعلام</li>
+                    <li><strong>Context Analysis:</strong> تحليل السياق والموضوع</li>
+                    <li><strong>Relevance Scoring:</strong> حساب درجة من 0 إلى 1</li>
+                    <li><strong>Comparative Ranking:</strong> مقارنة النصوص ببعضها</li>
+                </ul>
+                
+                <h3>📊 مثال على الدرجات:</h3>
+                <ul>
+                    <li><strong>0.95:</strong> صلة عالية جداً - النص يجاوب على السؤال مباشرة</li>
+                    <li><strong>0.75:</strong> صلة عالية - النص مرتبط بقوة بالموضوع</li>
+                    <li><strong>0.45:</strong> صلة متوسطة - النص يتكلم عن موضوع مشابه</li>
+                    <li><strong>0.15:</strong> صلة ضعيفة - النص له علاقة بعيدة بالموضوع</li>
+                </ul>
+                
+                <h3>🎯 العوامل المؤثرة:</h3>
+                <ul>
+                    <li><strong>Keyword Overlap:</strong> الكلمات المشتركة</li>
+                    <li><strong>Semantic Similarity:</strong> التشابه في المعنى</li>
+                    <li><strong>Context Relevance:</strong> صلة السياق العام</li>
+                    <li><strong>Intent Matching:</strong> توافق النية من الاستعلام</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 الخطوة الرابعة: إرجاع النتائج مع الدرجات</h2>
+            <div class="objects-box">
+                <h3>📤 استلام النتائج:</h3>
+                <p>Cohere API بيرجع النتائج مرتبة حسب الصلة، مع درجة relevance score لكل نص.</p>
+                
+                <h3>🏗️ هيكل الاستجابة:</h3>
+                <ul>
+                    <li><strong>Ranked Results:</strong> النصوص مرتبة من الأعلى للأقل صلة</li>
+                    <li><strong>Relevance Scores:</strong> درجة رقمية لكل نص</li>
+                    <li><strong>Original Index:</strong> رقم النص في القائمة الأصلية</li>
+                    <li><strong>Metadata:</strong> معلومات إضافية عن العملية</li>
+                </ul>
+                
+                <h3>🔄 تحويل النتائج:</h3>
+                <p>LlamaIndex بياخد النتائج دي ويحولها لـ <strong>NodeWithScore objects</strong> - ده نوع خاص من البيانات يجمع بين محتوى الـ node والدرجة بتاعته.</p>
+                
+                <h3>💎 مكونات NodeWithScore:</h3>
+                <ul>
+                    <li><strong>Node:</strong> المحتوى الأصلي مع كل الـ metadata</li>
+                    <li><strong>Score:</strong> درجة الصلة من Cohere</li>
+                    <li><strong>Source Info:</strong> معلومات المصدر الأصلي</li>
+                    <li><strong>Additional Metadata:</strong> معلومات إضافية للتتبع</li>
+                </ul>
+                
+                <h3>🎯 فوائد NodeWithScore:</h3>
+                <ul>
+                    <li><strong>Transparency:</strong> شفافية في معرفة درجة كل نتيجة</li>
+                    <li><strong>Debugging:</strong> سهولة تتبع وحل المشاكل</li>
+                    <li><strong>Further Processing:</strong> إمكانية معالجة إضافية</li>
+                    <li><strong>User Feedback:</strong> عرض الدرجات للمستخدم</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 الخطوة الأخيرة: إرسال للـ LLM</h2>
+            <div class="synthesis-box">
+                <h3>📨 تسليم النتائج:</h3>
+                <p>النتائج المرتبة والمحسنة بتتبعت للـ LLM عشان يستخدمها في توليد الإجابة النهائية.</p>
+                
+                <h3>🎯 ليه الخطوة دي حيوية؟</h3>
+                <ul>
+                    <li><strong>Best Context First:</strong> أهم المعلومات في بداية الـ prompt</li>
+                    <li><strong>Optimized Token Usage:</strong> استخدام أمثل لمساحة الـ tokens</li>
+                    <li><strong>Higher Quality Output:</strong> إجابات أدق وأكثر صلة</li>
+                    <li><strong>Reduced Hallucination:</strong> تقليل اختلاق المعلومات</li>
+                </ul>
+                
+                <h3>📋 تنسيق الإرسال للـ LLM:</h3>
+                <ul>
+                    <li><strong>Context Arrangement:</strong> ترتيب المعلومات بشكل منطقي</li>
+                    <li><strong>Source Attribution:</strong> ربط كل معلومة بمصدرها</li>
+                    <li><strong>Relevance Indicators:</strong> إشارات لدرجة أهمية كل جزء</li>
+                    <li><strong>Instruction Clarity:</strong> تعليمات واضحة للـ LLM</li>
+                </ul>
+                
+                <h3>⚡ النتيجة النهائية:</h3>
+                <p>المستخدم يحصل على إجابة دقيقة ومفيدة، مبنية على أهم وأدق المعلومات المتاحة، مع إمكانية الاطلاع على المصادر ودرجات الصلة.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 فهم الآلية الداخلية = قدرة أكبر على التحسين والاستفادة!</p>
+        </div>
+    </div>
+</body>
+</html>

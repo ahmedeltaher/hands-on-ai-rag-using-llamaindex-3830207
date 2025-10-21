@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقنيات الثلاثة للـ Self-Correcting RAG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(45deg, #00cec9, #55a3ff);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #00cec9;
+        }
+        
+        .technique-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+        
+        .technique-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .technique-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+        
+        .technique-number {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .technique-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .comparison-table {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .comparison-row {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #00cec9;
+        }
+        
+        .comparison-label {
+            font-weight: bold;
+            min-width: 150px;
+            margin-left: 15px;
+        }
+        
+        .vs-indicator {
+            background: linear-gradient(45deg, #ff7675, #fd79a8);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 25px 0;
+            font-weight: bold;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 التقنيات الثلاثة للـ Self-Correcting RAG</h1>
+            <p>فهم شامل لكل تقنية وإزاي بتشتغل ولماذا نحتاجها</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🔬 نظرة عامة على التقنيات الثلاثة</div>
+            </div>
+            <div class="content">
+                <p>بدل ما نعتمد على النظام البسيط اللي مش بيراجع نفسه، هنتعلم تلات تقنيات ذكية كل واحدة منهم بتحل مشكلة معينة بطريقة مختلفة. كل تقنية ليها استخدام مختلف حسب طبيعة المشكلة اللي واجهناها.</p>
+                
+                <div class="highlight">
+                    <strong>🎯 الفكرة الأساسية:</strong> بدل ما النظام يدي إجابة واحدة وخلاص، هيحاول كذا مرة ويحسن من نفسه لحد ما يوصل لأحسن إجابة!
+                </div>
+            </div>
+        </div>
+
+        <div class="technique-grid">
+            <div class="technique-card">
+                <div class="technique-number">1</div>
+                <div class="technique-title">🔄 Retry Query Engine</div>
+                <div style="position: relative; z-index: 1;">
+                    <p><strong>إيه هو؟</strong></p>
+                    <p>نظام بيستخدم مقيّم (Evaluator) عشان يحسن الإجابة من الـ Base Query Engine الأساسي.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <strong>🎯 امتى نستخدمه؟</strong><br>
+                        لما عايزين نحسن جودة الإجابات عموماً ومش مهتمين بتفاصيل المصادر
+                    </div>
+                    
+                    <p><strong>ازاي بيشتغل؟</strong></p>
+                    <p>بيقيّم الإجابة الأولى، لو مش كويسة بيعيد المحاولة بطريقة محسنة</p>
+                </div>
+            </div>
+
+            <div class="technique-card" style="background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);">
+                <div class="technique-number">2</div>
+                <div class="technique-title">📊 Retry Source Query Engine</div>
+                <div style="position: relative; z-index: 1;">
+                    <p><strong>إيه هو؟</strong></p>
+                    <p>بيعدل على مصادر البيانات (Source Nodes) عن طريق تصفية المصادر الموجودة بناءً على تقييم الـ LLM للعقد.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <strong>🎯 امتى نستخدمه؟</strong><br>
+                        لما المشكلة في جودة المصادر اللي بتيجي من البحث
+                    </div>
+                    
+                    <p><strong>ازاي بيشتغل؟</strong></p>
+                    <p>بيفحص كل مصدر لوحده، بيشيل المصادر الوحشة، ويعيد إنشاء الفهرس بالمصادر الكويسة بس</p>
+                </div>
+            </div>
+
+            <div class="technique-card" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">
+                <div class="technique-number">3</div>
+                <div class="technique-title">📋 Retry Guideline Query Engine</div>
+                <div style="position: relative; z-index: 1;">
+                    <p><strong>إيه هو؟</strong></p>
+                    <p>بيستخدم مبادئ توجيهية (Guidelines) عشان يوجه سلوك المقيّم. ممكن تخصصه بمبادئك الخاصة عن طريق الـ Prompts.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <strong>🎯 امتى نستخدمه؟</strong><br>
+                        لما عندك معايير محددة أو قواعد خاصة للإجابات
+                    </div>
+                    
+                    <p><strong>ازاي بيشتغل؟</strong></p>
+                    <p>بيقيّم الإجابة ضد المبادئ اللي انت حددتها، ولو مش مطابقة بيعدل السؤال ويحاول تاني</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">⚖️ مقارنة بين التقنيات الثلاثة</div>
+            </div>
+            <div class="content">
+                <div class="comparison-table">
+                    <div class="comparison-row">
+                        <div class="comparison-label">🎯 الهدف الأساسي:</div>
+                        <div>
+                            <strong>Retry Query:</strong> تحسين الإجابة عموماً<br>
+                            <strong>Retry Source:</strong> تحسين جودة المصادر<br>
+                            <strong>Retry Guideline:</strong> الالتزام بمعايير محددة
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-row">
+                        <div class="comparison-label">🔧 نوع التعديل:</div>
+                        <div>
+                            <strong>Retry Query:</strong> يعدل على طريقة الاستعلام<br>
+                            <strong>Retry Source:</strong> يعدل على المصادر المستخدمة<br>
+                            <strong>Retry Guideline:</strong> يعدل السؤال بناءً على التقييم
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-row">
+                        <div class="comparison-label">📊 مستوى التحكم:</div>
+                        <div>
+                            <strong>Retry Query:</strong> تحكم عام<br>
+                            <strong>Retry Source:</strong> تحكم في البيانات<br>
+                            <strong>Retry Guideline:</strong> تحكم مخصص ومرن
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-row">
+                        <div class="comparison-label">⚡ سرعة التنفيذ:</div>
+                        <div>
+                            <strong>Retry Query:</strong> سريع نسبياً<br>
+                            <strong>Retry Source:</strong> أبطأ (يعيد إنشاء الفهرس)<br>
+                            <strong>Retry Guideline:</strong> متوسط
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="vs-indicator">
+            <div style="font-size: 1.2rem;">💡 إزاي تختار التقنية المناسبة؟</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🤔 إزاي تقرر تستخدم إيه؟</div>
+            </div>
+            <div class="content">
+                <div class="highlight">
+                    <strong>استخدم Retry Query Engine لو:</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>عايز تحسين عام في جودة الإجابات</li>
+                        <li>مش مهتم بتفاصيل المصادر</li>
+                        <li>عايز حل سريع وبسيط</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>استخدم Retry Source Query Engine لو:</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>المشكلة في جودة المصادر اللي بتيجي</li>
+                        <li>عايز تتحكم في البيانات المستخدمة</li>
+                        <li>الفهرس بتاعك فيه بيانات كتير مش مفيدة</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>استخدم Retry Guideline Query Engine لو:</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>عندك معايير أو قواعد خاصة للإجابات</li>
+                        <li>بتشتغل في مجال متخصص له قواعد معينة</li>
+                        <li>عايز مرونة في تخصيص المعايير</li>
+                    </ul>
+                </div>
+                
+                <p style="margin-top: 25px; font-size: 1.2rem; font-weight: bold; text-align: center; color: #0984e3;">
+                    🎯 وممكن كمان تستخدم أكتر من تقنية مع بعض حسب احتياجاتك!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

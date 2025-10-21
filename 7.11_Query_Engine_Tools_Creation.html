@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء Query Engine Tools - الأدوات الأساسية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .tools-definition {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+
+        .implementation-details {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .technical-architecture {
+            background: linear-gradient(120deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+
+        .practical-example {
+            background: linear-gradient(120deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+
+        .initialization-process {
+            background: linear-gradient(120deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #9c27b0;
+        }
+
+        .integration-flow {
+            background: linear-gradient(120deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .code-card {
+            background: linear-gradient(120deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        ul {
+            padding-right: 30px;
+            margin: 15px 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛠️ إنشاء Query Engine Tools</h1>
+            <p>الدرس الحادي عشر: الأدوات الأساسية للبحث في SubQuestionQueryEngine</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 إيه هي Query Engine Tools؟</h2>
+            
+            <div class="tools-definition">
+                <h3>التعريف الأساسي</h3>
+                <p>Query Engine Tools هي <strong>الأدوات المتخصصة</strong> اللي بتتعامل مع البحث الفعلي في قاعدة البيانات. هي اللي بتاخد كل سؤال فرعي وتدور عليه في البيانات وترجع بالنتائج.</p>
+                
+                <h4>الوظائف الأساسية:</h4>
+                <ul>
+                    <li><strong>استقبال الأسئلة الفرعية:</strong> من SubQuestionQueryEngine</li>
+                    <li><strong>البحث في البيانات:</strong> استخدام تقنيات البحث المتقدمة</li>
+                    <li><strong>فلترة النتائج:</strong> اختيار أكثر النتائج صلة</li>
+                    <li><strong>إرجاع المعلومات:</strong> تسليم النتائج للنظام الأساسي</li>
+                </ul>
+            </div>
+
+            <div class="technical-architecture">
+                <h3>🏗️ المعمارية التقنية</h3>
+                <p>كل Query Engine Tool هو في الأساس <strong>wrapper</strong> حول query engine عادي، بس مع إضافات تخليه يشتغل مع SubQuestionQueryEngine بطريقة منسقة.</p>
+                
+                <div class="example-box">
+                    <h5>مكونات Query Engine Tool:</h5>
+                    <ul>
+                        <li><strong>Query Engine الأساسي:</strong> المحرك اللي بيعمل البحث الفعلي</li>
+                        <li><strong>Metadata:</strong> معلومات عن نوع البيانات والإمكانيات</li>
+                        <li><strong>Interface:</strong> طريقة التواصل مع النظام الأكبر</li>
+                        <li><strong>Configuration:</strong> إعدادات البحث والفلترة</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 عملية البناء والإعداد</h2>
+            
+            <div class="implementation-details">
+                <h3>خطوات إنشاء Query Engine Tool</h3>
+                
+                <div class="example-box">
+                    <h5>الخطوة الأولى: تحضير Query Engine الأساسي</h5>
+                    <p>أول حاجة محتاج تعملها هي إنك تجهز query engine عادي يشتغل مع البيانات بتاعتك:</p>
+                    <ul>
+                        <li>تحديد نوع الفهرس (Vector Store، Tree، List، إلخ)</li>
+                        <li>ضبط معاملات البحث</li>
+                        <li>تحسين الأداء للبيانات المتاحة</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <h5>الخطوة الثانية: إضافة Metadata</h5>
+                    <p>تضيف معلومات وصفية عن الأداة عشان SubQuestionQueryEngine يعرف امتى وإزاي يستخدمها:</p>
+                    <ul>
+                        <li>وصف نوع البيانات المتاحة</li>
+                        <li>تحديد نطاق الاستخدام</li>
+                        <li>شرح الإمكانيات والقيود</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <h5>الخطوة الثالثة: تكوين Tool Object</h5>
+                    <p>تجمع كل ده في object واحد جاهز للاستخدام مع SubQuestionQueryEngine.</p>
+                </div>
+            </div>
+
+            <div class="code-card">
+                <h4>مثال تطبيقي مبسط:</h4>
+                <p style="direction: rtl; text-align: right; color: #555; margin-bottom: 15px;">
+                    هنا مثال مبسط يوضح الفكرة (بدون كود فعلي حسب التعليمات):
+                </p>
+                <div style="background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 10px;">
+                    <p>1. إنشاء VectorStoreIndex من البيانات</p>
+                    <p>2. تحويله لـ QueryEngine</p>
+                    <p>3. إنشاء QueryEngineTool بالمعلومات الوصفية</p>
+                    <p>4. تجهيزه للاستخدام مع SubQuestionQueryEngine</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 استخدام Tools متعددة</h2>
+            
+            <div class="practical-example">
+                <h3>سيناريو: أكثر من مصدر بيانات</h3>
+                <p>في كتير من الأوقات، هتحتاج أكتر من Query Engine Tool لأن البيانات موزعة على مصادر مختلفة أو أنواع مختلفة من المعلومات.</p>
+                
+                <div class="example-box">
+                    <h5>مثال: شركة لديها بيانات متنوعة</h5>
+                    
+                    <p><strong>Tool 1: المستندات التقنية</strong></p>
+                    <ul>
+                        <li>يحتوي على documentation والأدلة التقنية</li>
+                        <li>متخصص في الإجابة على الأسئلة التقنية</li>
+                        <li>محسن للبحث في النصوص المعقدة</li>
+                    </ul>
+                    
+                    <p><strong>Tool 2: قاعدة بيانات المنتجات</strong></p>
+                    <ul>
+                        <li>يحتوي على معلومات المنتجات والأسعار</li>
+                        <li>متخصص في معلومات التجارة والمبيعات</li>
+                        <li>محسن للبحث في البيانات المنظمة</li>
+                    </ul>
+                    
+                    <p><strong>Tool 3: قاعدة المعرفة العامة</strong></p>
+                    <ul>
+                        <li>يحتوي على سياسات الشركة والمعلومات العامة</li>
+                        <li>متخصص في الأسئلة الإدارية والعامة</li>
+                        <li>محسن للبحث السريع والمباشر</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="initialization-process">
+                <h3>🔄 آلية الاختيار الذكي</h3>
+                <p>لما يكون عندك tools متعددة، SubQuestionQueryEngine بيختار أنسب tool لكل سؤال فرعي بناءً على:</p>
+                
+                <ul>
+                    <li><strong>محتوى السؤال:</strong> إيه نوع المعلومات المطلوبة</li>
+                    <li><strong>الـ Metadata:</strong> وصف كل tool وإمكانياته</li>
+                    <li><strong>السياق:</strong> علاقة السؤال بالأسئلة التانية</li>
+                    <li><strong>الأولوية:</strong> ترتيب الأدوات حسب الأهمية</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h5>مثال على عملية الاختيار:</h5>
+                    <p><strong>السؤال المعقد:</strong> "عايز أعرف إيه منتجات الشركة الجديدة وإيه السياسات اللي تحكم بيعها وإيه التقنيات المستخدمة فيها"</p>
+                    
+                    <p><strong>التوزيع على الأدوات:</strong></p>
+                    <ul>
+                        <li>"ما هي المنتجات الجديدة؟" ← Tool 2 (قاعدة المنتجات)</li>
+                        <li>"ما هي سياسات البيع؟" ← Tool 3 (قاعدة المعرفة)</li>
+                        <li>"ما هي التقنيات المستخدمة؟" ← Tool 1 (المستندات التقنية)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ التكوين والتحسين</h2>
+            
+            <div class="integration-flow">
+                <h3>دمج Query Engine Tools مع SubQuestionQueryEngine</h3>
+                <p>بعد ما تجهز كل الأدوات، لازم تدمجها مع SubQuestionQueryEngine بطريقة صحيحة عشان النظام يشتغل بكفاءة.</p>
+                
+                <h4>خطوات التكامل:</h4>
+                
+                <div class="example-box">
+                    <h5>1. تجميع الأدوات</h5>
+                    <p>كل Query Engine Tools تتجمع في list أو collection واحد</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>2. إعداد SubQuestionQueryEngine</h5>
+                    <p>إنشاء SubQuestionQueryEngine وتمرير الأدوات له</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>3. تخصيص الإعدادات</h5>
+                    <p>ضبط طريقة التقسيم وإعدادات التجميع</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>4. اختبار النظام</h5>
+                    <p>تجريب أسئلة معقدة والتأكد من صحة النتائج</p>
+                </div>
+            </div>
+
+            <div class="technical-architecture">
+                <h3>🎯 تحسين الأداء</h3>
+                
+                <h4>استراتيجيات التحسين:</h4>
+                <ul>
+                    <li><strong>تحسين الفهرسة:</strong> كل tool يكون محسن للبيانات بتاعته</li>
+                    <li><strong>تحسين البحث:</strong> ضبط معاملات البحث لكل نوع بيانات</li>
+                    <li><strong>تحسين التوزيع:</strong> ضمان التوزيع الصحيح للأسئلة على الأدوات</li>
+                    <li><strong>تحسين التجميع:</strong> دمج فعال للنتائج من مصادر متعددة</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h5>مؤشرات الأداء المهمة:</h5>
+                    <ul>
+                        <li><strong>سرعة الاستجابة:</strong> الوقت اللازم للحصول على النتائج</li>
+                        <li><strong>دقة النتائج:</strong> مدى صلة النتائج بالأسئلة</li>
+                        <li><strong>شمولية التغطية:</strong> تغطية كل جوانب السؤال المعقد</li>
+                        <li><strong>استهلاك الموارد:</strong> الذاكرة والمعالجة المستخدمة</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🛠️ انتهى الجزء الحادي عشر من Query Transformation | الجزء التالي: إعداد SubQuestionQueryEngine وتخصيص الـ Prompts</p>
+        </div>
+    </div>
+</body>
+</html>

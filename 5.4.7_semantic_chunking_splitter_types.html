@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Chunking - الجزء السابع: أنواع الـ Splitters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .splitter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .splitter-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #74b9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .splitter-card:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+        }
+
+        .splitter-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .pros-cons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .pros-section {
+            background: rgba(39, 174, 96, 0.1);
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+
+        .cons-section {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .use-case-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fdcb6e;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .splitter-grid,
+            .pros-cons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 أنواع الـ Splitters</h1>
+            <p>الجزء السابع: مقارنة شاملة بين أنواع تقسيم النصوص</p>
+        </div>
+
+        <div class="content">
+            <!-- مقدمة عن أنواع الـ Splitters -->
+            <div class="card">
+                <h2>🎯 مقدمة عن أنواع الـ Node Parsers</h2>
+                <div class="card-content">
+                    <p>في LlamaIndex، في أنواع مختلفة من الـ Node Parsers، كل واحد ليه طريقة مختلفة في تقسيم النص. هنتعرف على كل نوع والفرق بينهم:</p>
+
+                    <div class="splitter-grid">
+                        <div class="splitter-card">
+                            <div class="splitter-header">
+                                <h5>🧠 Semantic Splitter</h5>
+                            </div>
+                            <div>
+                                <p><strong>المبدأ:</strong> تقسيم بناء على المعنى والسياق</p>
+                                <p><strong>الطريقة:</strong> حساب التشابه الدلالي</p>
+                                <p><strong>المميزات:</strong> دقة عالية، chunks منطقية</p>
+                                <p><strong>العيوب:</strong> أبطأ، يحتاج موارد أكتر</p>
+                            </div>
+                        </div>
+
+                        <div class="splitter-card">
+                            <div class="splitter-header">
+                                <h5>📏 Token Splitter</h5>
+                            </div>
+                            <div>
+                                <p><strong>المبدأ:</strong> تقسيم بناء على عدد الـ tokens</p>
+                                <p><strong>الطريقة:</strong> عد الكلمات والرموز</p>
+                                <p><strong>المميزات:</strong> سرعة عالية، حجم ثابت</p>
+                                <p><strong>العيوب:</strong> ممكن يقطع الأفكار</p>
+                            </div>
+                        </div>
+
+                        <div class="splitter-card">
+                            <div class="splitter-header">
+                                <h5>📄 Sentence Splitter</h5>
+                            </div>
+                            <div>
+                                <p><strong>المبدأ:</strong> تقسيم بناء على الجمل</p>
+                                <p><strong>الطريقة:</strong> تحديد نهايات الجمل</p>
+                                <p><strong>المميزات:</strong> جمل كاملة، منطقي</p>
+                                <p><strong>العيوب:</strong> أحجام متغيرة</p>
+                            </div>
+                        </div>
+
+                        <div class="splitter-card">
+                            <div class="splitter-header">
+                                <h5>🪟 Simple Node Parser</h5>
+                            </div>
+                            <div>
+                                <p><strong>المبدأ:</strong> تقسيم بسيط بحجم محدد</p>
+                                <p><strong>الطريقة:</strong> أحرف أو كلمات ثابتة</p>
+                                <p><strong>المميزات:</strong> بساطة، سرعة</p>
+                                <p><strong>العيوب:</strong> غير دقيق، ممكن يقطع الكلمات</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 متى تستخدم كل نوع؟</h4>
+                        <p>كل نوع له استخدامات مختلفة حسب طبيعة النص والدقة المطلوبة. Semantic Splitter الأفضل لما تحتاج دقة عالية في فهم المعنى!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مقارنة تفصيلية -->
+            <div class="card">
+                <h2>⚖️ مقارنة تفصيلية بين الأنواع</h2>
+                <div class="card-content">
+                    <p>هنا مقارنة شاملة عشان تفهم إيه المناسب لمشروعك:</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>الخاصية</th>
+                                <th>Semantic</th>
+                                <th>Token</th>
+                                <th>Sentence</th>
+                                <th>Simple</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>السرعة</strong></td>
+                                <td>⭐⭐</td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>⭐⭐⭐⭐</td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الدقة</strong></td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>⭐⭐</td>
+                                <td>⭐⭐⭐⭐</td>
+                                <td>⭐</td>
+                            </tr>
+                            <tr>
+                                <td><strong>فهم السياق</strong></td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>⭐</td>
+                                <td>⭐⭐⭐</td>
+                                <td>⭐</td>
+                            </tr>
+                            <tr>
+                                <td><strong>استهلاك الموارد</strong></td>
+                                <td>عالي</td>
+                                <td>منخفض</td>
+                                <td>متوسط</td>
+                                <td>منخفض</td>
+                            </tr>
+                            <tr>
+                                <td><strong>حجم الـ Chunks</strong></td>
+                                <td>متغير ذكي</td>
+                                <td>ثابت</td>
+                                <td>متغير</td>
+                                <td>ثابت</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الاعتماد على AI</strong></td>
+                                <td>نعم</td>
+                                <td>لا</td>
+                                <td>لا</td>
+                                <td>لا</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="technical-detail">
+                        <h4>🔍 شرح التقييمات</h4>
+                        <ul>
+                            <li><strong>السرعة:</strong> كم بيحتاج وقت للمعالجة</li>
+                            <li><strong>الدقة:</strong> جودة التقسيم ومنطقيته</li>
+                            <li><strong>فهم السياق:</strong> قدرته على فهم العلاقات بين النصوص</li>
+                            <li><strong>استهلاك الموارد:</strong> كمية الـ CPU وMemory المطلوبة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مميزات وعيوب كل نوع -->
+            <div class="card">
+                <h2>✅❌ مميزات وعيوب كل نوع</h2>
+                <div class="card-content">
+                    <p>هنفصل كل نوع ونشوف المميزات والعيوب بتاعته:</p>
+
+                    <div class="use-case-section">
+                        <h4>🧠 Semantic Splitter</h4>
+                        <div class="pros-cons-grid">
+                            <div class="pros-section">
+                                <h5>✅ المميزات</h5>
+                                <ul>
+                                    <li>يفهم السياق والمعنى</li>
+                                    <li>تقسيم منطقي ودقيق</li>
+                                    <li>chunks متماسكة دلالياً</li>
+                                    <li>نتائج أفضل في RAG</li>
+                                    <li>يحترم حدود المواضيع</li>
+                                </ul>
+                            </div>
+                            <div class="cons-section">
+                                <h5>❌ العيوب</h5>
+                                <ul>
+                                    <li>أبطأ في المعالجة</li>
+                                    <li>يحتاج موارد أكتر</li>
+                                    <li>يعتمد على نموذج AI</li>
+                                    <li>تكلفة أعلى (API calls)</li>
+                                    <li>معقد أكتر في الإعداد</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="use-case-section">
+                        <h4>📏 Token Splitter</h4>
+                        <div class="pros-cons-grid">
+                            <div class="pros-section">
+                                <h5>✅ المميزات</h5>
+                                <ul>
+                                    <li>سرعة عالية جداً</li>
+                                    <li>أحجام chunks ثابتة</li>
+                                    <li>لا يحتاج AI</li>
+                                    <li>موارد قليلة</li>
+                                    <li>بساطة في الاستخدام</li>
+                                </ul>
+                            </div>
+                            <div class="cons-section">
+                                <h5>❌ العيوب</h5>
+                                <ul>
+                                    <li>ممكن يقطع الأفكار</li>
+                                    <li>مايفهمش السياق</li>
+                                    <li>تقسيم غير منطقي أحياناً</li>
+                                    <li>chunks مش متماسكة دلالياً</li>
+                                    <li>صعوبة في الـ retrieval</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="use-case-section">
+                        <h4>📄 Sentence Splitter</h4>
+                        <div class="pros-cons-grid">
+                            <div class="pros-section">
+                                <h5>✅ المميزات</h5>
+                                <ul>
+                                    <li>جمل كاملة</li>
+                                    <li>سرعة جيدة</li>
+                                    <li>منطقي للقراءة</li>
+                                    <li>لا يحتاج AI</li>
+                                    <li>موارد متوسطة</li>
+                                </ul>
+                            </div>
+                            <div class="cons-section">
+                                <h5>❌ العيوب</h5>
+                                <ul>
+                                    <li>أحجام متغيرة</li>
+                                    <li>مايفهمش الترابط</li>
+                                    <li>ممكن chunks صغيرة جداً</li>
+                                    <li>مشاكل مع النصوص المعقدة</li>
+                                    <li>صعوبة مع اللغات المختلفة</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 التوصية العامة</h4>
+                        <p>لمعظم مشاريع RAG، Semantic Splitter هو الأفضل رغم إنه أبطأ، لأن الدقة أهم من السرعة في فهم النصوص واسترجاع المعلومات الصحيحة!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- حالات الاستخدام -->
+            <div class="card">
+                <h2>🎯 متى تستخدم كل نوع؟</h2>
+                <div class="card-content">
+                    <p>اختيار النوع المناسب يعتمد على مشروعك واحتياجاتك:</p>
+
+                    <div class="splitter-grid">
+                        <div class="splitter-card">
+                            <div class="splitter-header">
+                                <h5>🧠 استخدم Semantic Splitter</h5>
+                            </div>
+                            <div>
+                                <h6>✅ مناسب لـ:</h6>
+                                <ul>
+                                    <li>مشاريع RAG عالية الدقة</li>
+                                    <li>النصوص الأكاديمية والعلمية</li>
+                                    <li>المقالات الطويلة المعقدة</li>
+                                    <li>التطبيقات التي تحتاج فهم عميق</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="splitter-card">
+                            <div class="splitter-header">
+                                <h5>📏 استخدم Token Splitter</h5>
+                            </div>
+                            <div>
+                                <h6>✅ مناسب لـ:</h6>
+                                <ul>
+                                    <li>المعالجة السريعة للنصوص الكبيرة</li>
+                                    <li>التطبيقات عالية الحجم</li>
+                                    <li>الأنظمة ذات الموارد المحدودة</li>
+                                    <li>النصوص البسيطة والمنتظمة</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="splitter-card">
+                            <div class="splitter-header">
+                                <h5>📄 استخدم Sentence Splitter</h5>
+                            </div>
+                            <div>
+                                <h6>✅ مناسب لـ:</h6>
+                                <ul>
+                                    <li>النصوص القصيرة والمتوسطة</li>
+                                    <li>المحتوى التعليمي</li>
+                                    <li>المقالات الإخبارية</li>
+                                    <li>التطبيقات التي تحتاج توازن</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="splitter-card">
+                            <div class="splitter-header">
+                                <h5>🪟 استخدم Simple Parser</h5>
+                            </div>
+                            <div>
+                                <h6>✅ مناسب لـ:</h6>
+                                <ul>
+                                    <li>التجارب والاختبارات السريعة</li>
+                                    <li>النصوص البسيطة جداً</li>
+                                    <li>المراحل الأولية من التطوير</li>
+                                    <li>الحالات اللي مش محتاجة دقة عالية</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نصائح مهمة للاختيار</h4>
+                        <ul>
+                            <li>اختبر أكتر من نوع واحد على نفس البيانات</li>
+                            <li>قيس الأداء والدقة لكل نوع</li>
+                            <li>فكر في الموارد المتاحة وحجم البيانات</li>
+                            <li>ابدأ بـ Semantic واتراجع للأنواع الأخرى لو لزم</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

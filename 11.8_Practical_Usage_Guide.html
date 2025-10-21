@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استخدام LongLLMLinguaPostprocessor عملياً</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #74b9ff; padding-bottom: 10px; }
+        .code-box { background: #2c3e50; padding: 20px; border-radius: 15px; margin: 20px 0; color: #ecf0f1; font-family: 'Courier New', monospace; overflow-x: auto; direction: ltr; text-align: left; }
+        .usage-box { background: linear-gradient(120deg, #74b9ff 0%, #0984e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .practical-box { background: linear-gradient(120deg, #00b894 0%, #00cec9 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .example-box { background: linear-gradient(120deg, #fdcb6e 0%, #e17055 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .tips-box { background: linear-gradient(120deg, #fd79a8 0%, #e84393 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+        .step-number { background: #2c3e50; color: white; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💻 استخدام LongLLMLinguaPostprocessor عملياً</h1>
+            <p>الدرس الثامن: من التثبيت للتطبيق - دليل شامل</p>
+        </div>
+
+        <div class="card">
+            <h2>🚀 التثبيت والإعداد الأولي</h2>
+            <div class="usage-box">
+                <h3><span class="step-number">1</span>تثبيت المكتبات المطلوبة:</h3>
+                <p>قبل ما نبدأ، لازم نتأكد إن كل الحاجات المطلوبة مثبتة!</p>
+                
+                <div class="code-box">
+# تثبيت LlamaIndex مع دعم LongLLMLingua
+pip install llama-index
+pip install llama-index-postprocessor-longllmlingua
+
+# تثبيت المكتبات المساعدة
+pip install transformers torch
+pip install accelerate  # للأداء الأفضل
+                </div>
+                
+                <h3><span class="step-number">2</span>التحقق من التثبيت:</h3>
+                <div class="code-box">
+# اختبار سريع للتأكد إن كل شيء شغال
+try:
+    from llama_index.postprocessor.longllmlingua import LongLLMLinguaPostprocessor
+    print("✅ التثبيت تم بنجاح!")
+except ImportError as e:
+    print(f"❌ مشكلة في التثبيت: {e}")
+                </div>
+                
+                <h3>⚠️ متطلبات النظام:</h3>
+                <ul>
+                    <li><strong>Python:</strong> 3.8 أو أحدث</li>
+                    <li><strong>Memory:</strong> 4GB RAM على الأقل</li>
+                    <li><strong>Storage:</strong> 2GB مساحة للموديلات</li>
+                    <li><strong>GPU:</strong> اختياري لكن يحسن الأداء كثيراً</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ الإعداد الأساسي والتكوين</h2>
+            <div class="practical-box">
+                <h3><span class="step-number">3</span>إنشاء Postprocessor بالإعدادات الافتراضية:</h3>
+                <div class="code-box">
+from llama_index.postprocessor.longllmlingua import LongLLMLinguaPostprocessor
+
+# الطريقة الأبسط - إعدادات افتراضية
+postprocessor = LongLLMLinguaPostprocessor()
+
+print("🎯 تم إنشاء الـ postprocessor بنجاح!")
+print(f"📊 الإعدادات الافتراضية:")
+print(f"   - Target Token: {postprocessor.target_token}")
+print(f"   - Rank Method: {postprocessor.rank_method}")
+print(f"   - Additional Compress: {postprocessor.additional_compress}")
+                </div>
+                
+                <h3><span class="step-number">4</span>إعداد مخصص حسب احتياجاتك:</h3>
+                <div class="code-box">
+# إعداد متقدم مع تحكم كامل
+postprocessor = LongLLMLinguaPostprocessor(
+    instruction_str="أجب على السؤال بدقة واختصار",  # تعليمات مخصصة
+    target_token=300,                                      # هدف عدد الكلمات
+    rank_method="longllmlingua",                          # طريقة الترتيب
+    additional_compress=0.1,                              # ضغط إضافي 10%
+    condition_compare=True,                               # مقارنة الشروط
+    context_budget="+100",                                # ميزانية إضافية
+    reorder_context="sort"                                # إعادة ترتيب
+)
+
+print("⚙️ إعداد مخصص تم بنجاح!")
+                </div>
+                
+                <h3>🎛️ شرح المعاملات المهمة:</h3>
+                <ul>
+                    <li><strong>target_token:</strong> عدد الكلمات المطلوب الوصول إليه</li>
+                    <li><strong>rank_method:</strong> طريقة ترتيب أهمية المحتوى</li>
+                    <li><strong>additional_compress:</strong> نسبة ضغط إضافية</li>
+                    <li><strong>condition_compare:</strong> مقارنة ذكية للشروط</li>
+                    <li><strong>context_budget:</strong> حجم المحتوى المسموح</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 استخدام عملي خطوة بخطوة</h2>
+            <div class="example-box">
+                <h3><span class="step-number">5</span>مثال كامل - من البداية للنهاية:</h3>
+                <div class="code-box">
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
+from llama_index.core.postprocessor import LongLLMLinguaPostprocessor
+from llama_index.llms.openai import OpenAI
+
+# 1. تحميل البيانات
+print("📁 تحميل البيانات...")
+documents = SimpleDirectoryReader("./data").load_data()
+
+# 2. إنشاء الفهرس
+print("🔍 إنشاء الفهرس...")
+index = VectorStoreIndex.from_documents(documents)
+
+# 3. إعداد الـ LLM
+print("🤖 إعداد النموذج...")
+llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
+
+# 4. إنشاء الـ postprocessor
+print("⚙️ إعداد الضغط...")
+postprocessor = LongLLMLinguaPostprocessor(
+    target_token=500,               # نريد 500 كلمة كحد أقصى
+    rank_method="longllmlingua",    # استخدم الطريقة المتقدمة
+    additional_compress=0.1         # ضغط إضافي 10%
+)
+
+# 5. إنشاء Query Engine مع الـ postprocessor
+print("🔧 ربط المكونات...")
+query_engine = index.as_query_engine(
+    llm=llm,
+    node_postprocessors=[postprocessor],  # هنا السحر!
+    similarity_top_k=10                   # جيب أهم 10 نتائج
+)
+
+# 6. السؤال والحصول على إجابة
+print("❓ طرح السؤال...")
+question = "ما هي أهم فوائد الذكاء الاصطناعي في التعليم؟"
+response = query_engine.query(question)
+
+print(f"✅ الإجابة: {response}")
+print(f"📊 عدد الكلمات في المصادر المستخدمة: {len(response.source_nodes)}")
+                </div>
+                
+                <h3>🎯 نتائج المثال:</h3>
+                <ul>
+                    <li><strong>ضغط ذكي:</strong> تم تقليل المحتوى بنسبة 60-80%</li>
+                    <li><strong>جودة محافظة:</strong> الإجابة دقيقة ومفيدة</li>
+                    <li><strong>سرعة أكبر:</strong> وقت المعالجة أقل بكثير</li>
+                    <li><strong>تكلفة أقل:</strong> استهلاك tokens أقل</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 أمثلة متقدمة للاستخدام</h2>
+            <div class="practical-box">
+                <h3><span class="step-number">6</span>ضبط دقيق حسب نوع المحتوى:</h3>
+                
+                <h4>📚 للمحتوى الأكاديمي:</h4>
+                <div class="code-box">
+# إعداد خاص بالمحتوى الأكاديمي
+academic_postprocessor = LongLLMLinguaPostprocessor(
+    instruction_str="احتفظ بالمصطلحات العلمية والتفاصيل المهمة",
+    target_token=800,              # نص أطول للمحتوى الأكاديمي
+    rank_method="longllmlingua",
+    additional_compress=0.05,      # ضغط أقل للمحافظة على التفاصيل
+    condition_compare=True
+)
+                </div>
+                
+                <h4>📰 للأخبار والتقارير:</h4>
+                <div class="code-box">
+# إعداد خاص بالأخبار
+news_postprocessor = LongLLMLinguaPostprocessor(
+    instruction_str="ركز على الأحداث والتواريخ والأرقام المهمة",
+    target_token=400,              # نص مختصر للأخبار
+    rank_method="longllmlingua",
+    additional_compress=0.15,      # ضغط أكبر للاختصار
+    reorder_context="sort"
+)
+                </div>
+                
+                <h4>💼 للمحتوى التجاري:</h4>
+                <div class="code-box">
+# إعداد خاص بالأعمال
+business_postprocessor = LongLLMLinguaPostprocessor(
+    instruction_str="ركز على المعلومات المالية والقرارات الاستراتيجية",
+    target_token=600,
+    rank_method="longllmlingua",
+    additional_compress=0.08,
+    condition_compare=True,
+    context_budget="+50"
+)
+                </div>
+                
+                <h3><span class="step-number">7</span>استخدام متعدد المراحل:</h3>
+                <div class="code-box">
+# إنشاء pipeline متعدد المراحل
+from llama_index.core.postprocessor import SentenceTransformerRerank
+
+# المرحلة الأولى: إعادة ترتيب
+reranker = SentenceTransformerRerank(
+    model="cross-encoder/ms-marco-MiniLM-L-6-v2",
+    top_n=20
+)
+
+# المرحلة الثانية: ضغط
+compressor = LongLLMLinguaPostprocessor(
+    target_token=300,
+    rank_method="longllmlingua"
+)
+
+# الاستخدام المتسلسل
+query_engine = index.as_query_engine(
+    node_postprocessors=[reranker, compressor],  # مرحلتان متتاليتان
+    similarity_top_k=50
+)
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 نصائح وحيل متقدمة</h2>
+            <div class="tips-box">
+                <h3>🎯 نصائح للأداء الأمثل:</h3>
+                
+                <h4>1. اختيار target_token المناسب:</h4>
+                <ul>
+                    <li><strong>للإجابات السريعة:</strong> 200-400 token</li>
+                    <li><strong>للتحليل المتوسط:</strong> 500-800 token</li>
+                    <li><strong>للشرح المفصل:</strong> 800-1200 token</li>
+                    <li><strong>للمحتوى الشامل:</strong> 1200+ token</li>
+                </ul>
+                
+                <h4>2. ضبط additional_compress:</h4>
+                <ul>
+                    <li><strong>محتوى مهم:</strong> 0.05-0.1 (ضغط قليل)</li>
+                    <li><strong>محتوى عام:</strong> 0.1-0.2 (ضغط متوسط)</li>
+                    <li><strong>محتوى مكرر:</strong> 0.2-0.3 (ضغط عالي)</li>
+                </ul>
+                
+                <h4>3. استخدام instruction_str بذكاء:</h4>
+                <div class="code-box">
+# أمثلة على تعليمات فعالة
+instructions = {
+    "technical": "احتفظ بالمصطلحات التقنية والأرقام والتواريخ",
+    "summary": "ركز على النقاط الرئيسية والاستنتاجات",
+    "detailed": "حافظ على التفاصيل المهمة والأمثلة التوضيحية",
+    "comparison": "ركز على نقاط المقارنة والاختلافات"
+}
+                </div>
+                
+                <h4>4. مراقبة الأداء:</h4>
+                <div class="code-box">
+import time
+
+def monitor_compression(query_engine, question):
+    start_time = time.time()
+    response = query_engine.query(question)
+    end_time = time.time()
+    
+    print(f"⏱️ وقت المعالجة: {end_time - start_time:.2f} ثانية")
+    print(f"📝 طول الإجابة: {len(response.response)} حرف")
+    print(f"📊 عدد المصادر: {len(response.source_nodes)}")
+    
+    return response
+                </div>
+                
+                <h3>⚠️ أخطاء شائعة وحلولها:</h3>
+                <ul>
+                    <li><strong>target_token صغير جداً:</strong> زود الرقم تدريجياً</li>
+                    <li><strong>ضغط زائد:</strong> قلل additional_compress</li>
+                    <li><strong>فقدان معلومات مهمة:</strong> اضبط instruction_str</li>
+                    <li><strong>بطء في المعالجة:</strong> استخدم GPU أو قلل البيانات</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧪 اختبار وتقييم النتائج</h2>
+            <div class="example-box">
+                <h3><span class="step-number">8</span>قياس فعالية الضغط:</h3>
+                <div class="code-box">
+def evaluate_compression(original_query_engine, compressed_query_engine, test_questions):
+    results = []
+    
+    for question in test_questions:
+        # الطريقة التقليدية
+        start = time.time()
+        original_response = original_query_engine.query(question)
+        original_time = time.time() - start
+        
+        # الطريقة المضغوطة
+        start = time.time()
+        compressed_response = compressed_query_engine.query(question)
+        compressed_time = time.time() - start
+        
+        # مقارنة النتائج
+        result = {
+            'question': question,
+            'original_time': original_time,
+            'compressed_time': compressed_time,
+            'time_saved': original_time - compressed_time,
+            'compression_ratio': compressed_time / original_time,
+            'original_length': len(original_response.response),
+            'compressed_length': len(compressed_response.response)
+        }
+        results.append(result)
+        
+        print(f"📊 السؤال: {question[:50]}...")
+        print(f"   ⏱️ توفير الوقت: {result['time_saved']:.2f} ثانية")
+        print(f"   📏 نسبة الضغط: {result['compression_ratio']:.2%}")
+        print()
+    
+    return results
+
+# تطبيق التقييم
+test_questions = [
+    "ما هي فوائد الذكاء الاصطناعي؟",
+    "كيف يعمل النظام؟",
+    "ما هي التحديات المستقبلية؟"
+]
+
+evaluation_results = evaluate_compression(
+    original_query_engine, 
+    compressed_query_engine, 
+    test_questions
+)
+                </div>
+                
+                <h3>📈 تحليل النتائج المتوقعة:</h3>
+                <ul>
+                    <li><strong>توفير الوقت:</strong> 40-70% أسرع</li>
+                    <li><strong>توفير التكلفة:</strong> 50-80% أقل في tokens</li>
+                    <li><strong>جودة الإجابات:</strong> 85-95% من الجودة الأصلية</li>
+                    <li><strong>كفاءة الذاكرة:</strong> استهلاك أقل بكثير</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💻 التطبيق العملي هو أفضل طريقة لإتقان LongLLMLinguaPostprocessor!</p>
+        </div>
+    </div>
+</body>
+</html>

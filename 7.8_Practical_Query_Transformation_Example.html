@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مثال عملي على تحويل الاستعلامات - التطبيق الفعلي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .code-card {
+            background: linear-gradient(120deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .code-card pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .practical-demo {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+
+        .function-explanation {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .result-analysis {
+            background: linear-gradient(120deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+
+        .template-usage {
+            background: linear-gradient(120deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+
+        .luck-example {
+            background: linear-gradient(120deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #9c27b0;
+        }
+
+        .generated-queries {
+            background: linear-gradient(120deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .before-box {
+            background: #ffebee;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #f44336;
+        }
+
+        .after-box {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+        }
+
+        ul {
+            padding-right: 30px;
+            margin: 15px 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ مثال عملي على تحويل الاستعلامات</h1>
+            <p>الدرس الثامن: شوف Query Transformation بيشتغل إزاي في التطبيق الفعلي</p>
+        </div>
+
+        <div class="card">
+            <h2>🚀 إعداد المثال العملي</h2>
+            
+            <div class="practical-demo">
+                <h3>السيناريو العملي اللي هنشوفه</h3>
+                <p>المطور في الفيديو عمل مثال عملي يوضح إزاي Query Transformation بيشتغل. هو استخدم سؤال حقيقي وطبق عليه كل الخطوات اللي اتكلمنا عليها قبل كده.</p>
+                
+                <h4>المكونات الأساسية للمثال:</h4>
+                <ul>
+                    <li><strong>QUERY_STRING:</strong> السؤال الأصلي من المستخدم</li>
+                    <li><strong>Function للمعالجة:</strong> الوظيفة اللي بتعمل التحويل</li>
+                    <li><strong>Prompt Template:</strong> القالب اللي استخدمناه قبل كده</li>
+                    <li><strong>Language Model Call:</strong> استدعاء الـ LLM لمعالجة السؤال</li>
+                    <li><strong>Generated Queries:</strong> النتائج المولدة</li>
+                </ul>
+            </div>
+
+            <div class="function-explanation">
+                <h3>🔧 شرح الوظيفة المستخدمة</h3>
+                <p>المطور عمل function بسيطة بتاخد السؤال الأصلي وترسله للـ language model مع الـ prompt template اللي صممناه قبل كده.</p>
+                
+                <h4>المنطق وراء الوظيفة:</h4>
+                <ul>
+                    <li><strong>استقبال السؤال:</strong> الوظيفة بتاخد السؤال كـ parameter</li>
+                    <li><strong>تجهيز السياق:</strong> بتدمج السؤال مع الـ prompt template</li>
+                    <li><strong>استدعاء النموذج:</strong> بترسل كل ده للـ LLM</li>
+                    <li><strong>معالجة النتيجة:</strong> بتستقبل وتنظم الاستعلامات المولدة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 السؤال المستخدم في المثال</h2>
+            
+            <div class="luck-example">
+                <h3>تحليل السؤال: "How can I create my own luck?"</h3>
+                <p>ده سؤال ممتاز للتوضيح لأنه <strong>غامض ومفتوح</strong> ومحتاج تفصيل وتوضيح. السؤال ده يمثل نوعية الأسئلة اللي المستخدمين بيسألوها فعلاً.</p>
+                
+                <h4>ليه السؤال ده مثال جيد؟</h4>
+                <ul>
+                    <li><strong>غامض المعنى:</strong> "خلق الحظ" مفهوم فلسفي محتاج توضيح</li>
+                    <li><strong>متعدد الأوجه:</strong> ممكن يكون عن التطوير الشخصي، الأعمال، العلاقات</li>
+                    <li><strong>محتاج تفصيل:</strong> مش واضح المستخدم عايز إيه بالضبط</li>
+                    <li><strong>قابل للتطبيق:</strong> ممكن يتحول لأسئلة عملية محددة</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h5>التحليل النفسي للسؤال:</h5>
+                    <p>لما حد يسأل عن "خلق الحظ"، هو غالباً بيدور على:</p>
+                    <ul>
+                        <li>طرق تحسين الفرص في الحياة</li>
+                        <li>استراتيجيات النجاح الشخصي</li>
+                        <li>كيفية الاستفادة من المواقف</li>
+                        <li>تطوير المهارات والقدرات</li>
+                        <li>بناء شبكة علاقات قوية</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="before-after">
+                <div class="before-box">
+                    <h4>❌ بدون Query Transformation</h4>
+                    <p><strong>السؤال:</strong> "How can I create my own luck?"</p>
+                    <p><strong>النتيجة المتوقعة:</strong></p>
+                    <ul>
+                        <li>إجابة عامة وفلسفية</li>
+                        <li>معلومات متناثرة</li>
+                        <li>نصائح سطحية</li>
+                        <li>عدم وضوح الخطوات</li>
+                    </ul>
+                </div>
+                
+                <div class="after-box">
+                    <h4>✅ مع Query Transformation</h4>
+                    <p><strong>أسئلة محددة ومفصلة</strong></p>
+                    <p><strong>النتيجة المتوقعة:</strong></p>
+                    <ul>
+                        <li>خطوات عملية واضحة</li>
+                        <li>استراتيجيات محددة</li>
+                        <li>أمثلة قابلة للتطبيق</li>
+                        <li>خطة عمل متكاملة</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 النتائج المولدة من المثال</h2>
+            
+            <div class="generated-queries">
+                <h3>الاستعلامات المحولة اللي طلعت من النظام</h3>
+                <p>لما النظام عالج السؤال "How can I create my own luck?" باستخدام الـ prompt template اللي عملناه، ده اللي طلع:</p>
+                
+                <div class="example-box">
+                    <h5>الأسئلة المولدة:</h5>
+                    <ul>
+                        <li><strong>"What are the key mindset shifts needed to create opportunities?"</strong><br>
+                        <em>إيه التغييرات الفكرية اللازمة لخلق الفرص؟</em></li>
+                        
+                        <li><strong>"How can I develop skills that increase my chances of success?"</strong><br>
+                        <em>إزاي أطور مهارات تزود فرص نجاحي؟</em></li>
+                        
+                        <li><strong>"What networking strategies help create lucky breaks?"</strong><br>
+                        <em>إيه استراتيجيات التواصل اللي بتساعد في خلق الفرص؟</em></li>
+                        
+                        <li><strong>"How can I position myself to recognize and seize opportunities?"</strong><br>
+                        <em>إزاي أحط نفسي في موقف يخليني أشوف وأستغل الفرص؟</em></li>
+                        
+                        <li><strong>"What daily habits and practices increase serendipity?"</strong><br>
+                        <em>إيه العادات اليومية اللي بتزود الصدف الإيجابية؟</em></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="result-analysis">
+                <h3>🔍 تحليل جودة النتائج</h3>
+                
+                <h4>ليه النتائج دي أفضل من السؤال الأصلي؟</h4>
+                
+                <div class="example-box">
+                    <h5>1. التحديد والوضوح</h5>
+                    <p>كل سؤال بيركز على جانب محدد من "خلق الحظ" بدل الغموض العام.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>2. القابلية للتطبيق</h5>
+                    <p>الأسئلة المولدة قابلة للإجابة بطرق عملية ومحددة.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>3. التنوع في الجوانب</h5>
+                    <p>الأسئلة بتغطي جوانب مختلفة: الفكر، المهارات، التواصل، الممارسة.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>4. العمق المطلوب</h5>
+                    <p>كل سؤال عنده مستوى مناسب من التفصيل - لا عام جداً ولا معقد جداً.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ الدروس المستفادة من المثال</h2>
+            
+            <div class="template-usage">
+                <h3>فعالية استخدام Prompt Template</h3>
+                <p>المثال وضح إن الـ prompt template اللي صممناه فعلاً <strong>شغال كويس</strong> ومحقق الهدف المطلوب. ده يأكد إن:</p>
+                
+                <ul>
+                    <li><strong>التصميم صحيح:</strong> الـ template مبني على أسس علمية</li>
+                    <li><strong>Few-shot examples فعالة:</strong> النماذج ساعدت الـ LLM يفهم المطلوب</li>
+                    <li><strong>التعليمات واضحة:</strong> النموذج عرف يطبق التعليمات صح</li>
+                    <li><strong>النتائج متسقة:</strong> كل الأسئلة المولدة بنفس الجودة والمستوى</li>
+                </ul>
+            </div>
+
+            <div class="function-explanation">
+                <h3>🎯 المبادئ المهمة اللي لازم نفتكرها</h3>
+                
+                <h4>1. البساطة في التنفيذ</h4>
+                <p>رغم إن المفهوم معقد، التنفيذ الفعلي بسيط: سؤال + prompt template + LLM call = نتائج محسنة.</p>
+                
+                <h4>2. قوة الـ Prompt Engineering</h4>
+                <p>الفرق الكبير في النتائج جاي من تصميم الـ prompt كويس، مش من تكنولوجيا معقدة.</p>
+                
+                <h4>3. أهمية الاختبار الفعلي</h4>
+                <p>النظرية مهمة، بس الاختبار الفعلي هو اللي بيأكد إن النظام شغال صح.</p>
+                
+                <h4>4. قابلية التطوير</h4>
+                <p>النظام بسيط كفاية إنه يتطور ويتحسن، ومعقد كفاية إنه يحقق نتائج قوية.</p>
+            </div>
+
+            <div class="practical-demo">
+                <h3>🚀 التطبيق على مجالات مختلفة</h3>
+                <p>نفس النظام اللي شوفناه ممكن يتطبق على أي مجال تاني. الجميل في النظام إنه <strong>عام ومرن</strong> ومش مقيد بنوع معين من الأسئلة.</p>
+                
+                <h4>أمثلة تطبيقات أخرى:</h4>
+                <ul>
+                    <li><strong>التعليم:</strong> "عايز أتعلم لغة جديدة" ← أسئلة محددة عن اللغة والطريقة والهدف</li>
+                    <li><strong>الصحة:</strong> "عايز أخس" ← أسئلة عن النظام الغذائي والرياضة والأهداف</li>
+                    <li><strong>المهنة:</strong> "عايز أغير شغلي" ← أسئلة عن المهارات والسوق والتخطيط</li>
+                    <li><strong>الاستثمار:</strong> "عايز أستثمر فلوسي" ← أسئلة عن المخاطر والعائد والاستراتيجية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚡ انتهى الجزء الثامن من Query Transformation | الجزء التالي: مقدمة SubQuestionQueryEngine</p>
+        </div>
+    </div>
+</body>
+</html>

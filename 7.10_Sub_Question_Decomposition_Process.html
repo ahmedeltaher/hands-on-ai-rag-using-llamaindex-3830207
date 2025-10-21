@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عملية تقسيم الاستعلام لأسئلة فرعية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .decomposition-process {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+
+        .extraction-strategy {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .database-retrieval {
+            background: linear-gradient(120deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+
+        .synthesis-process {
+            background: linear-gradient(120deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+
+        .llm-initialization {
+            background: linear-gradient(120deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #9c27b0;
+        }
+
+        .workflow-diagram {
+            background: linear-gradient(120deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .process-step {
+            background: #f1f3f4;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #4285f4;
+        }
+
+        .step-number {
+            background: #4285f4;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .parallel-processing {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .parallel-item {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #1976d2;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #4285f4;
+            margin: 15px 0;
+        }
+
+        ul {
+            padding-right: 30px;
+            margin: 15px 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔀 عملية تقسيم الاستعلام لأسئلة فرعية</h1>
+            <p>الدرس العاشر: شوف إزاي الاستعلام المعقد بيتكسر لقطع صغيرة</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 الهدف من التقسيم</h2>
+            
+            <div class="decomposition-process">
+                <h3>ليه نقسم الاستعلام المعقد؟</h3>
+                <p>الفكرة الأساسية هي إن لما يكون عندك <strong>استعلام معقد ومتشعب</strong>، بدل ما تحاول تجاوب عليه كله مرة واحدة، تقسمه لـ <strong>أسئلة فرعية أبسط</strong> كل واحد منها يركز على جانب محدد.</p>
+                
+                <h4>المنطق وراء التقسيم:</h4>
+                <ul>
+                    <li><strong>تحسين الدقة:</strong> كل سؤال صغير يحصل على إجابة دقيقة</li>
+                    <li><strong>تحسين التغطية:</strong> كل جوانب الموضوع تتغطى</li>
+                    <li><strong>تحسين الفهم:</strong> النظام يفهم كل جزء أفضل</li>
+                    <li><strong>تحسين النتائج:</strong> الإجابة النهائية تكون أشمل وأدق</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h5>مثال بسيط للتوضيح:</h5>
+                    <p><strong>بدلاً من:</strong> "عايز أعرف كل حاجة عن الذكاء الاصطناعي"</p>
+                    <p><strong>نقسم لـ:</strong></p>
+                    <ul>
+                        <li>"ما هو تعريف الذكاء الاصطناعي؟"</li>
+                        <li>"ما هي تطبيقات الذكاء الاصطناعي؟"</li>
+                        <li>"ما هي التقنيات المستخدمة في الذكاء الاصطناعي؟"</li>
+                        <li>"ما هو مستقبل الذكاء الاصطناعي؟"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="workflow-diagram">
+                <h3>🔄 سير العملية الكامل</h3>
+                
+                <div class="process-step">
+                    <span class="step-number">1</span>
+                    <h4>استقبال الاستعلام المعقد</h4>
+                    <p>النظام يستقبل السؤال الكبير والمعقد من المستخدم</p>
+                </div>
+
+                <div class="flow-arrow">⬇️</div>
+
+                <div class="process-step">
+                    <span class="step-number">2</span>
+                    <h4>تحليل وتقسيم الاستعلام</h4>
+                    <p>النظام يحلل السؤال ويقسمه لمجموعة أسئلة فرعية منطقية</p>
+                </div>
+
+                <div class="flow-arrow">⬇️</div>
+
+                <div class="process-step">
+                    <span class="step-number">3</span>
+                    <h4>معالجة الأسئلة الفرعية</h4>
+                    <p>كل سؤال فرعي يتعالج بشكل منفصل ويروح لقاعدة البيانات</p>
+                </div>
+
+                <div class="flow-arrow">⬇️</div>
+
+                <div class="process-step">
+                    <span class="step-number">4</span>
+                    <h4>جمع النتائج المتعددة</h4>
+                    <p>النتائج من كل الأسئلة الفرعية تتجمع مع بعض</p>
+                </div>
+
+                <div class="flow-arrow">⬇️</div>
+
+                <div class="process-step">
+                    <span class="step-number">5</span>
+                    <h4>تجميع الإجابة النهائية</h4>
+                    <p>كل النتائج تتدمج لتكوين إجابة شاملة ومترابطة</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 استخراج المعلومات من قاعدة البيانات</h2>
+            
+            <div class="extraction-strategy">
+                <h3>إزاي كل سؤال فرعي بيجيب معلومات؟</h3>
+                <p>كل سؤال فرعي بيتعامل معاه كـ <strong>استعلام منفصل</strong> له استراتيجية بحث خاصة به، وده بيخلي النتائج أكثر دقة وتخصص.</p>
+                
+                <h4>مراحل الاستخراج:</h4>
+                
+                <div class="parallel-processing">
+                    <div class="parallel-item">
+                        <h5>📋 تحضير السؤال</h5>
+                        <p>تنظيف وتجهيز السؤال الفرعي للبحث</p>
+                    </div>
+                    
+                    <div class="parallel-item">
+                        <h5>🔍 البحث المتخصص</h5>
+                        <p>استخدام استراتيجية بحث مناسبة لنوع السؤال</p>
+                    </div>
+                    
+                    <div class="parallel-item">
+                        <h5>📊 فلترة النتائج</h5>
+                        <p>اختيار أكثر النتائج صلة وجودة</p>
+                    </div>
+                    
+                    <div class="parallel-item">
+                        <h5>✅ تقييم الجودة</h5>
+                        <p>التأكد من مناسبة النتائج للسؤال</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="database-retrieval">
+                <h3>🗃️ التعامل مع قاعدة البيانات</h3>
+                <p>كل سؤال فرعي لما يوصل لقاعدة البيانات، بيستخدم <strong>vector search</strong> أو أي تقنية بحث متاحة للوصول للمعلومات الأكثر صلة.</p>
+                
+                <div class="example-box">
+                    <h5>مثال على عملية البحث:</h5>
+                    <p><strong>السؤال الفرعي:</strong> "ما هي مزايا استخدام Python في الذكاء الاصطناعي؟"</p>
+                    
+                    <p><strong>عملية البحث:</strong></p>
+                    <ul>
+                        <li><strong>تحويل لـ embeddings:</strong> السؤال يتحول لـ vector numbers</li>
+                        <li><strong>البحث في الفهرس:</strong> النظام يدور على vectors مشابهة</li>
+                        <li><strong>استخراج المحتوى:</strong> النصوص الأكثر صلة تتستخرج</li>
+                        <li><strong>ترتيب النتائج:</strong> النتائج تترتب حسب الصلة</li>
+                    </ul>
+                </div>
+
+                <h4>تحديات البحث في الأسئلة الفرعية:</h4>
+                <ul>
+                    <li><strong>تجنب التكرار:</strong> ميكونش نفس المعلومات في أكتر من سؤال</li>
+                    <li><strong>ضمان التكامل:</strong> النتائج تكمل بعضها البعض</li>
+                    <li><strong>الحفاظ على السياق:</strong> كل نتيجة تكون مرتبطة بالسؤال الأصلي</li>
+                    <li><strong>إدارة الجودة:</strong> كل نتيجة تكون عالية الجودة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔗 تجميع الإجابات وإنتاج النتيجة النهائية</h2>
+            
+            <div class="synthesis-process">
+                <h3>عملية التجميع الذكي</h3>
+                <p>بعد ما كل سؤال فرعي يجيب نتائجه، يجي دور <strong>عملية التجميع</strong> اللي بتدمج كل النتائج دي في إجابة شاملة ومترابطة.</p>
+                
+                <h4>تحديات التجميع:</h4>
+                
+                <div class="example-box">
+                    <h5>1. إزالة التكرار</h5>
+                    <p>لو أكتر من سؤال فرعي جاب نفس المعلومة، النظام لازم يشيل التكرار ويخلي المعلومة تظهر مرة واحدة بس.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>2. ترتيب المعلومات</h5>
+                    <p>النتائج لازم تترتب بشكل منطقي يخلي الإجابة سهلة الفهم ومترابطة.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>3. ربط السياق</h5>
+                    <p>كل جزء من الإجابة لازم يكون مربوط بالأجزاء التانية بطريقة طبيعية.</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>4. ضمان الشمولية</h5>
+                    <p>الإجابة النهائية لازم تجاوب على كل جوانب السؤال الأصلي.</p>
+                </div>
+            </div>
+
+            <div class="llm-initialization">
+                <h3>🤖 دور الـ LLM في التجميع</h3>
+                <p>هنا بيجي دور الـ Language Model تاني لكن المرة دي مش لتقسيم السؤال، ولكن لـ <strong>تجميع النتائج</strong> بطريقة ذكية ومترابطة.</p>
+                
+                <h4>مهام الـ LLM في مرحلة التجميع:</h4>
+                <ul>
+                    <li><strong>فهم الترابط:</strong> يفهم إزاي النتائج مرتبطة ببعض</li>
+                    <li><strong>إعادة الصياغة:</strong> يصيغ النتائج بشكل متدفق وطبيعي</li>
+                    <li><strong>سد الفجوات:</strong> يملا أي فجوات منطقية بين النتائج</li>
+                    <li><strong>التنسيق:</strong> ينسق النتائج في شكل إجابة موحدة</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h5>مثال على عملية التجميع:</h5>
+                    <p><strong>نتائج الأسئلة الفرعية:</strong></p>
+                    <ul>
+                        <li>سؤال 1: معلومات عن تعريف الذكاء الاصطناعي</li>
+                        <li>سؤال 2: معلومات عن تطبيقات الذكاء الاصطناعي</li>
+                        <li>سؤال 3: معلومات عن التقنيات المستخدمة</li>
+                    </ul>
+                    
+                    <p><strong>الإجابة المجمعة:</strong></p>
+                    <p>"الذكاء الاصطناعي هو... [تعريف]، ويستخدم في مجالات عديدة مثل... [تطبيقات]، ويعتمد على تقنيات متقدمة مثل... [تقنيات]"</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ إعداد SubQuestionQueryEngine</h2>
+            
+            <div class="llm-initialization">
+                <h3>خطوات الإعداد في LlamaIndex</h3>
+                <p>عشان تستخدم SubQuestionQueryEngine، محتاج تعمل إعداد صحيح للنظام يشمل تجهيز كل المكونات اللازمة.</p>
+                
+                <h4>المكونات الأساسية للإعداد:</h4>
+                
+                <div class="process-step">
+                    <h5>1. إعداد قاعدة البيانات والفهرس</h5>
+                    <p>لازم يكون عندك قاعدة بيانات أو فهرس جاهز للبحث فيه</p>
+                    <ul>
+                        <li>تحضير المستندات والبيانات</li>
+                        <li>بناء Vector Store Index</li>
+                        <li>تحسين إعدادات البحث</li>
+                    </ul>
+                </div>
+
+                <div class="process-step">
+                    <h5>2. إعداد Query Engine Tools</h5>
+                    <p>هذه الأدوات هي اللي هتستخدم للبحث في قاعدة البيانات</p>
+                    <ul>
+                        <li>تحديد نوع الـ Query Engine</li>
+                        <li>ضبط معاملات البحث</li>
+                        <li>تحسين الأداء</li>
+                    </ul>
+                </div>
+
+                <div class="process-step">
+                    <h5>3. إعداد SubQuestionQueryEngine نفسه</h5>
+                    <p>تجميع كل المكونات في نظام واحد متكامل</p>
+                    <ul>
+                        <li>ربط Query Engine Tools</li>
+                        <li>ضبط إعدادات التقسيم</li>
+                        <li>تحديد استراتيجية التجميع</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="workflow-diagram">
+                <h3>🔧 الإعداد العملي</h3>
+                <p>في الدروس الجاية هنشوف بالتفصيل إزاي نعمل الإعداد ده عملياً، وإيه الكود المطلوب، وإزاي نحسن الأداء والنتائج.</p>
+                
+                <p>الخطوات اللي جايا:</p>
+                <ul>
+                    <li>إنشاء Query Engine Tools بطريقة صحيحة</li>
+                    <li>تكوين SubQuestionQueryEngine</li>
+                    <li>تخصيص الـ Prompts للاستخدام الأمثل</li>
+                    <li>اختبار وتقييم النتائج</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🔀 انتهى الجزء العاشر من Query Transformation | الجزء التالي: إنشاء Query Engine Tools</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بناء Prompts وFew-Shot Examples في Query Transformation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+
+        .important {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .code-card {
+            background: linear-gradient(120deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .code-card pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .prompt-engineering {
+            background: linear-gradient(120deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+
+        .few-shot-examples {
+            background: linear-gradient(120deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+
+        .user-psychology {
+            background: linear-gradient(120deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #9c27b0;
+        }
+
+        .best-practices {
+            background: linear-gradient(120deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        ul {
+            padding-right: 30px;
+            margin: 15px 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-box h5 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💡 بناء Prompts وFew-Shot Examples</h1>
+            <p>الدرس الرابع: إزاي نصمم prompts فعالة ونستخدم الأمثلة لتحسين الأداء</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 فهم مفهوم Prompt Engineering في Query Transformation</h2>
+            
+            <div class="prompt-engineering">
+                <h3>إيه هو الـ Prompt في هذا السياق؟</h3>
+                <p>الـ prompt هنا مش مجرد سؤال بنسأله للـ LLM، ده <strong>مجموعة تعليمات شاملة</strong> بتوضح للـ language model إيه المطلوب منه بالضبط وإزاي يعمل تحويل للاستعلام الأصلي.</p>
+                
+                <h4>مكونات الـ Prompt في Query Transformation:</h4>
+                <ul>
+                    <li><strong>السياق العام:</strong> شرح دور النظام وهدفه</li>
+                    <li><strong>التعليمات المحددة:</strong> إيه المطلوب من الـ LLM</li>
+                    <li><strong>الأمثلة التوضيحية:</strong> نماذج عملية لتوضيح الطريقة</li>
+                    <li><strong>القيود والضوابط:</strong> حدود وشروط العملية</li>
+                    <li><strong>تنسيق الإخراج:</strong> شكل النتيجة المطلوبة</li>
+                </ul>
+            </div>
+
+            <div class="important">
+                <h3>⚠️ ليه بنحتاج Prompt Engineering متقدم؟</h3>
+                <p>المستخدمين مش دايماً بيعرفوا يعبروا عن اللي عايزينه بوضوح. الـ prompt الذكي بيساعد الـ LLM يفهم النية الحقيقية وراء السؤال ويحوله لشكل أفضل للبحث.</p>
+                
+                <h4>المشاكل اللي بيحلها Prompt Engineering:</h4>
+                <ul>
+                    <li><strong>الغموض:</strong> أسئلة مش واضحة أو عامة جداً</li>
+                    <li><strong>نقص المعلومات:</strong> أسئلة ناقصة تفاصيل مهمة</li>
+                    <li><strong>عدم الدقة:</strong> مصطلحات غير محددة أو خاطئة</li>
+                    <li><strong>التعقيد الزائد:</strong> أسئلة معقدة محتاجة تقسيم</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎨 تشريح Prompt فعال لـ Query Transformation</h2>
+            
+            <div class="code-card">
+                <h4>مثال على Prompt متقدم:</h4>
+                <pre>
+You are an intelligent query transformation assistant.
+Your task is to help users articulate their questions more effectively.
+
+Users often struggle to express what they're looking for clearly.
+They might use vague terms, ask overly broad questions, or miss important details.
+
+When given a user query, please:
+1. Analyze the user's intent
+2. Identify any ambiguities or missing information
+3. Generate 3-5 more specific, targeted questions that capture different aspects of their need
+4. Ensure questions are actionable and searchable
+
+Remember: The goal is to improve search results by creating more precise queries.
+
+Examples:
+User Query: "How to be successful?"
+Generated Questions:
+- What are the key habits of successful entrepreneurs?
+- How to set and achieve professional goals effectively?
+- What skills are most important for career advancement?
+- How to measure and track personal success?
+
+User Query: "Tell me about cars"
+Generated Questions:
+- What are the different types of cars available in the market?
+- How to choose the right car based on budget and needs?
+- What are the latest automotive technologies and features?
+- How to maintain a car for optimal performance?
+
+Now, please transform this user query: [USER_QUERY_HERE]
+                </pre>
+            </div>
+
+            <div class="highlight">
+                <h3>🔍 تحليل عناصر الـ Prompt</h3>
+                
+                <h4>1. تعريف الدور (Role Definition)</h4>
+                <p>"You are an intelligent query transformation assistant" - ده بيحدد للـ LLM إيه شخصيته ومجال عمله.</p>
+                
+                <h4>2. شرح المهمة (Task Explanation)</h4>
+                <p>"Your task is to help users articulate their questions more effectively" - توضيح الهدف الأساسي.</p>
+                
+                <h4>3. تحديد المشكلة (Problem Statement)</h4>
+                <p>"Users often struggle to express what they're looking for clearly" - شرح المشكلة اللي بنحلها.</p>
+                
+                <h4>4. التعليمات المحددة (Specific Instructions)</h4>
+                <p>خطوات واضحة للتنفيذ مع ترقيم للوضوح.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🌟 قوة Few-Shot Examples</h2>
+            
+            <div class="few-shot-examples">
+                <h3>إيه هي Few-Shot Examples وليه مهمة؟</h3>
+                <p>Few-shot examples هي <strong>أمثلة توضيحية قليلة</strong> (عادة 2-5 أمثلة) بنحطها في الـ prompt عشان نوضح للـ LLM بالضبط إيه النتيجة اللي إحنا عايزينها.</p>
+                
+                <h4>ليه بتشتغل كويس أوي؟</h4>
+                <ul>
+                    <li><strong>التعلم بالمحاكاة:</strong> الـ LLM بيتعلم النمط من الأمثلة</li>
+                    <li><strong>توضيح التوقعات:</strong> بيفهم مستوى التفصيل المطلوب</li>
+                    <li><strong>ضبط التنسيق:</strong> بيعرف شكل الإخراج المطلوب</li>
+                    <li><strong>تقليل الأخطاء:</strong> أقل احتمالية لنتائج غير متوقعة</li>
+                </ul>
+            </div>
+
+            <div class="user-psychology">
+                <h3>🧠 فهم أنماط أسئلة المستخدمين</h3>
+                
+                <h4>الأنماط الشائعة للأسئلة الضعيفة:</h4>
+                
+                <div class="example-box">
+                    <h5>النمط الأول: الأسئلة العامة جداً</h5>
+                    <p><strong>مثال:</strong> "عايز أعرف عن الصحة"</p>
+                    <p><strong>المشكلة:</strong> مش واضح إيه الجانب المحدد المطلوب</p>
+                    <p><strong>التحويل:</strong> "إيه أفضل عادات الأكل الصحي؟ إيه تمارين مناسبة للمبتدئين؟"</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>النمط الثاني: الأسئلة الناقصة سياق</h5>
+                    <p><strong>مثال:</strong> "إزاي أحسن أدائي؟"</p>
+                    <p><strong>المشكلة:</strong> مش واضح أداء إيه - شغل؟ رياضة؟ دراسة؟</p>
+                    <p><strong>التحويل:</strong> أسئلة محددة لكل مجال ممكن</p>
+                </div>
+
+                <div class="example-box">
+                    <h5>النمط الثالث: الأسئلة المعقدة</h5>
+                    <p><strong>مثال:</strong> "عايز أعمل شركة ناجحة وأكسب فلوس كتير وأكون مشهور"</p>
+                    <p><strong>المشكلة:</strong> أهداف متعددة محتاجة تقسيم</p>
+                    <p><strong>التحويل:</strong> تقسيم لأهداف منفصلة وخطوات عملية</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ بناء Few-Shot Examples فعالة</h2>
+            
+            <div class="best-practices">
+                <h3>معايير اختيار الأمثلة الجيدة</h3>
+                
+                <h4>1. التنوع في السيناريوهات</h4>
+                <p>اختار أمثلة تغطي أنواع مختلفة من المشاكل اللي ممكن تواجهها:</p>
+                <ul>
+                    <li><strong>أسئلة عامة:</strong> تحتاج تخصيص</li>
+                    <li><strong>أسئلة معقدة:</strong> تحتاج تقسيم</li>
+                    <li><strong>أسئلة غامضة:</strong> تحتاج توضيح</li>
+                    <li><strong>أسئلة تقنية:</strong> تحتاج تبسيط</li>
+                </ul>
+                
+                <h4>2. الوضوح في التحول</h4>
+                <p>كل مثال لازم يوضح التحول من سؤال ضعيف لأسئلة قوية بشكل منطقي وواضح.</p>
+                
+                <h4>3. الاتساق في التنسيق</h4>
+                <p>كل الأمثلة تتبع نفس الشكل والتنسيق عشان الـ LLM يتعلم النمط صح.</p>
+            </div>
+
+            <div class="code-card">
+                <h4>مثال متقدم لـ Few-Shot Examples:</h4>
+                <pre>
+Example 1:
+User Query: "How to make money online?"
+Generated Questions:
+- What are legitimate ways to earn income through freelancing?
+- How to start an e-commerce business with minimal investment?
+- What skills are in high demand for remote work opportunities?
+- How to create and monetize digital content or courses?
+
+Example 2:
+User Query: "Best programming language to learn?"
+Generated Questions:
+- What programming languages are most in-demand for web development?
+- Which languages offer the best career opportunities for beginners?
+- What are the pros and cons of Python vs JavaScript for new developers?
+- How to choose a programming language based on specific career goals?
+
+Example 3:
+User Query: "How to lose weight fast?"
+Generated Questions:
+- What are safe and sustainable weight loss strategies?
+- How to create a balanced diet plan for gradual weight loss?
+- What types of exercise are most effective for burning calories?
+- How to maintain motivation and track progress during weight loss?
+                </pre>
+            </div>
+
+            <div class="important">
+                <h3>⚡ نصائح لكتابة أمثلة أقوى</h3>
+                
+                <h4>تجنب هذه الأخطاء:</h4>
+                <ul>
+                    <li><strong>الأمثلة المتشابهة:</strong> لا تكرر نفس نوع التحويل</li>
+                    <li><strong>الأمثلة المعقدة:</strong> خلي الأمثلة واضحة ومباشرة</li>
+                    <li><strong>التحويل الضعيف:</strong> تأكد إن الأسئلة الجديدة أفضل فعلاً</li>
+                    <li><strong>عدم الاتساق:</strong> حافظ على نفس التنسيق والأسلوب</li>
+                </ul>
+                
+                <h4>اتبع هذه المبادئ:</h4>
+                <ul>
+                    <li><strong>الدقة:</strong> كل سؤال محدد وقابل للإجابة</li>
+                    <li><strong>الشمولية:</strong> تغطية جوانب مختلفة من الموضوع</li>
+                    <li><strong>العملية:</strong> أسئلة عملية ومفيدة للمستخدم</li>
+                    <li><strong>السهولة:</strong> سهلة الفهم والبحث عنها</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 تحسين الـ Prompt تدريجياً</h2>
+            
+            <div class="highlight">
+                <h3>عملية التطوير التدريجي</h3>
+                
+                <h4>1. البداية البسيطة</h4>
+                <p>ابدأ بـ prompt بسيط مع أمثلة قليلة واختبر النتائج.</p>
+                
+                <h4>2. تحليل النتائج</h4>
+                <p>شوف إيه المشاكل في النتائج وإيه اللي ممكن يتحسن.</p>
+                
+                <h4>3. إضافة التحسينات</h4>
+                <p>ضيف تعليمات أوضح أو أمثلة أفضل حسب المشاكل اللي لقيتها.</p>
+                
+                <h4>4. الاختبار المستمر</h4>
+                <p>اختبر الـ prompt المحسن مع أنواع مختلفة من الأسئلة.</p>
+            </div>
+
+            <div class="user-psychology">
+                <h3>💡 الخلاصة العملية</h3>
+                <p>Few-shot examples مش مجرد أمثلة عادية، دي <strong>أداة تعليم قوية</strong> للـ language model. لما تكتبها صح، هتلاحظ فرق كبير في جودة النتائج. المهم تفتكر إن الهدف هو <strong>توجيه الـ LM لفهم النمط المطلوب</strong> وتطبيقه على أسئلة جديدة.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💡 انتهى الجزء الرابع من Query Transformation | الجزء التالي: استخدام الـ Prompt في سياق LLM</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعريف وأنواع Node Postprocessors</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .definition-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .types-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .focus-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .source-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .workflow-box { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 تعريف وأنواع Node Postprocessors</h1>
+            <p>الدرس الثاني: فهم عميق لطبيعة ووظائف معالجات العقد</p>
+        </div>
+
+        <div class="card">
+            <h2>📖 التعريف الشامل للـ Node Postprocessor</h2>
+            <div class="definition-box">
+                <h3>🎯 الوظيفة الأساسية:</h3>
+                <p>الـ postprocessor هو وحدة (module) بتطبق نوع من المعالجة الإضافية أو الفلترة على قائمة العقد اللي بترجع من استعلام، وبعدين بترجع النتيجة النهائية.</p>
+                
+                <h3>🔄 آلية العمل البسيطة:</h3>
+                <ol>
+                    <li><strong>الاستقبال:</strong> بياخد مجموعة من العقد (nodes)</li>
+                    <li><strong>التطبيق:</strong> بيطبق تحويل أو فلترة</li>
+                    <li><strong>الإرجاع:</strong> بيرجعهم بعد المعالجة</li>
+                </ol>
+                
+                <h3>💡 البساطة في التعقيد:</h3>
+                <p>زي ما قال المدرس: <em>"That's basically all they do"</em> - الفكرة بسيطة، بس التطبيق قوي جداً!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🌊 التنوع الهائل في LlamaIndex</h2>
+            <div class="types-box">
+                <h3>📚 مكتبة ضخمة من الـ Postprocessors:</h3>
+                <p>LlamaIndex فيها عدد كبير جداً من الـ postprocessors المختلفة، وده بيديك مرونة كبيرة في التعامل مع احتياجات مختلفة.</p>
+                
+                <h3>🗂️ أمثلة على الأنواع المتاحة:</h3>
+                <ul>
+                    <li><strong>Keyword:</strong> للفلترة بالكلمات المفتاحية</li>
+                    <li><strong>Similarity:</strong> للفلترة حسب درجة التشابه</li>
+                    <li><strong>Previous next node:</strong> للتعامل مع العقد المتجاورة</li>
+                    <li><strong>Auto previous next node:</strong> نسخة تلقائية من السابق</li>
+                    <li><strong>والقائمة تطول...</strong> فيه أنواع كتير أوي!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 التركيز على الأنواع المهمة</h2>
+            <div class="focus-box">
+                <h3>✨ الخمس أنواع الأساسية اللي هنركز عليها:</h3>
+                
+                <h4>1️⃣ Similarity Postprocessors</h4>
+                <p><strong>الوظيفة:</strong> بيفلتر العقد حسب درجة التشابه مع الاستعلام</p>
+                <p><strong>ليه مهم:</strong> عشان نتأكد إن اللي بنرجعه فعلاً متعلق بالسؤال</p>
+                
+                <h4>2️⃣ Keyword</h4>
+                <p><strong>الوظيفة:</strong> بيفلتر العقد حسب وجود أو عدم وجود كلمات معينة</p>
+                <p><strong>ليه مهم:</strong> لما عايزين نركز على موضوع محدد أو نتجنب مواضيع معينة</p>
+                
+                <h4>3️⃣ Metadata Replacement</h4>
+                <p><strong>الوظيفة:</strong> بيستبدل محتوى العقد بمعلومات من الـ metadata</p>
+                <p><strong>ليه مهم:</strong> مفيد جداً مع SentenceWindowNodeParser لإعطاء سياق أوسع</p>
+                
+                <h4>4️⃣ Long Context Reordering</h4>
+                <p><strong>الوظيفة:</strong> بيعيد ترتيب العقد عشان المعلومات المهمة تبقى في أول وآخر القائمة</p>
+                <p><strong>ليه مهم:</strong> لأن الـ LLMs بتركز أكتر على بداية ونهاية النص</p>
+                
+                <h4>5️⃣ Sentence Embedding</h4>
+                <p><strong>الوظيفة:</strong> بيحسن محتوى العقد على مستوى الجمل باستخدام embeddings</p>
+                <p><strong>ليه مهم:</strong> للحصول على أعلى دقة في اختيار المحتوى المناسب</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📂 إزاي تلاقي الـ Source Code</h2>
+            <div class="source-box">
+                <h3>🔍 الطريق للـ Source Code:</h3>
+                <p>عايز تشوف كل الأنواع المتاحة؟ اتبع المسار ده:</p>
+                <p><strong>LlamaIndex core → postprocessors</strong></p>
+                
+                <h3>📖 ليه مهم تقرا الـ Source Code؟</h3>
+                <ul>
+                    <li><strong>فهم أعمق:</strong> هتعرف بالضبط إيه اللي بيحصل جوه كل postprocessor</li>
+                    <li><strong>اكتشاف إمكانيات جديدة:</strong> ممكن تلاقي postprocessors مفيدة ماحدش شرحها</li>
+                    <li><strong>تخصيص أفضل:</strong> هتقدر تعدل أو تبني postprocessors جديدة</li>
+                    <li><strong>حل المشاكل:</strong> لما حاجة متشتغلش زي ما متوقع</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 إعادة النظر في Metadata Replacement</h2>
+            <div class="workflow-box">
+                <h3>🎭 ليه المدرس هيعيد شرحه؟</h3>
+                <p>رغم إن المدرس شرح الـ metadata replacement قبل كده، هو قرر يشرحه تاني هنا عشان:</p>
+                
+                <ul>
+                    <li><strong>الشمولية:</strong> يخلي الشرح متكامل في مكان واحد</li>
+                    <li><strong>السياق:</strong> يشرحه في سياق باقي الـ postprocessors</li>
+                    <li><strong>التفاصيل:</strong> يدي تفاصيل أكتر عن استخدامه</li>
+                    <li><strong>الربط:</strong> يوضح علاقته بباقي التقنيات</li>
+                </ul>
+                
+                <h3>📈 بناء المعرفة تدريجياً:</h3>
+                <p>ده جزء من استراتيجية تعليمية ذكية - بناء المعرفة طبقة فوق طبقة مع التكرار المفيد.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 دلوقتي إحنا فاهمين إيه هي الـ Postprocessors وإيه أنواعها - استعد لتعلم إزاي نستخدمها!</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نمط الاستخدام الأساسي للـ Node Postprocessing</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .pattern-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .api-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .usage-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-box { background: #f8f9fa; padding: 20px; border-radius: 15px; margin: 20px 0; direction: ltr; text-align: left; border: 2px solid #3498db; }
+        .motivation-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .workflow-box { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 نمط الاستخدام الأساسي للـ Node Postprocessing</h1>
+            <p>الدرس الثالث: إزاي نستخدم الـ Postprocessors بطريقة صحيحة وفعالة</p>
+        </div>
+
+        <div class="card">
+            <h2>🌟 جمال الـ Orchestration Frameworks</h2>
+            <div class="api-box">
+                <h3>✨ قوة الـ Common API:</h3>
+                <p>الحاجة الجميلة في الـ orchestration frameworks زي LlamaIndex إنها بتوفر API موحد يمكن استخدامه مع مجموعة كبيرة من الـ abstractions المختلفة.</p>
+                
+                <h3>🧠 ليه ده مهم؟</h3>
+                <ul>
+                    <li><strong>سهولة التذكر:</strong> مش محتاج تحفظ APIs مختلفة لكل حاجة</li>
+                    <li><strong>قلة الأخطاء:</strong> نفس النمط في كل حتة</li>
+                    <li><strong>سرعة التطوير:</strong> مش محتاج تتعلم من الأول كل مرة</li>
+                    <li><strong>المرونة:</strong> لما تعرف النمط، هتقدر تطبقه على أي postprocessor</li>
+                </ul>
+                
+                <h3>💡 فلسفة التصميم:</h3>
+                <p>بدل ما تحتاج تعمل <strong>context switch</strong> بين أنواع مختلفة من الـ postprocessors أو الـ abstractions، كلهم بيشتغلوا بنفس الطريقة - وده <strong>amazing</strong>!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 النمط الأساسي للاستخدام</h2>
+            <div class="pattern-box">
+                <h3>🔄 مكان التطبيق:</h3>
+                <p>الـ node postprocessor بيتستخدم كجزء من <strong>query engine</strong>، وده المكان اللي فيه التحويل هيتطبق على العقد اللي راجعة من الـ retriever قبل خطوة الـ response synthesis.</p>
+                
+                <h3>⚠️ تحذير مهم:</h3>
+                <p>إنت <strong>مبتستخدمش</strong> الـ node postprocessor مباشرة في الـ <code>as_retriever</code> method بتاع الـ index - المدرس هيوضح ده في آخر الدرس.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💻 الطريقة التقليدية للاستخدام</h2>
+            <div class="usage-box">
+                <h3>📦 الخطوات الأساسية:</h3>
+                <ol>
+                    <li><strong>Import الـ VectorStoreIndex:</strong> عشان تعمل الـ index</li>
+                    <li><strong>Import الـ postprocessor:</strong> النوع اللي عايزه</li>
+                    <li><strong>Instantiate الـ postprocessor:</strong> مع الـ arguments اللي محتاجها</li>
+                    <li><strong>Pass للـ query engine:</strong> كـ argument</li>
+                </ol>
+            </div>
+            
+            <div class="code-box">
+                <h3>🔧 مثال على الكود الأساسي:</h3>
+                <pre><code># استيراد المكتبات
+from llama_index.core import VectorStoreIndex
+from llama_index.core.postprocessor import SimilarityPostprocessor
+
+# إنشاء الـ postprocessor
+postprocessor = SimilarityPostprocessor(similarity_cutoff=0.7)
+
+# إنشاء الـ query engine مع الـ postprocessor
+query_engine = index.as_query_engine(node_postprocessors=[postprocessor])
+</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ الطريقة المحسنة: create_query_engine</h2>
+            <div class="workflow-box">
+                <h3>🎯 استخدام الـ Helper Functions:</h3>
+                <p>في abstraction محسن بني فوق النمط الأساسي اسمه <strong>create_query_engine</strong> موجود في الـ helper functions.</p>
+                
+                <h3>✨ إزاي بيشتغل:</h3>
+                <ul>
+                    <li>بنستخدم الـ <strong>query mode</strong></li>
+                    <li>بنمرر الـ postprocessor كـ <strong>keyword argument</strong></li>
+                    <li>كل ده وإحنا بننشئ الـ query engine</li>
+                </ul>
+            </div>
+            
+            <div class="code-box">
+                <h3>🚀 مثال على الكود المحسن:</h3>
+                <pre><code># استخدام الـ helper function
+query_engine = create_query_engine(
+    index=index,
+    query_mode="default",
+    node_postprocessors=[postprocessor]
+)
+</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎓 ثقة المدرس في الطلاب</h2>
+            <div class="motivation-box">
+                <h3>💪 رسالة التمكين:</h3>
+                <p>المدرس بيقول إنه شاف النمط ده على الأقل <strong>عشرات المرات</strong> في الكورس، وهو واثق إن الطلاب:</p>
+                
+                <ul>
+                    <li><strong>فهموا النمط:</strong> وقدروا يمسكوا عليه</li>
+                    <li><strong>يقدروا يطبقوه:</strong> بنفسهم على أي postprocessor</li>
+                    <li><strong>اتعلموا كويس:</strong> لدرجة إنهم مستقلين دلوقتي</li>
+                </ul>
+                
+                <h3>🎯 الهدف من النهج ده:</h3>
+                <p>المدرس مش هيشرح الكود كله، هو هيوصف الـ postprocessors وإزاي تعملها instantiate، بس التطبيق سيبه للطلاب.</p>
+                
+                <h3>🌟 الثقة المتبادلة:</h3>
+                <p>زي ما المدرس قال: "إني أؤمن بيكم، وأؤمن بقدرتي على تعليمكم بشكل جيد" - وده يوضح الثقة المتبادلة!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 الخطة للأمام</h2>
+            <div class="pattern-box">
+                <h3>📚 إيه اللي جاي:</h3>
+                <ul>
+                    <li><strong>وصف الـ postprocessors:</strong> كل نوع وإيه وظيفته</li>
+                    <li><strong>طرق الـ instantiation:</strong> إزاي تعمل instance من كل نوع</li>
+                    <li><strong>التطبيق العملي:</strong> ده متروك لك تعمله بنفسك</li>
+                </ul>
+                
+                <h3>🎯 التوقعات:</h3>
+                <p>في النقطة دي من الكورس، المدرس متوقع إنك:</p>
+                <ul>
+                    <li>تقدر تطبق النماذج اللي اتعلمتها</li>
+                    <li>تجرب الـ postprocessors بنفسك</li>
+                    <li>تفهم إزاي تدمجهم في مشاريعك</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 النمط واضح والأدوات جاهزة - دلوقتي وقت التطبيق والإبداع!</p>
+        </div>
+    </div>
+</body>
+</html>

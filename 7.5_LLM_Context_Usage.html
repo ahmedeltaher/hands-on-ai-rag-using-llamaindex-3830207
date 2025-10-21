@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استخدام الـ Prompt في سياق LLM وتعزيز الاستعلامات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+
+        .important {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .context-flow {
+            background: linear-gradient(120deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+
+        .augmentation-process {
+            background: linear-gradient(120deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+
+        .retrieval-strategy {
+            background: linear-gradient(120deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #9c27b0;
+        }
+
+        .technical-deep-dive {
+            background: linear-gradient(120deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        .flow-diagram {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .flow-step {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 1.5em;
+            color: #007bff;
+            margin: 0 10px;
+        }
+
+        ul {
+            padding-right: 30px;
+            margin: 15px 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 استخدام الـ Prompt في سياق LLM</h1>
+            <p>الدرس الخامس: إزاي الـ prompt بيشتغل كجزء من سياق الـ Language Model</p>
+        </div>
+
+        <div class="card">
+            <h2>🔄 دورة حياة الـ Prompt في Query Transformation</h2>
+            
+            <div class="context-flow">
+                <h3>فهم مفهوم الـ Context في LLM</h3>
+                <p>الـ context في الـ language model هو <strong>كل المعلومات المتاحة</strong> للنموذج في لحظة معينة. ده بيشمل:</p>
+                
+                <ul>
+                    <li><strong>System Prompt:</strong> التعليمات الأساسية لدور النموذج</li>
+                    <li><strong>Few-Shot Examples:</strong> الأمثلة التوضيحية</li>
+                    <li><strong>User Query:</strong> السؤال الحالي من المستخدم</li>
+                    <li><strong>Previous Interactions:</strong> المحادثات السابقة (إن وجدت)</li>
+                    <li><strong>Additional Instructions:</strong> أي تعليمات إضافية</li>
+                </ul>
+                
+                <p>كل ده بيتجمع مع بعض ويكون "السياق الكامل" اللي الـ LLM هيستخدمه لفهم المطلوب وإنتاج الإجابة.</p>
+            </div>
+
+            <div class="flow-diagram">
+                <h3>تدفق معالجة الـ Query</h3>
+                <div style="margin: 20px 0;">
+                    <span class="flow-step">استقبال السؤال</span>
+                    <span class="arrow">←</span>
+                    <span class="flow-step">إضافة للـ Context</span>
+                    <span class="arrow">←</span>
+                    <span class="flow-step">معالجة LLM</span>
+                    <span class="arrow">←</span>
+                    <span class="flow-step">توليد أسئلة محسنة</span>
+                    <span class="arrow">←</span>
+                    <span class="flow-step">إرسال للبحث</span>
+                </div>
+            </div>
+
+            <div class="important">
+                <h3>⚡ نقطة مهمة: الـ Prompt مش مجرد نص</h3>
+                <p>الـ prompt مش مجرد نص بنرسله للـ LLM، ده <strong>جزء من منظومة ذكية</strong> بتحضر الـ language model لفهم وتنفيذ مهمة محددة بطريقة دقيقة ومتسقة.</p>
+                
+                <h4>الفرق الجوهري:</h4>
+                <ul>
+                    <li><strong>مجرد نص:</strong> سؤال بسيط بدون سياق</li>
+                    <li><strong>Prompt منظم:</strong> تعليمات + أمثلة + سياق + توجيهات</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔗 آلية دمج الـ Query مع الـ Context</h2>
+            
+            <div class="augmentation-process">
+                <h3>عملية Query Augmentation - تعزيز الاستعلام</h3>
+                <p>لما بيجي سؤال جديد من المستخدم، النظام مش بيتعامل معاه لوحده. بدلاً من كده، بيحصل <strong>دمج ذكي</strong> بين السؤال الأصلي والـ context الموجود.</p>
+                
+                <h4>خطوات عملية التعزيز:</h4>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h5>الخطوة الأولى: تحضير السياق</h5>
+                    <p>النظام بيجهز الـ context الكامل اللي يشمل:</p>
+                    <ul>
+                        <li>تعليمات الـ prompt الأساسية</li>
+                        <li>الأمثلة التوضيحية</li>
+                        <li>أي معلومات إضافية عن المستخدم أو السياق</li>
+                    </ul>
+                </div>
+
+                <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h5>الخطوة الثانية: دمج السؤال</h5>
+                    <p>السؤال الجديد بيتضاف للـ context في المكان المناسب، عادة في النهاية مع إشارة واضحة إنه السؤال المطلوب معالجته.</p>
+                </div>
+
+                <div style="background: #fff3e0; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h5>الخطوة الثالثة: المعالجة المتكاملة</h5>
+                    <p>الـ LLM بيعالج كل المعلومات مع بعض ويولد استجابة متسقة مع التعليمات والأمثلة الموجودة.</p>
+                </div>
+            </div>
+
+            <div class="technical-deep-dive">
+                <h3>🔧 التفاصيل التقنية للدمج</h3>
+                
+                <h4>بنية الـ Context النهائية:</h4>
+                <pre style="background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 10px; direction: ltr; text-align: left;">
+[SYSTEM_PROMPT]
+You are an intelligent query transformation assistant...
+
+[INSTRUCTIONS]
+When given a user query, please:
+1. Analyze the user's intent
+2. Generate 3-5 more specific questions...
+
+[EXAMPLES]
+Example 1: ...
+Example 2: ...
+
+[CURRENT_TASK]
+User Query: "كيف أبدأ في التجارة الإلكترونية؟"
+Generated Questions:</pre>
+                
+                <p>الـ LLM بيشوف كل ده كوحدة واحدة ويستخدمه لفهم المطلوب بدقة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 عملية الاستخراج والاسترجاع</h2>
+            
+            <div class="retrieval-strategy">
+                <h3>من Query Transformation للـ Retrieval</h3>
+                <p>بعد ما الـ LLM يولد الأسئلة المحسنة، دي مش نهاية العملية. دي بداية مرحلة جديدة اسمها <strong>Augmented Retrieval</strong> - الاسترجاع المعزز.</p>
+                
+                <h4>إيه اللي بيحصل للأسئلة المولدة؟</h4>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <h5>🎯 السؤال الأصلي:</h5>
+                    <p>"عايز أتعلم الذكاء الاصطناعي"</p>
+                </div>
+
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <h5>🔄 الأسئلة المحولة:</h5>
+                    <ul>
+                        <li>"ما هي أساسيات الذكاء الاصطناعي للمبتدئين؟"</li>
+                        <li>"ما هي أفضل لغات البرمجة لتعلم الذكاء الاصطناعي؟"</li>
+                        <li>"ما هي المناهج والكورسات المناسبة لتعلم AI؟"</li>
+                        <li>"ما هي المشاريع العملية للممارسة في الذكاء الاصطناعي؟"</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <h5>🔍 النتيجة في البحث:</h5>
+                    <p>كل سؤال من الأسئلة دي بيتم إرساله لقاعدة البيانات أو الفهرس بشكل منفصل، وبالتالي النتائج بتكون أشمل وأدق.</p>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>⚡ ليه ده مهم جداً؟</h3>
+                
+                <h4>1. تحسين معدل الاستخراج (Recall)</h4>
+                <p>لما نبحث بأسئلة متعددة ومحددة، بنزود فرصة إننا نلاقي كل المعلومات ذات الصلة.</p>
+                
+                <h4>2. تحسين دقة النتائج (Precision)</h4>
+                <p>الأسئلة المحددة بتجيب نتائج أكثر دقة وصلة بالموضوع.</p>
+                
+                <h4>3. تغطية شاملة للموضوع</h4>
+                <p>بدل ما نجاوب على جانب واحد، بنغطي جوانب متعددة من نفس الموضوع.</p>
+                
+                <h4>4. تقليل النتائج الخاطئة</h4>
+                <p>الأسئلة الواضحة بتقلل احتمالية جلب معلومات غير مرتبطة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 التأثير على جودة النتائج النهائية</h2>
+            
+            <div class="important">
+                <h3>مقارنة بين النهج التقليدي والنهج المحسن</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <div style="background: #ffebee; padding: 20px; border-radius: 10px;">
+                        <h4 style="color: #c62828;">❌ بدون Query Transformation</h4>
+                        <ul style="color: #666; font-size: 1em;">
+                            <li>البحث بالسؤال الأصلي فقط</li>
+                            <li>نتائج محدودة ومتناثرة</li>
+                            <li>احتمالية فقدان معلومات مهمة</li>
+                            <li>صعوبة في فهم السياق</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #e8f5e8; padding: 20px; border-radius: 10px;">
+                        <h4 style="color: #2e7d32;">✅ مع Query Transformation</h4>
+                        <ul style="color: #666; font-size: 1em;">
+                            <li>بحث متعدد الأوجه</li>
+                            <li>نتائج شاملة ومترابطة</li>
+                            <li>تغطية كاملة للموضوع</li>
+                            <li>فهم عميق للمتطلبات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="context-flow">
+                <h3>🌟 الفائدة طويلة المدى</h3>
+                <p>استخدام Query Transformation مش مجرد تحسين تقني، ده <strong>استثمار في تجربة المستخدم</strong> وجودة النظام ككل.</p>
+                
+                <h4>الفوائد المستدامة:</h4>
+                <ul>
+                    <li><strong>بناء الثقة:</strong> المستخدمين يثقوا في النظام أكتر</li>
+                    <li><strong>زيادة الاستخدام:</strong> نتائج أفضل = استخدام أكتر</li>
+                    <li><strong>تقليل التكاليف:</strong> أقل دعم فني مطلوب</li>
+                    <li><strong>التطوير المستمر:</strong> النظام يتعلم ويتحسن مع الوقت</li>
+                </ul>
+            </div>
+
+            <div class="technical-deep-dive">
+                <h3>🔗 الخلاصة التقنية</h3>
+                <p>الـ prompt في Query Transformation مش مجرد نص، ده <strong>محرك ذكي</strong> بيحول الاستعلامات البسيطة لعمليات بحث متقدمة. العملية كلها بتعتمد على:</p>
+                
+                <ul>
+                    <li><strong>سياق غني:</strong> معلومات شاملة للـ LLM</li>
+                    <li><strong>تعليمات واضحة:</strong> توجيهات محددة للمعالجة</li>
+                    <li><strong>أمثلة توضيحية:</strong> نماذج للتعلم والمحاكاة</li>
+                    <li><strong>تكامل مع النظام:</strong> ربط سلس مع باقي المكونات</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🧠 انتهى الجزء الخامس من Query Transformation | الجزء التالي: تفسير مقصد المستخدم والتوافق مع البيانات</p>
+        </div>
+    </div>
+</body>
+</html>

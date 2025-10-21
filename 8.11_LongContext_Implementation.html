@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق LongContextReorder - الخوارزمية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .algorithm-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .step-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .example-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-box { background: #f8f9fa; padding: 20px; border-radius: 15px; margin: 20px 0; direction: ltr; text-align: left; border: 2px solid #3498db; }
+        .insight-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ تطبيق LongContextReorder - الخوارزمية</h1>
+            <p>الدرس الحادي عشر: فهم عميق لآلية إعادة الترتيب الذكية</p>
+        </div>
+
+        <div class="card">
+            <h2>🧮 الخوارزمية خطوة بخطوة</h2>
+            <div class="algorithm-box">
+                <h3>📋 نظرة عامة:</h3>
+                <p>الخوارزمية بتقوم بإعادة ترتيب العقد بناءً على درجات الصلة، مع وضع العقد الأهم في البداية والنهاية لتحسين وصول الـ LLM إليها.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>1️⃣ ترتيب العقد بالأهمية</h2>
+            <div class="step-box">
+                <h3>📊 الخطوة الأولى: الترتيب التنازلي</h3>
+                <p>بيتم ترتيب العقد حسب الـ relevance scores في ترتيب تنازلي (الأعلى درجة الأول).</p>
+                
+                <h3>⚠️ التعامل مع القيم المفقودة:</h3>
+                <ul>
+                    <li><strong>لو الـ score = None:</strong> بيتعامل معاه كإنه صفر</li>
+                    <li><strong>الهدف:</strong> ضمان إن كل العقد لها قيمة رقمية للمقارنة</li>
+                    <li><strong>الحكمة:</strong> العقد بدون درجة تعتبر أقل أهمية</li>
+                </ul>
+            </div>
+            
+            <div class="example-box">
+                <h3>🎯 مثال على الترتيب:</h3>
+                <p><strong>قبل الترتيب:</strong></p>
+                <ul>
+                    <li>عقدة A: score = 0.8</li>
+                    <li>عقدة B: score = 0.9</li>
+                    <li>عقدة C: score = None → 0.0</li>
+                    <li>عقدة D: score = 0.7</li>
+                    <li>عقدة E: score = 0.95</li>
+                </ul>
+                
+                <p><strong>بعد الترتيب التنازلي:</strong></p>
+                <ul>
+                    <li>عقدة E: 0.95</li>
+                    <li>عقدة B: 0.9</li>
+                    <li>عقدة A: 0.8</li>
+                    <li>عقدة D: 0.7</li>
+                    <li>عقدة C: 0.0</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>2️⃣ التوزيع الذكي: فردي وزوجي</h2>
+            <div class="step-box">
+                <h3>🔄 التكرار على القائمة المرتبة:</h3>
+                <p>بعد الترتيب، بيتم المرور على كل عقدة وفحص موقعها في القائمة (الـ index).</p>
+                
+                <h3>🎯 منطق التوزيع:</h3>
+                <ul>
+                    <li><strong>الفهرس الزوجي (0, 2, 4...):</strong> يتوضع في بداية القائمة الجديدة</li>
+                    <li><strong>الفهرس الفردي (1, 3, 5...):</strong> يتوضع في نهاية القائمة الجديدة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3️⃣ آلية الإدراج</h2>
+            <div class="algorithm-box">
+                <h3>🔧 للفهارس الزوجية:</h3>
+                <p>يتم إدراج العقدة في <strong>بداية</strong> الـ reordered_nodes list باستخدام <code>insert(0)</code></p>
+                
+                <h3>➕ للفهارس الفردية:</h3>
+                <p>يتم إلحاق العقدة في <strong>نهاية</strong> الـ reordered_nodes list باستخدام <code>append()</code></p>
+            </div>
+            
+            <div class="code-box">
+                <h3>💻 الكود المبسط:</h3>
+                <pre><code>reordered_nodes = []
+
+for index, node in enumerate(sorted_nodes):
+    if index % 2 == 0:  # فهرس زوجي
+        reordered_nodes.insert(0, node)  # إدراج في البداية
+    else:  # فهرس فردي
+        reordered_nodes.append(node)     # إلحاق في النهاية
+</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 مثال تطبيقي شامل</h2>
+            <div class="example-box">
+                <h3>📊 المثال العملي:</h3>
+                <p><strong>البيانات الأصلية بعد الترتيب:</strong></p>
+                <ol start="0">
+                    <li>عقدة E (0.95) - فهرس 0 (زوجي)</li>
+                    <li>عقدة B (0.9) - فهرس 1 (فردي)</li>
+                    <li>عقدة A (0.8) - فهرس 2 (زوجي)</li>
+                    <li>عقدة D (0.7) - فهرس 3 (فردي)</li>
+                    <li>عقدة C (0.0) - فهرس 4 (زوجي)</li>
+                </ol>
+                
+                <h3>🔄 عملية إعادة الترتيب:</h3>
+                <ol>
+                    <li><strong>عقدة E (فهرس 0، زوجي):</strong> insert(0) → [E]</li>
+                    <li><strong>عقدة B (فهرس 1، فردي):</strong> append() → [E, B]</li>
+                    <li><strong>عقدة A (فهرس 2، زوجي):</strong> insert(0) → [A, E, B]</li>
+                    <li><strong>عقدة D (فهرس 3، فردي):</strong> append() → [A, E, B, D]</li>
+                    <li><strong>عقدة C (فهرس 4، زوجي):</strong> insert(0) → [C, A, E, B, D]</li>
+                </ol>
+                
+                <h3>🎯 النتيجة النهائية:</h3>
+                <p><strong>[C, A, E, B, D]</strong></p>
+                <p>العقد عالية الدرجة (E, A, B) في البداية والنهاية، والضعيفة (C) والمتوسطة (D) في الوسط!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧠 الحكمة وراء هذا التصميم</h2>
+            <div class="insight-box">
+                <h3>🎯 ليه الطريقة دي ذكية؟</h3>
+                <ul>
+                    <li><strong>أعلى درجتين:</strong> هيكونوا في مواضع متقدمة (بداية ونهاية)</li>
+                    <li><strong>المتوسط والضعيف:</strong> هيتوزعوا في الوسط</li>
+                    <li><strong>توازن طبيعي:</strong> مش كل الأهم في مكان واحد</li>
+                </ul>
+                
+                <h3>📈 تحسين الأداء:</h3>
+                <ul>
+                    <li><strong>استغلال نقاط القوة:</strong> الـ LLM بيركز على البداية والنهاية</li>
+                    <li><strong>تقليل الفقدان:</strong> المعلومات المهمة مش هتضيع في الوسط</li>
+                    <li><strong>توزيع ذكي:</strong> حتى العقد المتوسطة تاخد فرصة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📖 قراءة Source Code</h2>
+            <div class="algorithm-box">
+                <h3>🔍 نصيحة المدرس:</h3>
+                <p>المدرس شجع على قراءة الـ source code لفهم التفاصيل أكتر، وهو وضح إن الكود مش طويل أو صعب الفهم.</p>
+                
+                <h3>💡 فوائد قراءة Source Code:</h3>
+                <ul>
+                    <li><strong>فهم التفاصيل:</strong> شوف بالضبط إيه اللي بيحصل</li>
+                    <li><strong>التعلم من المطورين:</strong> شوف إزاي المحترفين بيحلوا المشاكل</li>
+                    <li><strong>القدرة على التعديل:</strong> لو محتاج تخصص الخوارزمية</li>
+                    <li><strong>الثقة في الاستخدام:</strong> لما تفهم إيه اللي جوه</li>
+                </ul>
+                
+                <h3>🎯 وصف المدرس للكود:</h3>
+                <p><em>"ده مش طويل أو صعب الفهم، بس هو powerful!"</em> - تقنية قوية ومؤثرة!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 سهولة الاستخدام</h2>
+            <div class="step-box">
+                <h3>✨ نفس النمط المألوف:</h3>
+                <p>زي كل الـ postprocessors، بيتم إنشاؤه بنفس الطريقة البسيطة.</p>
+                
+                <h3>🎮 مثال على الاستخدام:</h3>
+            </div>
+            
+            <div class="code-box">
+                <pre><code>from llama_index.core.postprocessor import LongContextReorder
+
+# إنشاء الـ postprocessor (بدون معاملات!)
+reorder_postprocessor = LongContextReorder()
+
+# استخدامه مع query engine
+query_engine = create_query_engine(
+    index=vector_index,
+    postprocessors=[reorder_postprocessor]
+)
+</code></pre>
+            </div>
+            
+            <div class="insight-box">
+                <h3>🌟 جمال البساطة:</h3>
+                <p>الـ APIs كلها متشابهة في الـ orchestration frameworks - تعلم مرة واحدة، استخدم في كل حتة!</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 خوارزمية بسيطة وذكية - تحسين كبير بأقل مجهود!</p>
+        </div>
+    </div>
+</body>
+</html>

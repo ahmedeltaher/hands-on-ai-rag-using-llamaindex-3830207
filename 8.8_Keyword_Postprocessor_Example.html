@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Postprocessor - المثال العملي</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .demo-explanation { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-card { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 15px; margin: 20px 0; direction: ltr; text-align: left; }
+        .node-analysis { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .pipeline-demo { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .learning-note { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Keyword Postprocessor - المثال العملي</h1>
+            <p>الدرس الثامن: شوف الـ Keyword Postprocessor وهو بيشتغل عملياً</p>
+        </div>
+
+        <div class="card">
+            <h2>💭 "I wasn't going to show you, but I'll show you"</h2>
+            <div class="demo-explanation">
+                <p>المدرس قال إنه مش كان ناوي يوري المثال، بس قرر يوريه عشان الطلاب يبنوا عليه. ده approach تعليمي ممتاز لأنه:</p>
+                <ul>
+                    <li><strong>Balance:</strong> بين النظرية والتطبيق</li>
+                    <li><strong>Building Blocks:</strong> بيدي أساس يبنوا عليه</li>
+                    <li><strong>Motivation:</strong> بيخلي الطلاب متحمسين للتطبيق</li>
+                    <li><strong>Confidence:</strong> بيوري إن الكود مش صعب</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ إعداد Keyword Postprocessor</h2>
+            <div class="code-card">
+                <h3>Setting up the Keyword Postprocessor:</h3>
+                <pre><code>from llama_index.core.postprocessor import KeywordNodePostprocessor
+
+# Define what we want and what we don't want
+required_keywords = ["AI", "machine learning", "technology"]
+exclude_keywords = ["outdated", "deprecated", "legacy"]
+
+# Create the postprocessor
+keyword_postprocessor = KeywordNodePostprocessor(
+    required_keywords=required_keywords,
+    exclude_keywords=exclude_keywords,
+    lang="en"  # English language processing
+)</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏗️ إعداد Query Engine</h2>
+            <div class="code-card">
+                <h3>Creating Query Engine with Postprocessor:</h3>
+                <pre><code># Create query engine with the postprocessor
+query_engine = index.as_query_engine(
+    node_postprocessors=[keyword_postprocessor],
+    return_source_nodes=True  # Important for seeing the nodes
+)
+
+# Alternative using helper function
+query_engine = create_query_engine(
+    query_mode="default",
+    node_postprocessors=[keyword_postprocessor]
+)</code></pre>
+            </div>
+            <div class="demo-explanation">
+                <h3>🔑 نقاط مهمة:</h3>
+                <ul>
+                    <li><strong>return_source_nodes=True:</strong> عشان نشوف النودز اللي اتفلترت</li>
+                    <li><strong>List of postprocessors:</strong> ممكن نضيف أكتر من واحد</li>
+                    <li><strong>Helper function:</strong> طريقة أسهل للإعداد</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 فحص NodeWithScore Objects</h2>
+            <div class="node-analysis">
+                <p>المدرس عايز يوري الطلاب إيه هي NodeWithScore objects عشان يفهموا إيه اللي بيحصل:</p>
+                
+                <h3>🧩 مكونات NodeWithScore:</h3>
+                <ul>
+                    <li><strong>node:</strong> النود اللي فيه النص والـ metadata</li>
+                    <li><strong>score:</strong> الـ similarity score مع الـ query</li>
+                    <li><strong>text:</strong> النص الفعلي اللي هيتدي للـ LLM</li>
+                </ul>
+                
+                <h3>🎯 ليه ده مهم؟</h3>
+                <p>عشان الطلاب يفهموا البنية الأساسية للنظام ويعرفوا إيه اللي بيتنقل بين المراحل المختلفة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 بناء Query Chain والـ Pipeline</h2>
+            <div class="pipeline-demo">
+                <p>بعد إعداد الـ query engine، المدرس بيبني:</p>
+                
+                <h3>🔗 Query Chain:</h3>
+                <ul>
+                    <li>سلسلة من العمليات اللي بتحصل على الـ query</li>
+                    <li>كل خطوة بتبني على اللي قبلها</li>
+                    <li>منظمة ومرتبة للحصول على أفضل نتيجة</li>
+                </ul>
+                
+                <h3>🏭 Query Pipeline:</h3>
+                <ul>
+                    <li>النظام الكامل من الـ input للـ output</li>
+                    <li>بيشمل الـ retrieval والـ postprocessing والـ generation</li>
+                    <li>قابل للتخصيص والتطوير</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 المثال العملي المبسط</h2>
+            <div class="code-card">
+                <h3>Simple Query Example:</h3>
+                <pre><code># First, let's see the nodes before processing
+response = query_engine.query("Tell me about AI applications")
+
+# Check the source nodes
+for i, node in enumerate(response.source_nodes):
+    print(f"Node {i+1}:")
+    print(f"Text: {node.node.text[:100]}...")
+    print(f"Score: {node.score}")
+    print("---")
+</code></pre>
+            </div>
+            <div class="node-analysis">
+                <h3>🔍 تحليل النتائج:</h3>
+                <p>هنا بنشوف NodeWithScore objects واحد واحد عشان نفهم:</p>
+                <ul>
+                    <li>أي نودز فضلت بعد الفلترة</li>
+                    <li>الـ similarity scores بتاعتها</li>
+                    <li>المحتوى الفعلي لكل نود</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏭 استخدام في Pipeline</h2>
+            <div class="pipeline-demo">
+                <p>المدرس بيوضح إن ممكن نستخدم نفس الـ setup في pipeline أكبر:</p>
+                
+                <h3>🔄 Pipeline Benefits:</h3>
+                <ul>
+                    <li><strong>Consistency:</strong> نفس الـ filtering في كل الـ queries</li>
+                    <li><strong>Scalability:</strong> يشتغل مع queries كتيرة</li>
+                    <li><strong>Modularity:</strong> سهل تغيير أي جزء</li>
+                    <li><strong>Reusability:</strong> ممكن استخدامه في أماكن مختلفة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 "There we go" - تحليل النتيجة</h2>
+            <div class="demo-explanation">
+                <p>لما المدرس قال "There we go"، كان بيشير لنجاح العملية. ده يوضح:</p>
+                
+                <h3>✅ نجح الفلترة:</h3>
+                <ul>
+                    <li>النودز اتفلترت صح حسب الـ keywords</li>
+                    <li>النتيجة منطقية ومفيدة</li>
+                    <li>النظام شغال زي ما متوقع</li>
+                </ul>
+                
+                <h3>🎯 التعلم المستخلص:</h3>
+                <ul>
+                    <li>الـ pattern بسيط وقابل للتكرار</li>
+                    <li>النتائج فورية ومرئية</li>
+                    <li>سهل الفهم والتطبيق</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎓 الدروس المستفادة</h2>
+            <div class="learning-note">
+                <h3>💡 من المثال ده نتعلم:</h3>
+                <ul>
+                    <li><strong>Practice Makes Perfect:</strong> الممارسة العملية ضرورية</li>
+                    <li><strong>Step by Step:</strong> نبني المعرفة خطوة خطوة</li>
+                    <li><strong>See the Results:</strong> مهم نشوف النتايج الفعلية</li>
+                    <li><strong>Understand the Data:</strong> نفهم شكل البيانات اللي بتتنقل</li>
+                </ul>
+                
+                <h3>🚀 الخطوة التالية:</h3>
+                <p>دلوقتي إنت جاهز تطبق ده على بياناتك الخاصة وتشوف النتايج بنفسك!</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎮 انتهى الجزء الثامن | الجزء التالي: Metadata Replacement Postprocessor</p>
+        </div>
+    </div>
+</body>
+</html>

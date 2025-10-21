@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retry Query Engine - المعاملات والمتغيرات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(45deg, #fd79a8, #fdcb6e);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #fab1a0 0%, #fdcb6e 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #fd79a8;
+        }
+        
+        .code-card {
+            background: #2d3436;
+            color: #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #fdcb6e;
+        }
+        
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .parameter-card {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .parameter-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+        
+        .parameter-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .parameter-type {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .analogy-section {
+            background: linear-gradient(135deg, #00cec9 0%, #55a3ff 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .workflow-diagram {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .workflow-step {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 5px solid #fd79a8;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .source-link {
+            background: #2d3436;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Retry Query Engine - المعاملات والمتغيرات</h1>
+            <p>فهم تفصيلي لكل معامل وإزاي نستخدمه صح</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📋 نظرة عامة على المعاملات</div>
+            </div>
+            <div class="content">
+                <p>عشان تقدر تستخدم الـ Retry Query Engine بشكل صحيح، لازم تفهم كل معامل من المعاملات الأربعة المطلوبة. كل معامل له دور مختلف وضروري في عملية تحسين الإجابات.</p>
+                
+                <div class="highlight">
+                    <strong>🎯 المفهوم الأساسي:</strong> النظام ده بيستخدم query engine تاني جواه - يعني "محرك جوا محرك" عشان يحقق الهدف المطلوب!
+                </div>
+                
+                <p>ده معناه إن الـ Retry Query Engine مش بيشتغل لوحده، ولكن بيعتمد على محرك أساسي ويضيفله طبقة من التحسين والمراجعة.</p>
+            </div>
+        </div>
+
+        <div class="parameter-grid">
+            <div class="parameter-card">
+                <div class="parameter-title">🔧 Query Engine (Base)</div>
+                <div class="parameter-type">مطلوب • Query Engine Object</div>
+                <div style="position: relative; z-index: 1;">
+                    <p><strong>إيه ده؟</strong></p>
+                    <p>ده الـ Query Engine الأساسي اللي هيشتغل عليه النظام. هو اللي هيجاوب على الأسئلة فعلياً.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <strong>🎯 وظيفته:</strong><br>
+                        بيستقبل السؤال ويرد عليه، بس الـ Retry Engine بيراقبه ويحسن من أداؤه
+                    </div>
+                    
+                    <p><strong>نصايح مهمة:</strong></p>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>اختار query engine قوي عشان النتيجة تكون أحسن</li>
+                        <li>تأكد إنه مناسب لنوع البيانات بتاعتك</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="parameter-card" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);">
+                <div class="parameter-title">📊 Evaluator</div>
+                <div class="parameter-type">مطلوب • Evaluator Object</div>
+                <div style="position: relative; z-index: 1;">
+                    <p><strong>إيه ده؟</strong></p>
+                    <p>ده اللي هيقيّم جودة الإجابات باستخدام الـ evaluate_response method. هو الحكم اللي يقرر الإجابة كويسة ولا محتاجة تحسين.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <strong>🎯 وظيفته:</strong><br>
+                        بيشوف الإجابة ويقول: "كويسة، خلاص" أو "لأ، حاول تاني"
+                    </div>
+                    
+                    <p><strong>مثال:</strong> ممكن يقيّم بناءً على الصلة بالسؤال، الطول، التفصيل، أو معايير تانية حسب اللي انت عايزه.</p>
+                </div>
+            </div>
+
+            <div class="parameter-card" style="background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);">
+                <div class="parameter-title">🔄 Max Retries</div>
+                <div class="parameter-type">مطلوب • عدد صحيح (Integer)</div>
+                <div style="position: relative; z-index: 1;">
+                    <p><strong>إيه ده؟</strong></p>
+                    <p>عدد المحاولات اللي النظام هيعملها عشان يوصل لإجابة مرضية قبل ما يستسلم.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <strong>⚖️ نصايح للاختيار:</strong><br>
+                        • رقم قليل (2-3): أسرع بس ممكن مايوصلش لأحسن نتيجة<br>
+                        • رقم كبير (5-10): نتايج أحسن بس أبطأ وأغلى
+                    </div>
+                    
+                    <p><strong>المثالي:</strong> ابدأ بـ 3-5 محاولات وشوف النتايج إيه.</p>
+                </div>
+            </div>
+
+            <div class="parameter-card" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">
+                <div class="parameter-title">📞 Callback Manager</div>
+                <div class="parameter-type">اختياري • CallbackManager Object</div>
+                <div style="position: relative; z-index: 1;">
+                    <p><strong>إيه ده؟</strong></p>
+                    <p>نظام بيدير الـ Callbacks أثناء التشغيل - يعني بيخليك تتابع إيه اللي بيحصل في كل خطوة.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <strong>🎯 فايدته:</strong><br>
+                        مراقبة الأداء، تسجيل الأحداث، معرفة وقت كل خطوة
+                    </div>
+                    
+                    <p><strong>متى نستخدمه؟</strong> لما عايز تفهم إيه اللي بيحصل بالظبط أو لتحسين الأداء.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="analogy-section">
+            <div class="card-title" style="color: white;">🎭 تشبيه يوضح العلاقة بين المعاملات</div>
+            <div style="margin-top: 15px; line-height: 1.8;">
+                <p>تخيل إنك مدير في شركة وعندك:</p>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <strong>🧑‍💼 الموظف (Query Engine):</strong> اللي بيعمل الشغل الفعلي<br>
+                    <strong>👨‍⚖️ المراجع (Evaluator):</strong> اللي بيقيّم جودة الشغل<br>
+                    <strong>⏰ عدد الفرص (Max Retries):</strong> كام مرة ممكن الموظف يعيد الشغل<br>
+                    <strong>📋 نظام المتابعة (Callback Manager):</strong> اللي بيسجل كل حاجة حصلت
+                </div>
+                
+                <p>الموظف يشتغل، المراجع يقيّم، لو الشغل مش كويس يقوله "اعمله تاني"، وده يحصل لحد عدد المحاولات المسموح بيها. ونظام المتابعة بيسجل كل خطوة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🔗 إزاي المعاملات بتشتغل مع بعض؟</div>
+            </div>
+            <div class="content">
+                <div class="workflow-diagram">
+                    <h4 style="text-align: center; margin-bottom: 20px; color: #fd79a8;">مسار العمل بين المعاملات</h4>
+                    
+                    <div class="workflow-step">
+                        <strong>1️⃣ البداية:</strong> يوصل سؤال للـ Retry Query Engine
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>2️⃣ التوجيه:</strong> السؤال يتبعت للـ Query Engine الأساسي
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>3️⃣ الإجابة:</strong> الـ Query Engine يرد بإجابة أولية
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>4️⃣ التقييم:</strong> الـ Evaluator يفحص جودة الإجابة
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>5️⃣ القرار:</strong> 
+                        • لو الإجابة كويسة ← يرجع النتيجة<br>
+                        • لو مش كويسة ← يشوف عدد المحاولات المتبقي
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>6️⃣ إعادة المحاولة:</strong> لو فاضل محاولات، يخلق نسخة جديدة محسنة ويحاول تاني
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <strong>7️⃣ التسجيل:</strong> الـ Callback Manager بيسجل كل خطوة حصلت
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="source-link">
+            <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">📚 نصيحة للمطورين المتقدمين</div>
+            <p>المدرس نصح بقراءة الـ Source Code عشان تفهم إزاي الحاجات دي بتشتغل من تحت لتحت. مش تسيب الموضوع "سحر أسود"، ادخل اقرا الكود وافهم كل حتة بتعمل إيه.</p>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <strong>🎯 الفايدة:</strong> هتفهم النظام أحسن وهتقدر تخصصه أكتر حسب احتياجاتك
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">💡 نصايح عملية لاستخدام المعاملات</div>
+            </div>
+            <div class="content">
+                <div class="highlight">
+                    <strong>🚀 للمبتدئين:</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>ابدأ بـ query engine بسيط</li>
+                        <li>استخدم evaluator جاهز من المكتبة</li>
+                        <li>حدد max_retries بـ 3</li>
+                        <li>متستخدمش callback manager في البداية</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>⚡ للمتقدمين:</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>اعمل evaluator مخصوص لاحتياجاتك</li>
+                        <li>جرب أرقام مختلفة للـ max_retries</li>
+                        <li>استخدم callback manager للمونيتورينج</li>
+                        <li>ادرس الـ source code عشان تفهم التفاصيل</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary Index - الجزء الرابع عشر: استكشاف وحل الأخطاء</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #ddd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 5px solid #00b894;
+        }
+
+        .error-box {
+            background: linear-gradient(135deg, #d63031 0%, #e17055 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #a4161a;
+        }
+
+        .solution-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .debug-box {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #5f3dc4;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 استكشاف وحل الأخطاء</h1>
+            <p>الجزء الرابع عشر: دليل شامل لحل مشاكل Document Summary Index</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>🚨 الأخطاء الشائعة وحلولها</h2>
+                <div class="card-content">
+                    <div class="error-box">
+                        <h4>❌ خطأ: "OpenAI API key not found"</h4>
+                        <p><strong>السبب:</strong> مفتاح API غير محدد أو خاطئ</p>
+                        <p><strong>التأثير:</strong> فشل في إنشاء embeddings أو استدعاء LLM</p>
+                    </div>
+
+                    <div class="solution-box">
+                        <h4>✅ الحل الشامل</h4>
+                        <div class="code-block">
+import os
+from dotenv import load_dotenv
+
+# تحميل متغيرات البيئة
+load_dotenv()
+
+def verify_api_keys():
+    """التحقق من صحة مفاتيح API"""
+    
+    # فحص مفتاح OpenAI
+    openai_key = os.getenv("OPENAI_API_KEY")
+    
+    if not openai_key:
+        print("❌ مفتاح OpenAI API غير موجود")
+        print("💡 الحلول:")
+        print("1. أنشئ ملف .env وأضف: OPENAI_API_KEY=your_key_here")
+        print("2. أو اضبط متغير البيئة: export OPENAI_API_KEY=your_key")
+        return False
+    
+    elif openai_key.startswith("sk-") and len(openai_key) > 20:
+        print("✅ مفتاح OpenAI API صحيح")
+        
+        # اختبار المفتاح
+        try:
+            from llama_index.llms.openai import OpenAI
+            llm = OpenAI(api_key=openai_key)
+            response = llm.complete("test")
+            print("✅ المفتاح يعمل بشكل صحيح")
+            return True
+        except Exception as e:
+            print(f"❌ المفتاح غير صالح: {str(e)}")
+            return False
+    
+    else:
+        print("❌ تنسيق مفتاح OpenAI غير صحيح")
+        print("💡 يجب أن يبدأ بـ sk- ويكون طوله مناسب")
+        return False
+
+# التحقق من المفاتيح
+if verify_api_keys():
+    print("🎯 يمكن المتابعة بأمان")
+else:
+    print("⚠️ يجب إصلاح مشكلة المفاتيح أولاً")
+                        </div>
+                    </div>
+
+                    <div class="error-box">
+                        <h4>❌ خطأ: "Rate limit exceeded"</h4>
+                        <p><strong>السبب:</strong> تجاوز الحد الأقصى للطلبات في الدقيقة</p>
+                        <p><strong>التأثير:</strong> فشل مؤقت في الاستعلامات</p>
+                    </div>
+
+                    <div class="solution-box">
+                        <h4>✅ نظام إدارة معدل الطلبات</h4>
+                        <div class="code-block">
+import time
+from functools import wraps
+from typing import Any, Callable
+import random
+
+class RateLimitManager:
+    def __init__(self, calls_per_minute: int = 50):
+        self.calls_per_minute = calls_per_minute
+        self.call_times = []
+        self.min_interval = 60.0 / calls_per_minute  # الحد الأدنى بين الاستدعاءات
+        
+    def wait_if_needed(self):
+        """انتظار إذا كان معدل الطلبات مرتفع"""
+        
+        current_time = time.time()
+        
+        # إزالة الاستدعاءات القديمة (أكثر من دقيقة)
+        self.call_times = [t for t in self.call_times if current_time - t < 60]
+        
+        # فحص إذا كنا قريبين من الحد الأقصى
+        if len(self.call_times) >= self.calls_per_minute:
+            # حساب الوقت المطلوب للانتظار
+            oldest_call = min(self.call_times)
+            wait_time = 60 - (current_time - oldest_call)
+            
+            if wait_time > 0:
+                print(f"⏳ انتظار {wait_time:.1f} ثانية لتجنب rate limit")
+                time.sleep(wait_time + 0.1)  # مع هامش أمان
+        
+        # تسجيل الاستدعاء الحالي
+        self.call_times.append(time.time())
+
+def with_rate_limit(rate_manager: RateLimitManager):
+    """decorator لإدارة معدل الطلبات"""
+    
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> Any:
+            rate_manager.wait_if_needed()
+            
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                if "rate limit" in str(e).lower():
+                    print("💤 تم تجاوز الحد، انتظار 60 ثانية...")
+                    time.sleep(60)
+                    return func(*args, **kwargs)  # إعادة المحاولة
+                else:
+                    raise e
+        
+        return wrapper
+    return decorator
+
+# إعداد مدير معدل الطلبات
+rate_manager = RateLimitManager(calls_per_minute=30)  # 30 استدعاء في الدقيقة
+
+@with_rate_limit(rate_manager)
+def safe_llm_call(llm, prompt):
+    """استدعاء آمن للـ LLM مع إدارة معدل الطلبات"""
+    return llm.complete(prompt)
+
+print("✅ نظام إدارة معدل الطلبات جاهز")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔍 تشخيص مشاكل الأداء</h2>
+                <div class="card-content">
+                    <div class="debug-box">
+                        <h4>🔬 نظام التشخيص التلقائي</h4>
+                        <div class="code-block">
+import psutil
+import time
+from typing import Dict, List
+import traceback
+
+class PerformanceDiagnostics:
+    def __init__(self):
+        self.diagnostics_log = []
+        
+    def diagnose_slow_indexing(self, documents: List, expected_time: float = 60):
+        """تشخيص بطء بناء الـ index"""
+        
+        print("🔍 تشخيص مشاكل بناء الـ Index...")
+        
+        issues = []
+        
+        # 1. فحص حجم المستندات
+        total_size = sum(len(doc.text) for doc in documents)
+        avg_doc_size = total_size / len(documents)
+        
+        if avg_doc_size > 10000:  # أكبر من 10KB
+            issues.append({
+                'type': 'large_documents',
+                'severity': 'medium',
+                'message': f'المستندات كبيرة (متوسط {avg_doc_size/1000:.1f}KB)',
+                'solution': 'استخدم text splitting أو chunking'
+            })
+        
+        # 2. فحص عدد المستندات
+        if len(documents) > 100:
+            issues.append({
+                'type': 'many_documents',
+                'severity': 'medium',
+                'message': f'عدد كبير من المستندات ({len(documents)})',
+                'solution': 'استخدم batch processing أو parallel processing'
+            })
+        
+        # 3. فحص موارد النظام
+        memory = psutil.virtual_memory()
+        if memory.percent > 80:
+            issues.append({
+                'type': 'low_memory',
+                'severity': 'high',
+                'message': f'ذاكرة منخفضة ({memory.percent:.1f}% مستخدمة)',
+                'solution': 'أغلق التطبيقات الأخرى أو استخدم معالجة بـ batches أصغر'
+            })
+        
+        # 4. فحص المعالج
+        cpu_percent = psutil.cpu_percent(interval=1)
+        if cpu_percent > 90:
+            issues.append({
+                'type': 'high_cpu',
+                'severity': 'medium',
+                'message': f'معالج مثقل ({cpu_percent:.1f}%)',
+                'solution': 'قلل عدد العمليات المتوازية'
+            })
+        
+        return issues
+    
+    def diagnose_slow_queries(self, query_times: List[float]):
+        """تشخيص بطء الاستعلامات"""
+        
+        print("🔍 تشخيص مشاكل الاستعلامات...")
+        
+        issues = []
+        avg_time = sum(query_times) / len(query_times)
+        
+        if avg_time > 10:  # أكثر من 10 ثواني
+            issues.append({
+                'type': 'slow_queries',
+                'severity': 'high',
+                'message': f'استعلامات بطيئة (متوسط {avg_time:.1f}s)',
+                'solutions': [
+                    'استخدم embedding-based retrieval بدلاً من LLM-based',
+                    'قلل similarity_top_k',
+                    'استخدم نماذج أسرع',
+                    'تحسين prompts لتكون أقصر'
+                ]
+            })
+        
+        # فحص التباين في أوقات الاستجابة
+        max_time = max(query_times)
+        min_time = min(query_times)
+        
+        if max_time / min_time > 5:  # تباين كبير
+            issues.append({
+                'type': 'inconsistent_performance',
+                'severity': 'medium',
+                'message': f'أداء غير منتظم (من {min_time:.1f}s إلى {max_time:.1f}s)',
+                'solutions': [
+                    'فحص network connectivity',
+                    'استخدام caching للاستعلامات المتكررة',
+                    'تحسين حجم البيانات المُرسلة للـ LLM'
+                ]
+            })
+        
+        return issues
+    
+    def diagnose_memory_issues(self):
+        """تشخيص مشاكل الذاكرة"""
+        
+        print("🔍 تشخيص مشاكل الذاكرة...")
+        
+        issues = []
+        memory = psutil.virtual_memory()
+        
+        # فحص الذاكرة المتاحة
+        if memory.available < 1024 * 1024 * 1024:  # أقل من 1GB
+            issues.append({
+                'type': 'low_available_memory',
+                'severity': 'high',
+                'message': f'ذاكرة متاحة قليلة ({memory.available/1024/1024/1024:.1f}GB)',
+                'solutions': [
+                    'أغلق التطبيقات الأخرى',
+                    'استخدم معالجة بـ chunks أصغر',
+                    'فعل garbage collection بانتظام',
+                    'استخدم streaming للبيانات الكبيرة'
+                ]
+            })
+        
+        return issues
+    
+    def run_full_diagnosis(self, documents=None, query_times=None):
+        """تشخيص شامل لجميع المشاكل المحتملة"""
+        
+        print("🔍 بدء التشخيص الشامل...")
+        print("=" * 50)
+        
+        all_issues = []
+        
+        # تشخيص النظام
+        system_issues = self.diagnose_memory_issues()
+        all_issues.extend(system_issues)
+        
+        # تشخيص المستندات
+        if documents:
+            indexing_issues = self.diagnose_slow_indexing(documents)
+            all_issues.extend(indexing_issues)
+        
+        # تشخيص الاستعلامات
+        if query_times:
+            query_issues = self.diagnose_slow_queries(query_times)
+            all_issues.extend(query_issues)
+        
+        # عرض النتائج
+        if not all_issues:
+            print("✅ لا توجد مشاكل واضحة في الأداء")
+        else:
+            print(f"⚠️ تم العثور على {len(all_issues)} مشكلة:")
+            
+            for issue in all_issues:
+                severity_icon = "🔴" if issue['severity'] == 'high' else "🟡"
+                print(f"\n{severity_icon} {issue['message']}")
+                
+                if isinstance(issue.get('solution'), str):
+                    print(f"   💡 الحل: {issue['solution']}")
+                elif isinstance(issue.get('solutions'), list):
+                    print("   💡 الحلول المقترحة:")
+                    for solution in issue['solutions']:
+                        print(f"   - {solution}")
+        
+        return all_issues
+
+# إنشاء نظام التشخيص
+diagnostics = PerformanceDiagnostics()
+
+# تشخيص تجريبي (بدون بيانات حقيقية)
+print("🔍 نظام التشخيص جاهز للاستخدام")
+
+# مثال على الاستخدام:
+# issues = diagnostics.run_full_diagnosis()
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🛠️ أدوات Debug متقدمة</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# نظام debug متقدم للـ Document Summary Index
+import logging
+import json
+from datetime import datetime
+import inspect
+
+class AdvancedDebugger:
+    def __init__(self, debug_level="INFO"):
+        self.debug_level = debug_level
+        self.setup_logging()
+        self.call_trace = []
+        
+    def setup_logging(self):
+        """إعداد نظام logging مفصل"""
+        
+        # إنشاء logger مخصص
+        self.logger = logging.getLogger("DocumentSummaryDebug")
+        self.logger.setLevel(getattr(logging, self.debug_level))
+        
+        # إنشاء handler للملف
+        file_handler = logging.FileHandler(
+            f"debug_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+            encoding='utf-8'
+        )
+        
+        # إنشاء handler للكونسول
+        console_handler = logging.StreamHandler()
+        
+        # تنسيق الرسائل
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+        file_handler.setFormatter(formatter)
+        console_handler.setFormatter(formatter)
+        
+        self.logger.addHandler(file_handler)
+        self.logger.addHandler(console_handler)
+        
+        self.logger.info("🔧 نظام Debug متقدم تم تفعيله")
+    
+    def trace_function_calls(self, func):
+        """تتبع استدعاءات الدوال"""
+        
+        def wrapper(*args, **kwargs):
+            # تسجيل بداية الاستدعاء
+            start_time = time.time()
+            func_name = func.__name__
+            
+            self.logger.info(f"🔵 بداية {func_name}")
+            self.logger.debug(f"   المعاملات: args={len(args)}, kwargs={list(kwargs.keys())}")
+            
+            try:
+                # تنفيذ الدالة
+                result = func(*args, **kwargs)
+                
+                # تسجيل نهاية الاستدعاء
+                end_time = time.time()
+                duration = end_time - start_time
+                
+                self.logger.info(f"✅ انتهى {func_name} في {duration:.2f}s")
+                
+                # حفظ معلومات الاستدعاء
+                call_info = {
+                    'function': func_name,
+                    'start_time': start_time,
+                    'duration': duration,
+                    'success': True,
+                    'result_type': type(result).__name__
+                }
+                self.call_trace.append(call_info)
+                
+                return result
+                
+            except Exception as e:
+                # تسجيل الأخطاء
+                end_time = time.time()
+                duration = end_time - start_time
+                
+                self.logger.error(f"❌ خطأ في {func_name} بعد {duration:.2f}s: {str(e)}")
+                
+                # تسجيل تفاصيل الخطأ
+                error_details = {
+                    'function': func_name,
+                    'start_time': start_time,
+                    'duration': duration,
+                    'success': False,
+                    'error': str(e),
+                    'error_type': type(e).__name__
+                }
+                self.call_trace.append(error_details)
+                
+                # إعادة رفع الخطأ
+                raise e
+        
+        return wrapper
+    
+    def debug_document_processing(self, documents):
+        """debug مفصل لمعالجة المستندات"""
+        
+        self.logger.info(f"📄 بداية debug معالجة {len(documents)} مستند")
+        
+        for i, doc in enumerate(documents):
+            self.logger.debug(f"مستند {i+1}:")
+            self.logger.debug(f"   الطول: {len(doc.text)} حرف")
+            self.logger.debug(f"   أول 50 حرف: {doc.text[:50]}...")
+            
+            # فحص المشاكل المحتملة
+            if len(doc.text) < 10:
+                self.logger.warning(f"   ⚠️ مستند قصير جداً ({len(doc.text)} أحرف)")
+            
+            if len(doc.text) > 50000:
+                self.logger.warning(f"   ⚠️ مستند طويل جداً ({len(doc.text)} أحرف)")
+            
+            # فحص الترميز
+            try:
+                doc.text.encode('utf-8')
+            except UnicodeEncodeError as e:
+                self.logger.error(f"   ❌ مشكلة في ترميز المستند: {str(e)}")
+    
+    def debug_query_process(self, query, retrieval_mode, top_k):
+        """debug عملية الاستعلام"""
+        
+        self.logger.info(f"🔍 debug استعلام: '{query[:50]}...'")
+        self.logger.info(f"   نوع الاسترجاع: {retrieval_mode}")
+        self.logger.info(f"   عدد النتائج: {top_k}")
+        
+        # فحص طول الاستعلام
+        if len(query) < 3:
+            self.logger.warning("⚠️ استعلام قصير جداً قد لا يعطي نتائج جيدة")
+        
+        if len(query) > 500:
+            self.logger.warning("⚠️ استعلام طويل قد يبطئ المعالجة")
+    
+    def generate_debug_report(self):
+        """تقرير debug شامل"""
+        
+        print("\n🔍 تقرير Debug الشامل")
+        print("=" * 60)
+        
+        # إحصائيات الاستدعاءات
+        total_calls = len(self.call_trace)
+        successful_calls = sum(1 for call in self.call_trace if call['success'])
+        failed_calls = total_calls - successful_calls
+        
+        print(f"📊 إحصائيات الاستدعاءات:")
+        print(f"   إجمالي: {total_calls}")
+        print(f"   نجح: {successful_calls}")
+        print(f"   فشل: {failed_calls}")
+        
+        if self.call_trace:
+            # أبطأ الدوال
+            slowest = max(self.call_trace, key=lambda x: x['duration'])
+            print(f"\n🐌 أبطأ دالة: {slowest['function']} ({slowest['duration']:.2f}s)")
+            
+            # الأخطاء
+            errors = [call for call in self.call_trace if not call['success']]
+            if errors:
+                print(f"\n❌ الأخطاء ({len(errors)}):")
+                for error in errors[-5:]:  # آخر 5 أخطاء
+                    print(f"   {error['function']}: {error['error']}")
+        
+        # حفظ التقرير في ملف
+        report_file = f"debug_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        with open(report_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'timestamp': datetime.now().isoformat(),
+                'summary': {
+                    'total_calls': total_calls,
+                    'successful_calls': successful_calls,
+                    'failed_calls': failed_calls
+                },
+                'call_trace': self.call_trace
+            }, f, indent=2, ensure_ascii=False)
+        
+        print(f"\n💾 تم حفظ التقرير في: {report_file}")
+
+# إنشاء نظام debug
+debugger = AdvancedDebugger(debug_level="DEBUG")
+
+# مثال على استخدام decorator
+@debugger.trace_function_calls
+def example_function(text):
+    """مثال على دالة مع تتبع"""
+    time.sleep(0.1)  # محاكاة معالجة
+    return f"معالج: {text}"
+
+# اختبار
+# result = example_function("نص تجريبي")
+print("🔧 نظام Debug المتقدم جاهز للاستخدام")
+                    </div>
+
+                    <div class="debug-box">
+                        <h4>🎯 مميزات نظام Debug المتقدم</h4>
+                        <ul>
+                            <li><strong>تتبع شامل:</strong> مراقبة كل استدعاء دالة</li>
+                            <li><strong>logging مفصل:</strong> حفظ جميع العمليات</li>
+                            <li><strong>تقارير تلقائية:</strong> ملخص شامل للأداء</li>
+                            <li><strong>فحص تلقائي:</strong> اكتشاف المشاكل المحتملة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 دليل حل المشاكل خطوة بخطوة</h2>
+                <div class="card-content">
+                    <div class="info-box">
+                        <h4>🔍 منهجية حل المشاكل</h4>
+                        <ol>
+                            <li><strong>تحديد المشكلة:</strong> ما هو العرض الظاهر؟</li>
+                            <li><strong>جمع المعلومات:</strong> logs، error messages، أداء</li>
+                            <li><strong>تشخيص السبب:</strong> استخدام أدوات التشخيص</li>
+                            <li><strong>تطبيق الحل:</strong> تنفيذ الإصلاح المناسب</li>
+                            <li><strong>التحقق:</strong> اختبار أن المشكلة انحلت</li>
+                            <li><strong>التوثيق:</strong> كتابة ما تم إصلاحه</li>
+                        </ol>
+                    </div>
+
+                    <div class="code-block">
+# نظام حل المشاكل التلقائي
+class AutoTroubleshooter:
+    def __init__(self):
+        self.solutions_db = {
+            'api_key_error': [
+                'فحص وجود ملف .env',
+                'التأكد من صحة مفتاح API',
+                'فحص متغيرات البيئة'
+            ],
+            'rate_limit_error': [
+                'تطبيق rate limiting',
+                'استخدام exponential backoff',
+                'تقليل عدد الطلبات المتوازية'
+            ],
+            'memory_error': [
+                'تقليل batch size',
+                'استخدام garbage collection',
+                'معالجة البيانات بـ chunks'
+            ],
+            'slow_performance': [
+                'تحسين embedding dimensions',
+                'استخدام caching',
+                'تحسين database queries'
+            ]
+        }
+    
+    def auto_diagnose_and_fix(self, error_message: str, symptoms: List[str]):
+        """تشخيص وإصلاح تلقائي للمشاكل"""
+        
+        print(f"🔍 تشخيص تلقائي للمشكلة: {error_message}")
+        
+        # تحليل رسالة الخطأ
+        error_type = self._classify_error(error_message)
+        
+        print(f"📋 تصنيف المشكلة: {error_type}")
+        
+        # البحث عن حلول
+        solutions = self.solutions_db.get(error_type, ['تواصل مع الدعم الفني'])
+        
+        print("💡 الحلول المقترحة:")
+        for i, solution in enumerate(solutions, 1):
+            print(f"   {i}. {solution}")
+        
+        # تطبيق الحلول التلقائية
+        auto_fixes = self._get_auto_fixes(error_type)
+        
+        if auto_fixes:
+            print("\n🔧 تطبيق الإصلاحات التلقائية:")
+            for fix_name, fix_func in auto_fixes.items():
+                try:
+                    print(f"   تطبيق: {fix_name}")
+                    fix_func()
+                    print(f"   ✅ نجح: {fix_name}")
+                except Exception as e:
+                    print(f"   ❌ فشل {fix_name}: {str(e)}")
+        
+        return solutions
+    
+    def _classify_error(self, error_message: str) -> str:
+        """تصنيف نوع الخطأ"""
+        
+        error_message_lower = error_message.lower()
+        
+        if 'api key' in error_message_lower:
+            return 'api_key_error'
+        elif 'rate limit' in error_message_lower:
+            return 'rate_limit_error'
+        elif 'memory' in error_message_lower:
+            return 'memory_error'
+        elif 'timeout' in error_message_lower or 'slow' in error_message_lower:
+            return 'slow_performance'
+        else:
+            return 'unknown_error'
+    
+    def _get_auto_fixes(self, error_type: str) -> Dict:
+        """الحصول على إصلاحات تلقائية"""
+        
+        auto_fixes = {}
+        
+        if error_type == 'memory_error':
+            auto_fixes['clear_cache'] = self._clear_cache
+            auto_fixes['garbage_collect'] = self._force_garbage_collection
+        
+        elif error_type == 'rate_limit_error':
+            auto_fixes['add_delay'] = lambda: time.sleep(5)
+        
+        return auto_fixes
+    
+    def _clear_cache(self):
+        """مسح التخزين المؤقت"""
+        import gc
+        gc.collect()
+        print("   🗑️ تم مسح التخزين المؤقت")
+    
+    def _force_garbage_collection(self):
+        """تشغيل garbage collection قوي"""
+        import gc
+        for _ in range(3):
+            gc.collect()
+        print("   🧹 تم تنظيف الذاكرة")
+
+# إنشاء نظام حل المشاكل التلقائي
+troubleshooter = AutoTroubleshooter()
+
+# مثال على الاستخدام
+print("🔧 نظام حل المشاكل التلقائي جاهز")
+
+# troubleshooter.auto_diagnose_and_fix(
+#     "OpenAI API key not found", 
+#     ["فشل في إنشاء embeddings", "خطأ في LLM calls"]
+# )
+                    </code>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📚 مكتبة الحلول الشائعة</h2>
+                <div class="card-content">
+                    <div class="solution-box">
+                        <h4>✅ حل مشكلة: "Index corrupted"</h4>
+                        <div class="code-block">
+def fix_corrupted_index(index_path: str):
+    """إصلاح index تالف"""
+    
+    print("🔧 إصلاح index تالف...")
+    
+    try:
+        # محاولة تحميل الـ index
+        from llama_index.core import StorageContext, load_index_from_storage
+        storage_context = StorageContext.from_defaults(persist_dir=index_path)
+        index = load_index_from_storage(storage_context)
+        print("✅ الـ Index يعمل بشكل طبيعي")
+        return index
+        
+    except Exception as e:
+        print(f"❌ Index تالف: {str(e)}")
+        
+        # محاولة إصلاح
+        backup_path = f"{index_path}_backup_{int(time.time())}"
+        
+        # نسخ احتياطية
+        import shutil
+        if os.path.exists(index_path):
+            shutil.copytree(index_path, backup_path)
+            print(f"💾 تم إنشاء نسخة احتياطية في {backup_path}")
+        
+        # إعادة بناء من المستندات الأصلية
+        print("🔄 إعادة بناء الـ Index...")
+        return None  # يحتاج لإعادة بناء كامل
+
+print("🔧 دالة إصلاح الـ Index جاهزة")
+                        </div>
+                    </div>
+
+                    <div class="solution-box">
+                        <h4>✅ حل مشكلة: "Embedding mismatch"</h4>
+                        <div class="code-block">
+def fix_embedding_mismatch():
+    """إصلاح عدم تطابق الـ embeddings"""
+    
+    print("🔧 إصلاح مشكلة embedding mismatch...")
+    
+    # إعادة تعيين embedding model
+    from llama_index.core import Settings
+    from llama_index.embeddings.openai import OpenAIEmbedding
+    
+    # استخدام نموذج embedding موحد
+    Settings.embed_model = OpenAIEmbedding(
+        model="text-embedding-3-small",
+        dimensions=1536
+    )
+    
+    print("✅ تم توحيد نموذج الـ embedding")
+    print("💡 يُنصح بإعادة بناء الـ index بعد هذا التغيير")
+
+print("🔧 دالة إصلاح الـ embedding جاهزة")
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نصائح الوقاية من المشاكل</h4>
+                        <ul>
+                            <li><strong>نسخ احتياطية منتظمة:</strong> احفظ الـ index بانتظام</li>
+                            <li><strong>اختبار دوري:</strong> تأكد من عمل النظام</li>
+                            <li><strong>مراقبة الموارد:</strong> تتبع استهلاك الذاكرة والمعالج</li>
+                            <li><strong>تحديث المكتبات:</strong> حافظ على أحدث إصدارات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 الخلاصة والتوصيات</h2>
+                <div class="card-content">
+                    <div class="solution-box">
+                        <h4>✅ إنجازات دليل حل المشاكل</h4>
+                        <ul>
+                            <li>نظام تشخيص شامل للمشاكل الشائعة</li>
+                            <li>أدوات debug متقدمة مع logging مفصل</li>
+                            <li>حلول جاهزة للأخطاء الأكثر شيوعاً</li>
+                            <li>نظام إصلاح تلقائي للمشاكل البسيطة</li>
+                            <li>منهجية واضحة لحل المشاكل المعقدة</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 نصائح للمطورين</h4>
+                        <ul>
+                            <li><strong>اقرأ الأخطاء بعناية:</strong> رسائل الخطأ تحتوي معلومات مهمة</li>
+                            <li><strong>استخدم logging:</strong> سجل العمليات للمراجعة لاحقاً</li>
+                            <li><strong>اختبر تدريجياً:</strong> غير شيء واحد في كل مرة</li>
+                            <li><strong>وثق الحلول:</strong> اكتب الحلول للرجوع إليها</li>
+                        </ul>
+                    </div>
+
+                    <div class="debug-box">
+                        <h4>🚀 الرسالة النهائية</h4>
+                        <p>المشاكل جزء طبيعي من التطوير. المهم هو أن تكون مستعد بالأدوات والمعرفة المناسبة لحلها بسرعة وكفاءة. استخدم هذا الدليل كمرجع واستمر في التعلم!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

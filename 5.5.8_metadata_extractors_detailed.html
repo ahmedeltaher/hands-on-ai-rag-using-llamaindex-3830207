@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Extraction - الجزء الثامن: أنواع المستخرجات بالتفصيل</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .extractor-detailed {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .extractor-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #74b9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .example-card:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+        }
+
+        .example-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .qa-showcase {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #e17055;
+        }
+
+        .qa-examples {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .qa-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #e17055;
+            position: relative;
+        }
+
+        .qa-icon {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+        }
+
+        .entity-showcase {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #6c5ce7;
+        }
+
+        .entity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .entity-category {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #a29bfe;
+            transition: transform 0.3s ease;
+        }
+
+        .entity-category:hover {
+            transform: translateY(-3px);
+            border-color: #6c5ce7;
+        }
+
+        .entity-header {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .extractor-examples,
+            .entity-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 أنواع المستخرجات بالتفصيل</h1>
+            <p>الجزء الثامن: شرح عميق لكل نوع من أنواع استخراج الـ Metadata</p>
+        </div>
+
+        <div class="content">
+            <!-- Summary Extractor التفصيلي -->
+            <div class="card">
+                <h2>📄 Summary Extractor - الملخص الذكي</h2>
+                <div class="card-content">
+                    <p>ده واحد من أقوى المستخرجات! بيقرأ المحتوى ويعمل ملخص مركز يجمع أهم النقاط والأفكار الرئيسية:</p>
+
+                    <div class="extractor-detailed">
+                        <h4>🎯 كيف بيشتغل Summary Extractor؟</h4>
+                        <p>المستخرج ده بيستخدم تقنيات متقدمة في معالجة اللغة الطبيعية عشان يفهم جوهر المحتوى:</p>
+
+                        <div class="extractor-examples">
+                            <div class="example-card">
+                                <div class="example-header">
+                                    <h5>📝 النص الأصلي</h5>
+                                </div>
+                                <div>
+                                    <p>"الاستثمار في الأسهم يتطلب فهماً عميقاً للسوق المالية. يجب على المستثمر دراسة الشركات بعناية، تحليل القوائم المالية، ومراقبة الاتجاهات الاقتصادية. كما أن التنويع مهم جداً لتقليل المخاطر..."</p>
+                                </div>
+                            </div>
+
+                            <div class="example-card">
+                                <div class="example-header">
+                                    <h5>✨ الملخص المستخرج</h5>
+                                </div>
+                                <div>
+                                    <p>"دليل شامل لاستثمار الأسهم يغطي أساسيات تحليل الشركات، دراسة القوائم المالية، وأهمية التنويع في تقليل مخاطر الاستثمار."</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>🧠 ما اللي بيخليه مميز؟</h4>
+                            <ul>
+                                <li><strong>فهم السياق:</strong> مش بس بيلخص، بيفهم المعنى الحقيقي</li>
+                                <li><strong>الإيجاز المفيد:</strong> بيركز على المعلومات الأساسية</li>
+                                <li><strong>الوضوح:</strong> بيصيغ الملخص بطريقة واضحة ومفهومة</li>
+                                <li><strong>الشمولية:</strong> بيغطي النقاط المهمة مش نقطة واحدة بس</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 فوائد Summary Extractor</h4>
+                        <ul>
+                            <li><strong>البحث السريع:</strong> فهم المحتوى في ثوان بدل دقائق</li>
+                            <li><strong>التصنيف الذكي:</strong> تجميع المحتوى المتشابه بدقة</li>
+                            <li><strong>تحسين UX:</strong> المستخدم يشوف preview مفيد قبل القراءة</li>
+                            <li><strong>توفير الوقت:</strong> قرار أسرع بخصوص أهمية المحتوى</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Answered Extractor -->
+            <div class="card">
+                <h2>❓ Questions Answered Extractor - مولد الأسئلة الذكي</h2>
+                <div class="card-content">
+                    <p>ده مستخرج عبقري! بيفكر زي المستخدم ويسأل: "إيه الأسئلة اللي النص ده ممكن يجاوب عليها؟" ودي تقنية قوية جداً للربط بين الاستفسارات والمحتوى:</p>
+
+                    <div class="qa-showcase">
+                        <h4>🤔 كيف بيشتغل QA Extractor؟</h4>
+                        <p>المستخرج بيحلل المحتوى ويولد أسئلة منطقية ومفيدة يقدر النص يجاوب عليها:</p>
+
+                        <div class="qa-examples">
+                            <div class="qa-item">
+                                <div class="qa-icon">Q</div>
+                                <h5>مثال من محتوى عن الصحة</h5>
+                                <p><strong>النص:</strong> "التمارين اليومية تحسن من صحة القلب وتقلل من التوتر وتزيد من مستوى الطاقة..."</p>
+                                <p><strong>الأسئلة المولدة:</strong></p>
+                                <ul>
+                                    <li>"ما فوائد التمارين اليومية؟"</li>
+                                    <li>"كيف تؤثر التمارين على صحة القلب؟"</li>
+                                    <li>"ما علاقة التمارين بمستوى الطاقة؟"</li>
+                                </ul>
+                            </div>
+
+                            <div class="qa-item">
+                                <div class="qa-icon">Q</div>
+                                <h5>مثال من محتوى تقني</h5>
+                                <p><strong>النص:</strong> "البرمجة بلغة Python سهلة التعلم ومناسبة للمبتدئين..."</p>
+                                <p><strong>الأسئلة المولدة:</strong></p>
+                                <ul>
+                                    <li>"لماذا Python مناسبة للمبتدئين؟"</li>
+                                    <li>"ما مميزات لغة Python؟"</li>
+                                    <li>"كيف أبدأ تعلم البرمجة؟"</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <h4>💡 ليه QA Extractor مهم جداً؟</h4>
+                            <p>لأنه بيحول النص من "معلومات جامدة" لـ "قاعدة أسئلة وأجوبة تفاعلية"! ده بيخلي البحث أذكى وأكثر دقة.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entity Extractor -->
+            <div class="card">
+                <h2>🏢 Entity Extractor - مستخرج الكيانات المسماة</h2>
+                <div class="card-content">
+                    <p>ده المتخصص في استخراج الأسماء والكيانات المهمة! بيقدر يميز ويستخرج أسماء الأشخاص والشركات والأماكن والتواريخ:</p>
+
+                    <div class="entity-showcase">
+                        <h4>🔍 أنواع الكيانات اللي بيستخرجها</h4>
+                        
+                        <div class="entity-grid">
+                            <div class="entity-category">
+                                <div class="entity-header">
+                                    <h5>👤 أسماء الأشخاص</h5>
+                                </div>
+                                <div>
+                                    <p><strong>أمثلة:</strong> "أحمد زويل، بيل جيتس، أينشتاين"</p>
+                                    <p><strong>الفائدة:</strong> البحث عن محتوى متعلق بشخصيات معينة</p>
+                                </div>
+                            </div>
+
+                            <div class="entity-category">
+                                <div class="entity-header">
+                                    <h5>🏢 أسماء الشركات</h5>
+                                </div>
+                                <div>
+                                    <p><strong>أمثلة:</strong> "Apple، Microsoft، Google"</p>
+                                    <p><strong>الفائدة:</strong> تتبع أخبار وتحليلات الشركات</p>
+                                </div>
+                            </div>
+
+                            <div class="entity-category">
+                                <div class="entity-header">
+                                    <h5>🌍 أسماء الأماكن</h5>
+                                </div>
+                                <div>
+                                    <p><strong>أمثلة:</strong> "القاهرة، نيويورك، الشرق الأوسط"</p>
+                                    <p><strong>الفائدة:</strong> البحث الجغرافي والمحتوى المحلي</p>
+                                </div>
+                            </div>
+
+                            <div class="entity-category">
+                                <div class="entity-header">
+                                    <h5>🏛️ أسماء المؤسسات</h5>
+                                </div>
+                                <div>
+                                    <p><strong>أمثلة:</strong> "جامعة القاهرة، الأمم المتحدة، البنك المركزي"</p>
+                                    <p><strong>الفائدة:</strong> تصنيف حسب المصدر المؤسسي</p>
+                                </div>
+                            </div>
+
+                            <div class="entity-category">
+                                <div class="entity-header">
+                                    <h5>📅 التواريخ والأحداث</h5>
+                                </div>
+                                <div>
+                                    <p><strong>أمثلة:</strong> "2023، يناير، عيد الفطر"</p>
+                                    <p><strong>الفائدة:</strong> التصنيف الزمني والبحث التاريخي</p>
+                                </div>
+                            </div>
+
+                            <div class="entity-category">
+                                <div class="entity-header">
+                                    <h5>💰 المبالغ والعملات</h5>
+                                </div>
+                                <div>
+                                    <p><strong>أمثلة:</strong> "100 دولار، مليون جنيه، 50%"</p>
+                                    <p><strong>الفائدة:</strong> تحليل البيانات المالية والإحصائية</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>🎯 قوة Entity Extractor</h4>
+                            <p>المستخرج ده بيحول النص من "كلام عام" لـ "فهرس منظم" بكل الكيانات المهمة. ده بيخلي البحث دقيق جداً ومحدد!</p>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ متى نستخدم Entity Extractor؟</h4>
+                        <ul>
+                            <li><strong>المحتوى الإخباري:</strong> مليان أسماء وأحداث</li>
+                            <li><strong>التقارير التجارية:</strong> شركات وأرقام</li>
+                            <li><strong>المحتوى التاريخي:</strong> شخصيات وتواريخ</li>
+                            <li><strong>البحث المتخصص:</strong> لما محتاج دقة في الأسماء</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retry Query Engine - كيفية العمل تحت الغطاء</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #81ecec 0%, #74b9ff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #00cec9;
+        }
+        
+        .workflow-container {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+        }
+        
+        .workflow-step {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 15px;
+            border-right: 5px solid #00cec9;
+            position: relative;
+        }
+        
+        .workflow-step::before {
+            content: attr(data-step);
+            position: absolute;
+            right: -15px;
+            top: -10px;
+            background: #00cec9;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .decision-tree {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .decision-node {
+            background: white;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .decision-yes {
+            border-left: 5px solid #27ae60;
+        }
+        
+        .decision-no {
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .recursion-explanation {
+            background: linear-gradient(135fd79a8 0%, #a29bfe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .technical-deep-dive {
+            background: #2d3436;
+            color: #ddd;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .arrow-down {
+            text-align: center;
+            font-size: 2rem;
+            color: #00cec9;
+            margin: 10px 0;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Retry Query Engine - كيفية العمل تحت الغطاء</h1>
+            <p>رحلة مفصلة داخل النظام لفهم كل خطوة بدقة</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🔍 نظرة عامة على العملية</div>
+            </div>
+            <div class="content">
+                <p>النظام بيشتغل بطريقة ذكية جداً - مش مجرد "جرب واعيد المحاولة" عشوائي. فيه logic محكم وخطوات واضحة بتضمن إن كل محاولة تكون أحسن من اللي قبلها.</p>
+                
+                <div class="highlight">
+                    <strong>🧠 الفكرة الأساسية:</strong> النظام بيعمل نفسه (Recursive) - كل مرة بيخلق نسخة محسنة من نفسه مع معاملات مُعدلة!
+                </div>
+                
+                <p>ده مش مجرد loop بسيط، ده نظام recursion متقدم بيضمن التحسين التدريجي والوصول للهدف بأكفأ طريقة ممكنة.</p>
+            </div>
+        </div>
+
+        <div class="workflow-container">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2>🔄 مسار العمل التفصيلي</h2>
+                <p>كل خطوة مشروحة بالتفصيل مع الأسباب والنتائج</p>
+            </div>
+            
+            <div class="workflow-step" data-step="1">
+                <h4>📥 استقبال الاستعلام الأولي</h4>
+                <p>النظام يستقبل السؤال من المستخدم ويبدأ العملية. هنا بيتم إعداد كل المتغيرات والمعاملات اللازمة للشغل.</p>
+                <div style="background: rgba(0,206,201,0.2); padding: 10px; border-radius: 5px; margin: 10px 0;">
+                    <strong>مثال:</strong> "إيه أحسن طريقة لتعلم Python؟"
+                </div>
+            </div>
+            
+            <div class="arrow-down">⬇️</div>
+            
+            <div class="workflow-step" data-step="2">
+                <h4>🎯 إرسال للـ Base Query Engine</h4>
+                <p>السؤال يتبعت للـ Query Engine الأساسي اللي هو المسؤول عن توليد الإجابة الفعلية. هنا بيحصل البحث في البيانات وتوليد الإجابة الأولى.</p>
+                <div style="background: rgba(0,206,201,0.2); padding: 10px; border-radius: 5px; margin: 10px 0;">
+                    <strong>النتيجة:</strong> إجابة أولية ممكن تكون بسيطة أو غير مكتملة
+                </div>
+            </div>
+            
+            <div class="arrow-down">⬇️</div>
+            
+            <div class="workflow-step" data-step="3">
+                <h4>📊 تقييم الإجابة</h4>
+                <p>الـ Evaluator يفحص الإجابة بناءً على معايير محددة زي الصلة بالسؤال، مستوى التفصيل، الدقة، أو أي معايير تانية.</p>
+                <div style="background: rgba(0,206,201,0.2); padding: 10px; border-radius: 5px; margin: 10px 0;">
+                    <strong>السؤال:</strong> "هل الإجابة دي كافية ومفيدة؟"
+                </div>
+            </div>
+        </div>
+
+        <div class="decision-tree">
+            <h3 style="text-align: center; margin-bottom: 20px; color: #2d3436;">🤔 شجرة اتخاذ القرار</h3>
+            
+            <div class="decision-node">
+                <strong>هل الإجابة مُرضية؟</strong>
+            </div>
+            
+            <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                <div style="flex: 1; text-align: center;">
+                    <div class="decision-node decision-yes">
+                        <strong>✅ نعم، الإجابة كويسة</strong>
+                        <p>إرجاع النتيجة للمستخدم</p>
+                        <div style="background: #e8f5e8; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            <strong>النتيجة:</strong> المهمة مكتملة بنجاح!
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="flex: 1; text-align: center;">
+                    <div class="decision-node decision-no">
+                        <strong>❌ لا، تحتاج تحسين</strong>
+                        <p>فحص عدد المحاولات المتبقي</p>
+                        <div style="background: #fff5f5; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            <strong>السؤال التالي:</strong> فاضل محاولات؟
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recursion-explanation">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3>🔄 عملية الـ Recursion (إعادة الاستدعاء)</h3>
+            </div>
+            
+            <p>لو الإجابة مش مرضية وفيه محاولات متبقية، النظام بيعمل حاجة ذكية جداً:</p>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 15px 0;">
+                <h4>📝 خطوات الـ Recursion:</h4>
+                <ul style="padding-right: 30px; margin: 15px 0;">
+                    <li><strong>إنشاء نسخة جديدة:</strong> بيخلق Retry Query Engine جديد</li>
+                    <li><strong>نفس المعاملات:</strong> نفس الـ query_engine والـ evaluator</li>
+                    <li><strong>تقليل المحاولات:</strong> max_retries ينقص واحد</li>
+                    <li><strong>تحسين الاستعلام:</strong> بيعدل السؤال بناءً على الفيدباك</li>
+                    <li><strong>إعادة المحاولة:</strong> النسخة الجديدة تبدأ العملية من الأول</li>
+                </ul>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                <strong>💡 ليه الطريقة دي ذكية؟</strong><br>
+                لأن كل محاولة بتتعلم من اللي قبلها وبتحاول تحسن من الأخطاء!
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🔄 دورة التحسين التدريجي</div>
+            </div>
+            <div class="content">
+                <p>كل محاولة مش مجرد تكرار للي قبلها، ولكن محاولة محسنة ومطورة:</p>
+                
+                <div class="highlight">
+                    <strong>المحاولة الأولى (max_retries = 5):</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>إجابة أساسية بسيطة</li>
+                        <li>ممكن تكون سطحية أو ناقصة</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>المحاولة الثانية (max_retries = 4):</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>بناء على فيدباك المحاولة الأولى</li>
+                        <li>تعديل في صياغة السؤال أو أسلوب البحث</li>
+                        <li>إجابة أكتر تفصيلاً</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>المحاولة الثالثة (max_retries = 3):</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>تحسين أكبر بناء على المحاولتين السابقتين</li>
+                        <li>إجابة أكتر دقة وشمولية</li>
+                    </ul>
+                </div>
+                
+                <p style="margin-top: 20px; font-weight: bold; color: #00b894;">والعملية تستمر لحد ما نوصل لإجابة مُرضية أو ينتهي عدد المحاولات المسموح بيها!</p>
+            </div>
+        </div>
+
+        <div class="technical-deep-dive">
+            <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; color: #00cec9;">⚡ التفاصيل التقنية المتقدمة</div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #74b9ff;">🔧 إنشاء النسخة الجديدة:</h4>
+                <p>عندما يفشل التقييم، النظام مش بيعيد نفس المحاولة. بيعمل instance جديد كلياً من الـ Retry Query Engine مع:</p>
+                <ul style="padding-right: 30px; margin: 10px 0;">
+                    <li>نفس الـ query_engine الأساسي</li>
+                    <li>نفس الـ evaluator</li>
+                    <li>max_retries مقلل بواحد</li>
+                    <li>query محسن بناء على الفيدباك</li>
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #74b9ff;">🎯 آلية التحسين:</h4>
+                <p>التحسين مش عشوائي، بيتم بناء على:</p>
+                <ul style="padding-right: 30px; margin: 10px 0;">
+                    <li>نوع الخطأ أو النقص في الإجابة السابقة</li>
+                    <li>فيدباك الـ Evaluator</li>
+                    <li>تحليل السبب وراء فشل المحاولة</li>
+                    <li>تعديل استراتيجية البحث أو صياغة السؤال</li>
+                </ul>
+            </div>
+            
+            <div style="background: rgba(0,206,201,0.1); padding: 15px; border-radius: 8px;">
+                <strong>💡 نقطة مهمة:</strong> العملية دي بتتطلب موارد حاسوبية كتير لأن كل محاولة بتتضمن استدعاء الـ Language Model مرات عديدة للتقييم والتحسين!
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🎯 نقاط الإنهاء (Termination Points)</div>
+            </div>
+            <div class="content">
+                <p>النظام بيتوقف في حالتين بس:</p>
+                
+                <div class="highlight">
+                    <strong>✅ الحالة الأولى - النجاح:</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>الـ Evaluator يقول إن الإجابة مُرضية</li>
+                        <li>تحقيق كل المعايير المطلوبة</li>
+                        <li>إرجاع النتيجة للمستخدم فوراً</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>⏰ الحالة الثانية - انتهاء المحاولات:</strong>
+                    <ul style="padding-right: 20px; margin: 10px 0;">
+                        <li>max_retries يوصل لصفر</li>
+                        <li>إرجاع أحسن إجابة تم التوصل إليها</li>
+                        <li>حتى لو مش مُرضية 100%</li>
+                    </ul>
+                </div>
+                
+                <p style="margin-top: 20px; font-weight: bold; color: #2d3436;">ده يضمن إن النظام مش هيفضل يحاول إلى ما لا نهاية ويستنزف الموارد!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

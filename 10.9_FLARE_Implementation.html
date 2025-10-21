@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق FLARE عملياً: التنفيذ والـ Prompts</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .implementation-box { background: linear-gradient(120deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .prompt-box { background: linear-gradient(120deg, #fd79a8 0%, #fdcb6e 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .pipeline-box { background: linear-gradient(120deg, #74b9ff 0%, #0984e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .practical-box { background: linear-gradient(120deg, #00b894 0%, #00cec9 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .demo-box { background: linear-gradient(120deg, #e17055 0%, #fdcb6e 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+        .code-block { background: rgba(0, 0, 0, 0.8); color: #fff; padding: 15px; border-radius: 10px; font-family: 'Courier New', monospace; margin: 10px 0; overflow-x: auto; }
+        .prompt-example { background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 10px; margin: 10px 0; border-right: 4px solid #667eea; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 تطبيق FLARE عملياً: التنفيذ والـ Prompts</h1>
+            <p>الدرس التاسع: من النظرية إلى التطبيق العملي</p>
+        </div>
+
+        <div class="card">
+            <h2>💻 تطبيق FLARE في LlamaIndex</h2>
+            <div class="implementation-box">
+                <h3>🛠️ إعداد البيئة:</h3>
+                <p>FLARE متوفر جاهز في LlamaIndex، مما يخليه سهل التطبيق والاستخدام.</p>
+                
+                <h3>📦 المتطلبات الأساسية:</h3>
+                <ul>
+                    <li><strong>LlamaIndex:</strong> الإصدار الحديث مع دعم FLARE</li>
+                    <li><strong>LLM Provider:</strong> OpenAI، Claude، أو أي LLM مدعوم</li>
+                    <li><strong>Vector Database:</strong> لتخزين الـ embeddings</li>
+                    <li><strong>Documents:</strong> مجموعة البيانات المراد البحث فيها</li>
+                </ul>
+                
+                <div class="code-block">
+# إعداد FLARE في LlamaIndex
+from llama_index import VectorStoreIndex, Document
+from llama_index.query_engine import FLAREInstructQueryEngine
+from llama_index.llms import OpenAI
+
+# تحضير البيانات
+documents = [Document(text="...")]
+index = VectorStoreIndex.from_documents(documents)
+
+# إعداد FLARE
+llm = OpenAI(model="gpt-3.5-turbo")
+query_engine = FLAREInstructQueryEngine(
+    query_engine=index.as_query_engine(),
+    llm=llm,
+    max_iterations=5,
+    verbose=True
+)
+                </div>
+                
+                <h3>⚙️ المعاملات المهمة:</h3>
+                <ul>
+                    <li><strong>max_iterations:</strong> عدد دورات البحث الأقصى</li>
+                    <li><strong>verbose:</strong> إظهار تفاصيل العملية</li>
+                    <li><strong>similarity_top_k:</strong> عدد النتائج لكل بحث</li>
+                    <li><strong>llm:</strong> النموذج المستخدم للتوليد</li>
+                </ul>
+                
+                <h3>🎯 استخدام النظام:</h3>
+                <div class="code-block">
+# تشغيل استعلام
+response = query_engine.query(
+    "ما هي أحدث تطورات الذكاء الاصطناعي في 2024؟"
+)
+print(response)
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 prompts مخصصة لـ FLARE</h2>
+            <div class="prompt-box">
+                <h3>🎯 أهمية الـ Prompts:</h3>
+                <p>نجاح FLARE بيعتمد بشكل كبير على جودة الـ prompts المستخدمة، خصوصاً في توجيه النموذج لاتخاذ قرارات البحث.</p>
+                
+                <h3>📋 Prompt أساسي لـ FLAREinstruct:</h3>
+                <div class="prompt-example">
+                    <strong>النموذج الأساسي:</strong><br>
+                    "أنت مساعد ذكي يجيب على الأسئلة بدقة. إذا لم تكن متأكداً من معلومة معينة أو تحتاج معلومات إضافية للإجابة بدقة، ضع [SEARCH] متبوعاً بالسؤال أو الموضوع الذي تريد البحث عنه. ثم استمر في إجابتك بناءً على المعلومات المتوفرة."
+                </div>
+                
+                <h3>🔍 Prompt محسن مع أمثلة:</h3>
+                <div class="prompt-example">
+                    <strong>النموذج المحسن:</strong><br>
+                    "أنت خبير يجيب على الأسئلة بأسلوب علمي دقيق. عندما تواجه معلومة غير مؤكدة أو تحتاج تفاصيل إضافية، استخدم العلامة [SEARCH: موضوع البحث] ثم استمر بناءً على النتائج.<br><br>
+                    
+                    <strong>مثال:</strong><br>
+                    السؤال: 'ما معدل نمو الاقتصاد المصري في 2023؟'<br>
+                    الإجابة: 'نمو الاقتصاد المصري [SEARCH: معدل نمو الاقتصاد المصري 2023] بلغ...'<br><br>
+                    
+                    ابدأ إجابتك الآن:"
+                </div>
+                
+                <h3>🎨 تخصيص Prompts حسب المجال:</h3>
+                
+                <h4>🏥 للمجال الطبي:</h4>
+                <div class="prompt-example">
+                    "أنت طبيب استشاري متخصص. عند الحاجة لمعلومات طبية محدثة أو إحصائيات دقيقة، استخدم [SEARCH] للحصول على أحدث البيانات الطبية قبل تقديم المشورة."
+                </div>
+                
+                <h4>💼 للمجال القانوني:</h4>
+                <div class="prompt-example">
+                    "أنت محامي متخصص. عند الحاجة لمراجع قانونية أو قوانين محدثة، استخدم [SEARCH] للتأكد من دقة المعلومات القانونية والتشريعية."
+                </div>
+                
+                <h4>📊 للمجال التقني:</h4>
+                <div class="prompt-example">
+                    "أنت خبير تقني. عند مناقشة تقنيات جديدة أو إحصائيات متغيرة، استخدم [SEARCH] للحصول على أحدث المعلومات التقنية والتطورات."
+                </div>
+                
+                <h3>🔧 نصائح تطوير الـ Prompts:</h3>
+                <ul>
+                    <li><strong>وضوح التعليمات:</strong> اجعل التوجيهات واضحة ومباشرة</li>
+                    <li><strong>أمثلة توضيحية:</strong> أضف أمثلة للسلوك المطلوب</li>
+                    <li><strong>تحديد السياق:</strong> وضح طبيعة المهمة والهدف</li>
+                    <li><strong>معالجة الحالات الخاصة:</strong> أضف توجيهات للمواقف الاستثنائية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏗️ إعداد Pipeline متكامل</h2>
+            <div class="pipeline-box">
+                <h3>📊 مكونات Pipeline الكامل:</h3>
+                
+                <h4>1️⃣ تحضير البيانات:</h4>
+                <ul>
+                    <li><strong>جمع المستندات:</strong> تجميع المصادر المختلفة</li>
+                    <li><strong>تنظيف النصوص:</strong> إزالة التنسيقات غير المرغوبة</li>
+                    <li><strong>التقسيم:</strong> تقسيم المستندات لـ chunks مناسبة</li>
+                    <li><strong>إنشاء Embeddings:</strong> تحويل النصوص لvectors</li>
+                </ul>
+                
+                <h4>2️⃣ إعداد الفهارس:</h4>
+                <ul>
+                    <li><strong>Vector Store:</strong> إعداد قاعدة البيانات الشعاعية</li>
+                    <li><strong>Metadata:</strong> إضافة معلومات وصفية</li>
+                    <li><strong>Indexing:</strong> بناء الفهارس للبحث السريع</li>
+                    <li><strong>Optimization:</strong> تحسين الأداء</li>
+                </ul>
+                
+                <h4>3️⃣ تكوين FLARE:</h4>
+                <div class="code-block">
+# Pipeline متكامل
+from llama_index import (
+    VectorStoreIndex, 
+    ServiceContext,
+    StorageContext
+)
+from llama_index.query_engine import FLAREInstructQueryEngine
+from llama_index.llms import OpenAI
+from llama_index.embeddings import OpenAIEmbedding
+
+# إعداد الخدمات
+llm = OpenAI(model="gpt-4", temperature=0.1)
+embed_model = OpenAIEmbedding()
+
+service_context = ServiceContext.from_defaults(
+    llm=llm,
+    embed_model=embed_model,
+    chunk_size=512,
+    chunk_overlap=50
+)
+
+# بناء الفهرس
+index = VectorStoreIndex.from_documents(
+    documents,
+    service_context=service_context
+)
+
+# إعداد FLARE
+flare_query_engine = FLAREInstructQueryEngine(
+    query_engine=index.as_query_engine(
+        similarity_top_k=5,
+        service_context=service_context
+    ),
+    llm=llm,
+    max_iterations=5,
+    verbose=True
+)
+                </div>
+                
+                <h4>4️⃣ إعداد المراقبة:</h4>
+                <ul>
+                    <li><strong>Logging:</strong> تسجيل العمليات والقرارات</li>
+                    <li><strong>Metrics:</strong> قياس الأداء والدقة</li>
+                    <li><strong>Debugging:</strong> أدوات اكتشاف المشاكل</li>
+                    <li><strong>Optimization:</strong> تحسين مستمر</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 التطبيق العملي والاختبار</h2>
+            <div class="practical-box">
+                <h3>🧪 اختبار النظام:</h3>
+                
+                <h4>📋 خطة الاختبار:</h4>
+                <ul>
+                    <li><strong>أسئلة بسيطة:</strong> اختبار الوظائف الأساسية</li>
+                    <li><strong>أسئلة معقدة:</strong> اختبار قدرات البحث المتعدد</li>
+                    <li><strong>أسئلة مضللة:</strong> اختبار قدرة اكتشاف الأخطاء</li>
+                    <li><strong>أسئلة خارج النطاق:</strong> اختبار حدود النظام</li>
+                </ul>
+                
+                <div class="code-block">
+# مثال اختبار شامل
+test_queries = [
+    "ما هي عاصمة فرنسا؟",  # بسيط
+    "اشرح تأثير التغير المناخي على الاقتصاد العالمي في العقد الأخير",  # معقد
+    "ما معدل النمو الاقتصادي للمريخ؟",  # مضلل
+    "كيف أطبخ البيتزا؟"  # خارج النطاق
+]
+
+for query in test_queries:
+    print(f"السؤال: {query}")
+    response = flare_query_engine.query(query)
+    print(f"الإجابة: {response}")
+    print("-" * 50)
+                </div>
+                
+                <h3>📊 قياس الأداء:</h3>
+                <ul>
+                    <li><strong>دقة الإجابات:</strong> مدى صحة المعلومات</li>
+                    <li><strong>شمولية الإجابات:</strong> تغطية جوانب السؤال</li>
+                    <li><strong>زمن الاستجابة:</strong> سرعة الحصول على الإجابة</li>
+                    <li><strong>عدد البحثات:</strong> كفاءة استخدام البحث</li>
+                </ul>
+                
+                <h3>🔧 التحسين المستمر:</h3>
+                <ul>
+                    <li><strong>تحليل الأخطاء:</strong> فهم أسباب الإجابات الخاطئة</li>
+                    <li><strong>ضبط المعاملات:</strong> تحسين العتبات والحدود</li>
+                    <li><strong>تطوير الـ Prompts:</strong> تحسين التوجيهات</li>
+                    <li><strong>تحديث البيانات:</strong> إضافة مصادر جديدة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎬 عرض توضيحي متقدم</h2>
+            <div class="demo-box">
+                <h3>🚀 سيناريو عملي كامل:</h3>
+                
+                <h4>📖 السؤال المعقد:</h4>
+                <p><strong>"اشرح لي تأثير الذكاء الاصطناعي على سوق العمل في الشرق الأوسط مع ذكر إحصائيات حديثة وتوقعات المستقبل"</strong></p>
+                
+                <h4>🔄 مسار FLARE المتوقع:</h4>
+                
+                <p><strong>الدورة 1:</strong></p>
+                <ul>
+                    <li><strong>توليد:</strong> "الذكاء الاصطناعي يؤثر بشكل كبير على سوق العمل في الشرق الأوسط"</li>
+                    <li><strong>قرار:</strong> معلومات عامة، نحتاج تفاصيل أكثر</li>
+                    <li><strong>بحث:</strong> [SEARCH: إحصائيات تأثير الذكاء الاصطناعي سوق العمل الشرق الأوسط 2024]</li>
+                </ul>
+                
+                <p><strong>الدورة 2:</strong></p>
+                <ul>
+                    <li><strong>إضافة:</strong> إحصائيات محددة من البحث</li>
+                    <li><strong>توليد:</strong> "حيث تشير الدراسات إلى أن 40% من الوظائف قد تتأثر بحلول 2030"</li>
+                    <li><strong>قرار:</strong> نحتاج معلومات عن التوقعات المستقبلية</li>
+                    <li><strong>بحث:</strong> [SEARCH: توقعات مستقبل سوق العمل الذكاء الاصطناعي الشرق الأوسط]</li>
+                </ul>
+                
+                <p><strong>النتيجة النهائية:</strong></p>
+                <ul>
+                    <li><strong>إجابة شاملة:</strong> تغطي التأثيرات الحالية</li>
+                    <li><strong>إحصائيات دقيقة:</strong> أرقام محدثة وموثقة</li>
+                    <li><strong>توقعات مستقبلية:</strong> رؤية للسنوات القادمة</li>
+                    <li><strong>سياق محلي:</strong> تركيز على منطقة الشرق الأوسط</li>
+                </ul>
+                
+                <h3>💡 الدروس المستفادة:</h3>
+                <ul>
+                    <li><strong>البحث التدريجي:</strong> كل بحث يبني على السابق</li>
+                    <li><strong>التخصص المحلي:</strong> فهم السياق الجغرافي</li>
+                    <li><strong>الدقة الزمنية:</strong> البحث عن أحدث المعلومات</li>
+                    <li><strong>الشمولية:</strong> تغطية جوانب مختلفة للموضوع</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 FLARE في العمل: من الكود إلى النتائج المذهلة!</p>
+        </div>
+    </div>
+</body>
+</html>

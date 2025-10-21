@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentenceEmbeddingOptimizer - Parameters والإعدادات</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .parameter-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .percentile-demo { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .threshold-demo { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .combination-example { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .tokenizer-explanation { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-card { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 15px; margin: 20px 0; direction: ltr; text-align: left; }
+        .calculation-box { background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 15px 0; border-right: 4px solid #007bff; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ SentenceEmbeddingOptimizer - Parameters والإعدادات</h1>
+            <p>الدرس الثالث عشر: فهم كل الإعدادات والخيارات المتاحة</p>
+        </div>
+
+        <div class="card">
+            <h2>🤖 Embedding Model</h2>
+            <div class="parameter-box">
+                <h3>🎯 الـ Parameter الأول والأهم:</h3>
+                <p>لازم تديله embedding model عشان يحول الجمل والـ query لـ vectors ويقارن بينهم.</p>
+                
+                <h3>🔧 الافتراضي:</h3>
+                <p>زي كل حاجة في LlamaIndex، بيستخدم OpenAI embedding model افتراضياً.</p>
+                
+                <h3>🎮 البدائل:</h3>
+                <ul>
+                    <li><strong>OpenAI:</strong> text-embedding-ada-002 (دقيق لكن مكلف)</li>
+                    <li><strong>Hugging Face:</strong> models مجانية ومتنوعة</li>
+                    <li><strong>Local Models:</strong> للخصوصية والسرعة</li>
+                    <li><strong>Multilingual Models:</strong> للغات المختلفة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Percentile Cutoff</h2>
+            <div class="percentile-demo">
+                <h3>🎯 إيه ده؟</h3>
+                <p>ده بيحدد نسبة الجمل اللي عايزها من الأعلى similarity. مثلاً 0.5 يعني أعلى 50% من الجمل.</p>
+                
+                <div class="calculation-box">
+                    <h4>🧮 طريقة الحساب:</h4>
+                    <p><strong>عدد الجمل المختارة = int(إجمالي الجمل × percentile_cutoff)</strong></p>
+                </div>
+                
+                <h3>📝 مثال عملي:</h3>
+                <ul>
+                    <li><strong>إجمالي الجمل:</strong> 20 جملة</li>
+                    <li><strong>percentile_cutoff = 0.5:</strong> int(20 × 0.5) = 10 جمل</li>
+                    <li><strong>النتيجة:</strong> أعلى 10 جمل من ناحية similarity</li>
+                </ul>
+                
+                <h3>🎛️ قيم مختلفة:</h3>
+                <ul>
+                    <li><strong>0.3:</strong> أعلى 30% (تركيز عالي)</li>
+                    <li><strong>0.5:</strong> أعلى 50% (متوازن)</li>
+                    <li><strong>0.7:</strong> أعلى 70% (شامل أكتر)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Threshold Cutoff</h2>
+            <div class="threshold-demo">
+                <h3>🔍 إيه الفرق عن Percentile؟</h3>
+                <p>ده مش بيحدد نسبة، لكن بيحدد حد أدنى للـ similarity score نفسه.</p>
+                
+                <h3>📊 مثال توضيحي:</h3>
+                <p><strong>threshold_cutoff = 0.7:</strong> بس الجمل اللي similarity score بتاعها أعلى من 0.7</p>
+                
+                <h3>🎮 السيناريوهات:</h3>
+                <ul>
+                    <li><strong>لو كل الجمل > 0.7:</strong> كلها هتتاخد</li>
+                    <li><strong>لو جملة واحدة > 0.7:</strong> دي بس اللي هتتاخد</li>
+                    <li><strong>لو مافيش جمل > 0.7:</strong> مش هيتاخد حاجة!</li>
+                </ul>
+                
+                <h3>⚖️ متى نستخدمه؟</h3>
+                <p>لما عايز جودة ثابتة بغض النظر عن العدد. مثلاً في التطبيقات الطبية أو القانونية.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔄 دمج Percentile و Threshold</h2>
+            <div class="combination-example">
+                <h3>💡 قوة الدمج:</h3>
+                <p>ممكن تستخدم الاتنين مع بعض! النظام هياخد الجمل اللي تحقق الشرطين.</p>
+                
+                <h3>📝 مثال عملي:</h3>
+                <ul>
+                    <li><strong>percentile_cutoff = 0.5:</strong> أعلى 50%</li>
+                    <li><strong>threshold_cutoff = 0.6:</strong> بس اللي فوق 0.6</li>
+                </ul>
+                
+                <h3>🧮 النتيجة:</h3>
+                <p>هياخد أعلى 50% من الجمل، لكن بس اللي similarity score بتاعها فوق 0.6.</p>
+                
+                <h3>🎯 فوائد الدمج:</h3>
+                <ul>
+                    <li><strong>مرونة:</strong> تحكم في العدد والجودة</li>
+                    <li><strong>أمان:</strong> مافيش جمل ضعيفة هتعدي</li>
+                    <li><strong>تحسين:</strong> أفضل balance بين الكمية والنوعية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>✂️ Tokenizer Function</h2>
+            <div class="tokenizer-explanation">
+                <h3>🔧 الوظيفة:</h3>
+                <p>دي الfunction اللي بتقسم النص لجمل منفردة.</p>
+                
+                <h3>📚 الافتراضي: NLTK English Tokenizer</h3>
+                <p>بيستخدم punkt sentence tokenizer من NLTK، واحد من أدق الـ tokenizers.</p>
+                
+                <h3>🎯 ليه punkt كويس؟</h3>
+                <ul>
+                    <li><strong>ذكي:</strong> مش بيعتمد على النقطة بس</li>
+                    <li><strong>يفهم الاختصارات:</strong> "Dr. Ahmed" مش جملتين</li>
+                    <li><strong>يتعامل مع علامات الترقيم:</strong> أسئلة، تعجب، إلخ</li>
+                    <li><strong>متعدد اللغات:</strong> يدعم لغات كتيرة</li>
+                </ul>
+                
+                <h3>🔄 البدائل:</h3>
+                <ul>
+                    <li>Custom tokenizers للغات خاصة</li>
+                    <li>Rule-based splitters للتحكم أكتر</li>
+                    <li>ML-based tokenizers للدقة العالية</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📍 Context Before/After</h2>
+            <div class="parameter-box">
+                <h3>🎯 إيه دول؟</h3>
+                <p>دول parameters تخليك تاخد جمل إضافية قبل وبعد الجمل المختارة عشان السياق.</p>
+                
+                <h3>📝 مثال:</h3>
+                <ul>
+                    <li><strong>الجملة المختارة:</strong> "الذكاء الاصطناعي مفيد في الطب"</li>
+                    <li><strong>context_before = 1:</strong> هياخد جملة قبلها</li>
+                    <li><strong>context_after = 1:</strong> هياخد جملة بعدها</li>
+                </ul>
+                
+                <h3>🎯 الفائدة:</h3>
+                <ul>
+                    <li><strong>سياق أوسع:</strong> الـ LLM يفهم أحسن</li>
+                    <li><strong>معلومات مكملة:</strong> تفاصيل إضافية مهمة</li>
+                    <li><strong>ترابط المعنى:</strong> الجمل تكون مترابطة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💻 مثال شامل للإعداد</h2>
+            <div class="code-card">
+                <h3>Complete Configuration:</h3>
+                <pre><code>from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+# Custom embedding model
+embedding_model = HuggingFaceEmbedding(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+
+# Create optimizer with all parameters
+optimizer = SentenceEmbeddingOptimizer(
+    embed_model=embedding_model,
+    percentile_cutoff=0.6,        # Top 60% of sentences
+    threshold_cutoff=0.5,         # Minimum similarity 0.5
+    context_before=1,             # 1 sentence before
+    context_after=1               # 1 sentence after
+)
+
+# Use with query engine
+query_engine = index.as_query_engine(
+    node_postprocessors=[optimizer]
+)</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 إزاي تختار القيم المناسبة؟</h2>
+            <div class="combination-example">
+                <h3>🔍 للدقة العالية:</h3>
+                <ul>
+                    <li>percentile_cutoff = 0.3</li>
+                    <li>threshold_cutoff = 0.7</li>
+                    <li>context_before/after = 0</li>
+                </ul>
+                
+                <h3>⚖️ للتوازن:</h3>
+                <ul>
+                    <li>percentile_cutoff = 0.5</li>
+                    <li>threshold_cutoff = 0.5</li>
+                    <li>context_before/after = 1</li>
+                </ul>
+                
+                <h3>📚 للشمولية:</h3>
+                <ul>
+                    <li>percentile_cutoff = 0.7</li>
+                    <li>threshold_cutoff = 0.3</li>
+                    <li>context_before/after = 2</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚙️ انتهى الجزء الثالث عشر | الجزء التالي: SentenceEmbeddingOptimizer - آلية العمل التفصيلية</p>
+        </div>
+    </div>
+</body>
+</html>

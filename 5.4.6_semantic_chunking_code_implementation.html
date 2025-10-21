@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Chunking - الجزء السادس: الكود والتطبيق العملي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-section {
+            background: #2d3436;
+            color: #00cec9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .code-comment {
+            color: #74b9ff;
+            font-style: italic;
+        }
+
+        .code-string {
+            color: #fd79a8;
+        }
+
+        .code-keyword {
+            color: #00b894;
+            font-weight: bold;
+        }
+
+        .implementation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .implementation-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #e17055;
+            transition: transform 0.3s ease;
+        }
+
+        .implementation-card:hover {
+            transform: translateY(-3px);
+            border-color: #d63031;
+        }
+
+        .implementation-header {
+            background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .example-output {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+        }
+
+        .config-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fdcb6e;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .implementation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-section {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💻 الكود والتطبيق العملي</h1>
+            <p>الجزء السادس: تطبيق Semantic Chunking بالكود الفعلي</p>
+        </div>
+
+        <div class="content">
+            <!-- الكود الأساسي -->
+            <div class="card">
+                <h2>🚀 الكود الأساسي للتطبيق</h2>
+                <div class="card-content">
+                    <p>هنا الكود الكامل اللي محتاجه عشان تشغل Semantic Chunking في مشروعك:</p>
+
+                    <div class="code-section">
+<span class="code-comment"># استيراد المكتبات المطلوبة</span>
+<span class="code-keyword">from</span> llama_index.core.node_parser <span class="code-keyword">import</span> SemanticSplitterNodeParser
+<span class="code-keyword">from</span> llama_index.embeddings.openai <span class="code-keyword">import</span> OpenAIEmbedding
+<span class="code-keyword">from</span> llama_index.core <span class="code-keyword">import</span> Document
+
+<span class="code-comment"># إعداد نموذج الـ embedding</span>
+embed_model = OpenAIEmbedding(
+    model=<span class="code-string">"text-embedding-3-small"</span>,
+    dimensions=<span class="code-string">1536</span>
+)
+
+<span class="code-comment"># إنشاء الـ semantic splitter</span>
+splitter = SemanticSplitterNodeParser(
+    buffer_size=<span class="code-string">1</span>,                    <span class="code-comment"># عدد الجمل للسياق</span>
+    breakpoint_percentile_threshold=<span class="code-string">95</span>, <span class="code-comment"># نسبة التقسيم</span>
+    embed_model=embed_model           <span class="code-comment"># نموذج الـ embedding</span>
+)
+
+<span class="code-comment"># النص المراد تقسيمه</span>
+text = <span class="code-string">"""
+مقدمة في الذكاء الاصطناعي والتعلم الآلي.
+يعتبر الذكاء الاصطناعي من أهم التقنيات الحديثة.
+يستخدم في العديد من المجالات المختلفة.
+
+التعلم الآلي هو فرع من فروع الذكاء الاصطناعي.
+يهدف إلى تمكين الآلات من التعلم دون برمجة صريحة.
+يعتمد على البيانات والخوارزميات المتقدمة.
+
+الشبكات العصبية الاصطناعية تحاكي عمل الدماغ البشري.
+تتكون من طبقات متعددة من العقد المترابطة.
+تستخدم في معالجة الصور والنصوص والأصوات.
+"""</span>
+
+<span class="code-comment"># إنشاء document</span>
+document = Document(text=text)
+
+<span class="code-comment"># تطبيق التقسيم</span>
+nodes = splitter.get_nodes_from_documents([document])
+
+<span class="code-comment"># عرض النتائج</span>
+<span class="code-keyword">for</span> i, node <span class="code-keyword">in</span> enumerate(nodes):
+    print(f<span class="code-string">"Node {i+1}:"</span>)
+    print(node.text)
+    print(<span class="code-string">"-"</span> * <span class="code-string">50</span>)
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 شرح المعاملات</h4>
+                        <ul>
+                            <li><strong>buffer_size=1:</strong> يشوف جملة واحدة قبل وبعد للسياق</li>
+                            <li><strong>breakpoint_percentile_threshold=95:</strong> يقسم عند أكبر 5% من المسافات</li>
+                            <li><strong>embed_model:</strong> نموذج تحويل النص لأرقام</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تخصيص المعاملات -->
+            <div class="card">
+                <h2>⚙️ تخصيص المعاملات حسب احتياجاتك</h2>
+                <div class="card-content">
+                    <p>هنا أمثلة مختلفة لإعدادات متنوعة حسب نوع النص اللي بتشتغل عليه:</p>
+
+                    <div class="implementation-grid">
+                        <div class="implementation-card">
+                            <div class="implementation-header">
+                                <h5>📚 للنصوص الأكاديمية</h5>
+                            </div>
+                            <div class="code-section">
+<span class="code-comment"># إعدادات النصوص الأكاديمية</span>
+splitter = SemanticSplitterNodeParser(
+    buffer_size=<span class="code-string">2</span>,     <span class="code-comment"># سياق أوسع</span>
+    breakpoint_percentile_threshold=<span class="code-string">97</span>, 
+    embed_model=embed_model
+)
+                            </div>
+                            <p><strong>متى تستخدمه؟</strong> للبحوث والمقالات العلمية الطويلة</p>
+                        </div>
+
+                        <div class="implementation-card">
+                            <div class="implementation-header">
+                                <h5>📰 للمقالات الإخبارية</h5>
+                            </div>
+                            <div class="code-section">
+<span class="code-comment"># إعدادات المقالات الإخبارية</span>
+splitter = SemanticSplitterNodeParser(
+    buffer_size=<span class="code-string">1</span>,     <span class="code-comment"># سياق متوسط</span>
+    breakpoint_percentile_threshold=<span class="code-string">90</span>, 
+    embed_model=embed_model
+)
+                            </div>
+                            <p><strong>متى تستخدمه؟</strong> للمقالات المتنوعة والأخبار</p>
+                        </div>
+
+                        <div class="implementation-card">
+                            <div class="implementation-header">
+                                <h5>💬 للمحادثات والحوارات</h5>
+                            </div>
+                            <div class="code-section">
+<span class="code-comment"># إعدادات المحادثات</span>
+splitter = SemanticSplitterNodeParser(
+    buffer_size=<span class="code-string">3</span>,     <span class="code-comment"># سياق أكبر</span>
+    breakpoint_percentile_threshold=<span class="code-string">85</span>, 
+    embed_model=embed_model
+)
+                            </div>
+                            <p><strong>متى تستخدمه؟</strong> للمحادثات وجلسات الأسئلة والأجوبة</p>
+                        </div>
+
+                        <div class="implementation-card">
+                            <div class="implementation-header">
+                                <h5>📖 للقصص والروايات</h5>
+                            </div>
+                            <div class="code-section">
+<span class="code-comment"># إعدادات القصص</span>
+splitter = SemanticSplitterNodeParser(
+    buffer_size=<span class="code-string">2</span>,     <span class="code-comment"># سياق جيد</span>
+    breakpoint_percentile_threshold=<span class="code-string">92</span>, 
+    embed_model=embed_model
+)
+                            </div>
+                            <p><strong>متى تستخدمه؟</strong> للروايات والقصص الطويلة</p>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نصائح مهمة للتخصيص</h4>
+                        <ul>
+                            <li>ابدأ بالقيم الافتراضية واختبر النتائج</li>
+                            <li>غير معامل واحد في كل مرة عشان تشوف التأثير</li>
+                            <li>جرب على عينة صغيرة الأول قبل المشروع الكامل</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- التعامل مع نماذج embedding مختلفة -->
+            <div class="card">
+                <h2>🧠 استخدام نماذج Embedding مختلفة</h2>
+                <div class="card-content">
+                    <p>تقدر تستخدم نماذج embedding مختلفة حسب احتياجاتك ومقدار الدقة المطلوبة:</p>
+
+                    <div class="config-section">
+                        <h4>🏗️ خيارات نماذج OpenAI</h4>
+                        
+                        <div class="code-section">
+<span class="code-comment"># نموذج صغير وسريع</span>
+embed_model_small = OpenAIEmbedding(
+    model=<span class="code-string">"text-embedding-3-small"</span>,
+    dimensions=<span class="code-string">1536</span>
+)
+
+<span class="code-comment"># نموذج كبير ودقيق</span>
+embed_model_large = OpenAIEmbedding(
+    model=<span class="code-string">"text-embedding-3-large"</span>,
+    dimensions=<span class="code-string">3072</span>
+)
+
+<span class="code-comment"># نموذج كلاسيكي (أقل تكلفة)</span>
+embed_model_ada = OpenAIEmbedding(
+    model=<span class="code-string">"text-embedding-ada-002"</span>
+)
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>🔍 مقارنة النماذج</h4>
+                            <ul>
+                                <li><strong>text-embedding-3-small:</strong> سريع، كفاءة عالية، تكلفة أقل</li>
+                                <li><strong>text-embedding-3-large:</strong> دقة أعلى، تفاصيل أكثر، تكلفة أكبر</li>
+                                <li><strong>text-embedding-ada-002:</strong> خيار اقتصادي، جودة جيدة</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>📊 كيف تختار النموذج المناسب؟</h4>
+                        <ul>
+                            <li><strong>للمشاريع الكبيرة:</strong> استخدم النموذج الصغير للتوفير</li>
+                            <li><strong>للدقة العالية:</strong> استخدم النموذج الكبير</li>
+                            <li><strong>للتجارب:</strong> ابدأ بـ ada-002</li>
+                            <li><strong>للإنتاج:</strong> text-embedding-3-small مناسب جداً</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مثال على النتيجة -->
+            <div class="card">
+                <h2>📋 مثال على النتيجة المتوقعة</h2>
+                <div class="card-content">
+                    <p>لما تشغل الكود، هاتحصل على نتيجة شبه كده:</p>
+
+                    <div class="example-output">
+Node 1:
+مقدمة في الذكاء الاصطناعي والتعلم الآلي.
+يعتبر الذكاء الاصطناعي من أهم التقنيات الحديثة.
+يستخدم في العديد من المجالات المختلفة.
+--------------------------------------------------
+Node 2:
+التعلم الآلي هو فرع من فروع الذكاء الاصطناعي.
+يهدف إلى تمكين الآلات من التعلم دون برمجة صريحة.
+يعتمد على البيانات والخوارزميات المتقدمة.
+--------------------------------------------------
+Node 3:
+الشبكات العصبية الاصطناعية تحاكي عمل الدماغ البشري.
+تتكون من طبقات متعددة من العقد المترابطة.
+تستخدم في معالجة الصور والنصوص والأصوات.
+--------------------------------------------------
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 ملاحظات على النتيجة</h4>
+                        <ul>
+                            <li>كل node يحتوي على جمل مترابطة دلالياً</li>
+                            <li>التقسيم حصل في أماكن منطقية</li>
+                            <li>المواضيع المختلفة اتفصلت بوضوح</li>
+                            <li>طول كل node مناسب للمعالجة</li>
+                        </ul>
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🔧 تحسين النتائج</h4>
+                        <p>لو النتائج مش مناسبة، جرب:</p>
+                        <ul>
+                            <li><strong>قلل الـ threshold:</strong> للمزيد من التقسيم</li>
+                            <li><strong>زود الـ buffer_size:</strong> لسياق أوضح</li>
+                            <li><strong>غير نموذج الـ embedding:</strong> لدقة أعلى</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

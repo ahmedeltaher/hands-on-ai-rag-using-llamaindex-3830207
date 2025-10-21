@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قيود الاستخدام وأفضل الممارسات</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .constraints-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .integration-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .best-practice-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .warning-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #f39c12; }
+        .success-box { background: linear-gradient(120deg, #c3ec52 0%, #0ba360 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚠️ قيود الاستخدام وأفضل الممارسات</h1>
+            <p>الدرس الخامس عشر: فهم المحددات والحلول الذكية</p>
+        </div>
+
+        <div class="card">
+            <h2>🚫 القيود الأساسية لـ Node Postprocessing</h2>
+            <div class="constraints-box">
+                <h3>⚠️ القيد الرئيسي: Query Engines فقط</h3>
+                <p>معظم postprocessors، بما فيهم SentenceEmbeddingOptimizer، يشتغلوا مع <strong>query engines</strong> بس.</p>
+                
+                <h3>❌ لا يعمل مع:</h3>
+                <ul>
+                    <li><strong>Chat Engines:</strong> محرك المحادثة</li>
+                    <li><strong>Agents:</strong> الوكلاء الذكيين</li>
+                    <li><strong>Direct Retrieval:</strong> البحث المباشر</li>
+                    <li><strong>Custom Pipelines:</strong> المسارات المخصصة</li>
+                </ul>
+                
+                <h3>🤔 ليه الحد ده موجود؟</h3>
+                <p>لأن postprocessors محتاجين structure محدد للـ node processing، والـ query engines هي الوحيدة اللي بتوفر ده.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 التكامل مع Query Engines</h2>
+            <div class="integration-box">
+                <h3>✅ الطرق المدعومة:</h3>
+                <ul>
+                    <li><strong>RetrieverQueryEngine:</strong> الطريقة الأساسية</li>
+                    <li><strong>SubQuestionQueryEngine:</strong> للأسئلة المعقدة</li>
+                    <li><strong>RouterQueryEngine:</strong> للتوجيه الذكي</li>
+                    <li><strong>TreeQueryEngine:</strong> للبحث الهرمي</li>
+                </ul>
+                
+                <h3>🎯 نقطة التطبيق:</h3>
+                <p>الـ postprocessors بيتطبقوا <strong>بعد البحث</strong> وقبل إرسال النتائج لـ LLM.</p>
+                
+                <h3>⚙️ مكان التشغيل:</h3>
+                <ol>
+                    <li><strong>Retrieval:</strong> البحث في الفهرس</li>
+                    <li><strong>Post-processing:</strong> تطبيق الـ postprocessors ← هنا</li>
+                    <li><strong>LLM Generation:</strong> توليد الإجابة</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 حلول للقيود</h2>
+            <div class="best-practice-box">
+                <h3>🔄 للـ Chat Engines:</h3>
+                <p><strong>الحل:</strong> استخدم query engine داخلياً في chat engine مخصص.</p>
+                
+                <h3>🤖 للـ Agents:</h3>
+                <p><strong>الحل:</strong> اعمل query engine tool للـ agent يستخدم الـ postprocessors.</p>
+                
+                <h3>🛠️ للـ Custom Pipelines:</h3>
+                <p><strong>الحل:</strong> طبق الـ postprocessor logic يدوياً في الـ pipeline بتاعك.</p>
+                
+                <h3>📊 للـ Direct Retrieval:</h3>
+                <p><strong>الحل:</strong> لف الـ retriever في query engine أو طبق المعالجة يدوياً.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ اعتبارات الأداء</h2>
+            <div class="warning-box">
+                <h3>🐌 تأثير على السرعة:</h3>
+                <ul>
+                    <li><strong>إضافة وقت:</strong> كل postprocessor بيضيف latency</li>
+                    <li><strong>معالجة إضافية:</strong> خاصة مع embedding calculations</li>
+                    <li><strong>استهلاك ذاكرة:</strong> للـ embedding models</li>
+                </ul>
+                
+                <h3>📊 تأثير على التكلفة:</h3>
+                <ul>
+                    <li><strong>API calls:</strong> إذا كنت بتستخدم OpenAI embeddings</li>
+                    <li><strong>Compute resources:</strong> للمعالجة المحلية</li>
+                    <li><strong>Storage:</strong> لحفظ embeddings مؤقتاً</li>
+                </ul>
+                
+                <h3>⚖️ التوازن المطلوب:</h3>
+                <p>لازم توازن بين <strong>جودة النتائج</strong> و <strong>سرعة الاستجابة</strong>.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 أفضل الممارسات</h2>
+            <div class="success-box">
+                <h3>📏 تحديد الكمية المناسبة:</h3>
+                <ul>
+                    <li><strong>ابدأ بـ similarity_top_k=10:</strong> عدد متوسط</li>
+                    <li><strong>percentile_cutoff=0.5:</strong> نقطة بداية متوازنة</li>
+                    <li><strong>اضبط تدريجياً:</strong> حسب النتائج</li>
+                </ul>
+                
+                <h3>🔧 ترتيب الـ Postprocessors:</h3>
+                <ol>
+                    <li><strong>أولاً:</strong> Filters البسيطة (Similarity, Keywords)</li>
+                    <li><strong>ثانياً:</strong> Advanced processing (SentenceEmbedding)</li>
+                    <li><strong>أخيراً:</strong> Final formatting (LongContextReorder)</li>
+                </ol>
+                
+                <h3>📊 مراقبة الأداء:</h3>
+                <ul>
+                    <li><strong>قيس وقت الاستجابة:</strong> قبل وبعد الـ postprocessors</li>
+                    <li><strong>راقب جودة النتائج:</strong> من خلال user feedback</li>
+                    <li><strong>اختبر على بيانات متنوعة:</strong> للتأكد من الثبات</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ نصائح للتحسين</h2>
+            <div class="integration-box">
+                <h3>🚀 تحسين السرعة:</h3>
+                <ul>
+                    <li><strong>استخدم local embeddings:</strong> بدل API calls</li>
+                    <li><strong>قلل similarity_top_k:</strong> في البداية</li>
+                    <li><strong>cache embeddings:</strong> للاستعلامات المتكررة</li>
+                </ul>
+                
+                <h3>💎 تحسين الجودة:</h3>
+                <ul>
+                    <li><strong>جرب قيم مختلفة للـ cutoffs:</strong> على بياناتك</li>
+                    <li><strong>استخدم context sentences:</strong> للسياق الأفضل</li>
+                    <li><strong>امزج عدة postprocessors:</strong> للنتائج المثلى</li>
+                </ul>
+                
+                <h3>🔄 التطوير التدريجي:</h3>
+                <ul>
+                    <li><strong>ابدأ بسيط:</strong> postprocessor واحد</li>
+                    <li><strong>قيس التأثير:</strong> لكل إضافة</li>
+                    <li><strong>اضبط بناءً على البيانات:</strong> مش تخمين</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 متى تستخدم كل نوع</h2>
+            <div class="best-practice-box">
+                <h3>🔍 SimilarityPostprocessor:</h3>
+                <p><strong>متى:</strong> عايز تستبعد nodes ضعيفة التشابه بسرعة</p>
+                
+                <h3>🏷️ KeywordNodePostprocessor:</h3>
+                <p><strong>متى:</strong> عندك كلمات مفتاحية محددة مهمة أو ممنوعة</p>
+                
+                <h3>📝 MetadataReplacementPostProcessor:</h3>
+                <p><strong>متى:</strong> عايز تحسن جودة النص المرسل للـ LLM</p>
+                
+                <h3>📚 LongContextReorder:</h3>
+                <p><strong>متى:</strong> بتستخدم LLMs مع context طويل</p>
+                
+                <h3>✨ SentenceEmbeddingOptimizer:</h3>
+                <p><strong>متى:</strong> عايز أفضل جودة ممكنة ومش مهتم بالسرعة قوي</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 فهم القيود = اختيارات أذكى ونتائج أفضل!</p>
+        </div>
+    </div>
+</body>
+</html>

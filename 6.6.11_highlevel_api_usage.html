@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary Index - الجزء الحادي عشر: High-level API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #ddd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 5px solid #00b894;
+        }
+
+        .api-showcase {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #74b9ff;
+            position: relative;
+        }
+
+        .step-card::after {
+            content: '↓';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+
+        .step-card:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #fd79a8;
+            transition: transform 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-3px);
+            border-color: #e84393;
+        }
+
+        .benefit-icon {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 High-level API للتطبيق السريع</h1>
+            <p>الجزء الحادي عشر: استخدام الواجهة البسيطة لـ Document Summary Index</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>🚀 مقدمة High-level API</h2>
+                <div class="card-content">
+                    <p>الـ High-level API في LlamaIndex مصمم ليخلي التطبيق سهل وسريع للمبتدئين والمطورين اللي عايزين نتائج سريعة:</p>
+
+                    <div class="api-showcase">
+                        <h4>✨ مميزات الـ High-level API</h4>
+                        
+                        <div class="benefits-grid">
+                            <div class="benefit-card">
+                                <div class="benefit-icon">⚡</div>
+                                <h5>سرعة التطبيق</h5>
+                                <p>كود أقل، نتائج أسرع. ممكن تبني نظام كامل في دقائق معدودة بدلاً من ساعات.</p>
+                            </div>
+
+                            <div class="benefit-card">
+                                <div class="benefit-icon">🎛️</div>
+                                <h5>إعدادات ذكية</h5>
+                                <p>إعدادات افتراضية محسنة ومجربة، مناسبة لمعظم الحالات بدون تعقيد.</p>
+                            </div>
+
+                            <div class="benefit-card">
+                                <div class="benefit-icon">🛠️</div>
+                                <h5>سهولة الاستخدام</h5>
+                                <p>واجهة بسيطة ومفهومة، مناسبة للمبتدئين والخبراء على حد سواء.</p>
+                            </div>
+
+                            <div class="benefit-card">
+                                <div class="benefit-icon">🔄</div>
+                                <h5>تكامل سلس</h5>
+                                <p>يتكامل مع باقي مكونات LlamaIndex بسهولة ويدعم التطوير التدريجي.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 متى تستخدم High-level API؟</h4>
+                        <ul>
+                            <li><strong>البداية السريعة:</strong> عايز تجرب الفكرة بسرعة</li>
+                            <li><strong>النماذج الأولية:</strong> proof of concept أو demo</li>
+                            <li><strong>التطبيقات البسيطة:</strong> مش محتاج تخصيص عميق</li>
+                            <li><strong>التعلم:</strong> فهم كيف يعمل النظام أولاً</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📝 الطريقة الأساسية والمباشرة</h2>
+                <div class="card-content">
+                    <div class="steps-container">
+                        <div class="step-card">
+                            <div class="step-number">الخطوة 1</div>
+                            <h5>إعداد البيئة الأساسية</h5>
+                            <div class="code-block">
+# الاستيراد الأساسي
+from llama_index.core import DocumentSummaryIndex, SimpleDirectoryReader
+import os
+
+# إعداد مفتاح API
+os.environ["OPENAI_API_KEY"] = "your-api-key-here"
+
+print("✅ تم إعداد البيئة")
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">الخطوة 2</div>
+                            <h5>تحميل المستندات</h5>
+                            <div class="code-block">
+# تحميل المستندات بأبسط طريقة
+documents = SimpleDirectoryReader("./data").load_data()
+
+print(f"📄 تم تحميل {len(documents)} مستند")
+
+# أو تحميل ملفات محددة
+specific_files = SimpleDirectoryReader(
+    input_files=["file1.pdf", "file2.txt", "file3.docx"]
+).load_data()
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">الخطوة 3</div>
+                            <h5>إنشاء Index بأبسط طريقة</h5>
+                            <div class="code-block">
+# إنشاء DocumentSummaryIndex بكل الإعدادات الافتراضية
+index = DocumentSummaryIndex.from_documents(documents)
+
+print("🎯 تم إنشاء DocumentSummaryIndex بنجاح!")
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">الخطوة 4</div>
+                            <h5>الاستعلام المباشر</h5>
+                            <div class="code-block">
+# إنشاء query engine والاستعلام مباشرة
+query_engine = index.as_query_engine()
+
+# طرح السؤال
+response = query_engine.query("ما هي أهم النقاط في هذه المستندات؟")
+
+print("الإجابة:", response.response)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎪 هذا كل شيء!</h4>
+                        <p>في 4 خطوات بسيطة، أنشأت نظام Document Summary Index كامل وعملي. الـ High-level API بيتولى كل التعقيدات الداخلية!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎛️ إضافات بسيطة للتحسين</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# تحسينات بسيطة مع High-level API
+
+# 1. عرض شريط التقدم
+index = DocumentSummaryIndex.from_documents(
+    documents,
+    show_progress=True  # لمتابعة عملية الإنشاء
+)
+
+# 2. تخصيص بسيط للـ query engine
+query_engine = index.as_query_engine(
+    similarity_top_k=5,              # عدد النتائج
+    response_mode="compact"          # طريقة الاستجابة
+)
+
+# 3. استعلامات متعددة
+questions = [
+    "ما هو الموضوع الرئيسي؟",
+    "ما هي أهم التوصيات؟", 
+    "ما هي النقاط المهمة؟"
+]
+
+for question in questions:
+    print(f"\n❓ {question}")
+    response = query_engine.query(question)
+    print(f"💡 {response.response}")
+                    </div>
+
+                    <div class="code-block">
+# حفظ وتحميل بطريقة بسيطة
+# حفظ
+index.storage_context.persist(persist_dir="./my_index")
+print("💾 تم حفظ الـ index")
+
+# تحميل
+from llama_index.core import StorageContext, load_index_from_storage
+
+storage_context = StorageContext.from_defaults(persist_dir="./my_index")
+loaded_index = load_index_from_storage(storage_context)
+
+# استخدام الـ index المحمل
+loaded_query_engine = loaded_index.as_query_engine()
+response = loaded_query_engine.query("سؤال تجريبي")
+print("✅ تم تحميل واستخدام الـ index بنجاح")
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🔧 الإعدادات الافتراضية الذكية</h4>
+                        <p>الـ High-level API بيستخدم إعدادات افتراضية محسنة:</p>
+                        <ul>
+                            <li><strong>LLM:</strong> gpt-3.5-turbo (توازن بين الجودة والتكلفة)</li>
+                            <li><strong>Embedding:</strong> text-embedding-ada-002 (كفاءة عالية)</li>
+                            <li><strong>Response Mode:</strong> compact (أداء متوازن)</li>
+                            <li><strong>Top-k:</strong> 2 (نتائج مركزة)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📱 مثال تطبيق كامل ومبسط</h2>
+                <div class="card-content">
+                    <div class="code-block">
+"""
+تطبيق Document Summary بسيط ومتكامل
+باستخدام High-level API فقط
+"""
+
+import os
+from llama_index.core import DocumentSummaryIndex, SimpleDirectoryReader
+
+class SimpleDocumentSummaryApp:
+    def __init__(self, data_folder="./data", storage_folder="./storage"):
+        self.data_folder = data_folder
+        self.storage_folder = storage_folder
+        self.index = None
+        self.query_engine = None
+        
+        # إعداد API key
+        if not os.getenv("OPENAI_API_KEY"):
+            api_key = input("🔑 أدخل مفتاح OpenAI API: ")
+            os.environ["OPENAI_API_KEY"] = api_key
+    
+    def setup(self):
+        """إعداد وتحميل النظام"""
+        print("🚀 بدء إعداد النظام...")
+        
+        try:
+            # محاولة تحميل index موجود
+            from llama_index.core import StorageContext, load_index_from_storage
+            storage_context = StorageContext.from_defaults(
+                persist_dir=self.storage_folder
+            )
+            self.index = load_index_from_storage(storage_context)
+            print("✅ تم تحميل index موجود")
+            
+        except:
+            # إنشاء index جديد
+            print("📚 تحميل المستندات...")
+            documents = SimpleDirectoryReader(self.data_folder).load_data()
+            print(f"📄 تم العثور على {len(documents)} مستند")
+            
+            print("🔄 إنشاء DocumentSummaryIndex...")
+            self.index = DocumentSummaryIndex.from_documents(
+                documents,
+                show_progress=True
+            )
+            
+            # حفظ للمرة القادمة
+            self.index.storage_context.persist(persist_dir=self.storage_folder)
+            print("💾 تم حفظ الـ index")
+        
+        # إعداد query engine
+        self.query_engine = self.index.as_query_engine()
+        print("✅ النظام جاهز للاستخدام!")
+    
+    def ask(self, question):
+        """طرح سؤال على النظام"""
+        if not self.query_engine:
+            print("❌ يجب إعداد النظام أولاً")
+            return None
+        
+        print(f"🔍 جاري البحث عن: {question}")
+        response = self.query_engine.query(question)
+        return response.response
+    
+    def interactive_mode(self):
+        """وضع تفاعلي للأسئلة المتعددة"""
+        print("\n🤖 الوضع التفاعلي - اكتب 'خروج' للإنهاء")
+        
+        while True:
+            question = input("\n❓ سؤالك: ").strip()
+            
+            if question.lower() in ['خروج', 'exit', 'quit', '']:
+                print("👋 شكراً لاستخدام النظام!")
+                break
+            
+            answer = self.ask(question)
+            print(f"\n💡 الإجابة:\n{answer}")
+            print("-" * 50)
+
+# تشغيل التطبيق
+def main():
+    # إنشاء التطبيق
+    app = SimpleDocumentSummaryApp()
+    
+    # إعداد النظام
+    app.setup()
+    
+    # أمثلة على الأسئلة
+    sample_questions = [
+        "ما هو الموضوع الرئيسي للمستندات؟",
+        "ما هي أهم النقاط المذكورة؟",
+        "ما هي التوصيات الرئيسية؟"
+    ]
+    
+    print("\n📋 أمثلة على الأسئلة:")
+    for i, q in enumerate(sample_questions, 1):
+        print(f"{i}. {q}")
+        answer = app.ask(q)
+        print(f"   💡 {answer[:100]}...\n")
+    
+    # بدء الوضع التفاعلي
+    app.interactive_mode()
+
+if __name__ == "__main__":
+    main()
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🌟 مميزات هذا التطبيق</h4>
+                        <ul>
+                            <li><strong>سهولة الاستخدام:</strong> واجهة بسيطة وواضحة</li>
+                            <li><strong>ذكي في الحفظ:</strong> يحفظ ويحمل الـ index تلقائياً</li>
+                            <li><strong>تفاعلي:</strong> يسمح بطرح أسئلة متعددة</li>
+                            <li><strong>مكتمل:</strong> جاهز للاستخدام مباشرة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 متى تنتقل لـ Low-level API؟</h2>
+                <div class="card-content">
+                    <div class="warning-box">
+                        <h4>⚠️ علامات الحاجة للتطوير</h4>
+                        <ul>
+                            <li><strong>أداء غير كافي:</strong> النتائج مش بالجودة المطلوبة</li>
+                            <li><strong>احتياجات خاصة:</strong> تخصيصات معقدة مطلوبة</li>
+                            <li><strong>تكامل متقدم:</strong> ربط مع أنظمة أخرى</li>
+                            <li><strong>تحكم دقيق:</strong> السيطرة على كل جزئية</li>
+                            <li><strong>تحسين التكاليف:</strong> ضبط استهلاك API بدقة</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎪 استراتيجية التطوير التدريجي</h4>
+                        <ol>
+                            <li><strong>ابدأ بـ High-level:</strong> اختبر الفكرة سريعاً</li>
+                            <li><strong>اجمع بيانات الأداء:</strong> راقب النتائج والتكاليف</li>
+                            <li><strong>حدد نقاط التحسين:</strong> إيه اللي محتاج تطوير؟</li>
+                            <li><strong>انتقل تدريجياً:</strong> طور جزء واحد في كل مرة</li>
+                            <li><strong>اختبر واقيس:</strong> تأكد إن التطوير بيحسن فعلاً</li>
+                        </ol>
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🔄 نصائح الانتقال السلس</h4>
+                        <ul>
+                            <li><strong>احتفظ بالنموذج الأصلي:</strong> للمقارنة والاختبار</li>
+                            <li><strong>وثق التغييرات:</strong> اكتب سبب كل تعديل</li>
+                            <li><strong>اختبر تدريجياً:</strong> تأكد من كل تحسين</li>
+                            <li><strong>راجع الأداء:</strong> قيس النتائج باستمرار</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 الخلاصة العملية</h2>
+                <div class="card-content">
+                    <div class="highlight-box">
+                        <h4>✅ ما تعلمناه عن High-level API</h4>
+                        <ul>
+                            <li>سرعة وسهولة التطبيق للمشاريع الجديدة</li>
+                            <li>إعدادات ذكية تناسب معظم الحالات</li>
+                            <li>مثالي للنماذج الأولية والتعلم</li>
+                            <li>أساس ممتاز للتطوير التدريجي</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 الاستخدام الأمثل</h4>
+                        <ul>
+                            <li><strong>للمبتدئين:</strong> ابدأ هنا دائماً</li>
+                            <li><strong>للمشاريع السريعة:</strong> demos وproofs of concept</li>
+                            <li><strong>للتعلم:</strong> فهم كيف يعمل النظام</li>
+                            <li><strong>للقاعدة:</strong> أساس للتطوير المتقدم لاحقاً</li>
+                        </ul>
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🚀 الرسالة الأساسية</h4>
+                        <p>High-level API هو نقطة البداية المثالية لأي مشروع Document Summary Index. يخليك تركز على حل المشكلة بدلاً من التعقيدات التقنية، ولما تكون جاهز للتطوير، تقدر تنتقل للـ Low-level API تدريجياً!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

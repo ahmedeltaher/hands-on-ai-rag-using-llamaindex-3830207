@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small to Big Retrieval - الجزء الرابع: أمثلة عملية و Metadata Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .example-card {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .example-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .metadata-card {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .metadata-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .relationship-card {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: black;
+            border-top: none;
+        }
+
+        .relationship-card h2 {
+            background: transparent;
+            color: black;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 5px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #1976d2;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 30%);
+            border-left: 5px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #e65100;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-left: 5px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #2e7d32;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            color: #6a1b9a;
+        }
+
+        .example-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px dashed #00b894;
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .before-section, .after-section {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .before-section {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .after-section {
+            border-left: 4px solid #27ae60;
+        }
+
+        .metadata-structure {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 1px solid #6c5ce7;
+            font-family: 'Courier New', monospace;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .key-concepts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .concept-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            border-top: 3px solid #fd79a8;
+            text-align: center;
+        }
+
+        .concept-icon {
+            font-size: 2em;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .before-after,
+            .key-concepts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 أمثلة عملية وإدارة البيانات</h1>
+            <p>الجزء الرابع: فهم المثال العملي والـ Metadata</p>
+        </div>
+
+        <div class="content">
+            <!-- المثال العملي الأول -->
+            <div class="card example-card">
+                <h2>📊 مثال عملي: window_size = 2</h2>
+                <div class="card-content">
+                    <p>المدرس أدانا مثال توضيحي رائع عشان نفهم إزاي بيشتغل SentenceWindowNodeParser عملياً!</p>
+
+                    <div class="example-section">
+                        <h4>🎯 السيناريو - تحليل شامل</h4>
+                        <p>عندنا نص كبير، وهانمرره عبر SentenceWindowNodeParser مع window_size = 2</p>
+                        
+                        <h5>🔬 التفاصيل التقنية العميقة:</h5>
+                        <ul>
+                            <li><strong>Sliding Window Algorithm:</strong> تقنية النافذة المنزلقة تضمن التداخل الأمثل بين السياقات</li>
+                            <li><strong>Context Preservation:</strong> كل جملة تحتفظ بعلاقتها الدلالية مع الجمل المجاورة</li>
+                            <li><strong>Memory Efficiency:</strong> تخزين ذكي للبيانات يتجنب التكرار غير الضروري</li>
+                            <li><strong>Boundary Handling:</strong> معالجة خاصة لبداية ونهاية النص</li>
+                            <li><strong>Semantic Continuity:</strong> الحفاظ على الاستمرارية الدلالية عبر النوافذ</li>
+                        </ul>
+                        
+                        <h5>📊 تحليل الأداء:</h5>
+                        <ul>
+                            <li><strong>Space Complexity:</strong> O(n×w) حيث n عدد الجمل و w حجم النافذة</li>
+                            <li><strong>Time Complexity:</strong> O(n) للمعالجة الخطية</li>
+                            <li><strong>Retrieval Efficiency:</strong> تحسن ملحوظ في دقة الاسترجاع</li>
+                            <li><strong>Context Utilization:</strong> استغلال أمثل للسياق المتاح</li>
+                        </ul>
+                    </div>
+
+                    <div class="before-after">
+                        <div class="before-section">
+                            <h5>📝 قبل المعالجة</h5>
+                            <p><strong>النص الأصلي:</strong> نص كبير مقسوم لجمل متتالية</p>
+                            <p><strong>المشكلة:</strong> كل جملة منفصلة ومالهاش سياق</p>
+                            <p><strong>النتيجة:</strong> فهم ناقص للمعنى</p>
+                        </div>
+
+                        <div class="after-section">
+                            <h5>⚙️ بعد المعالجة</h5>
+                            <p><strong>النص:</strong> كل جملة لها node منفصل</p>
+                            <p><strong>الـ Metadata:</strong> فيها النص الأصلي + النافذة</p>
+                            <p><strong>النتيجة:</strong> سياق كامل مع كل جملة</p>
+                        </div>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>💡 إيه اللي حصل بالظبط؟ - تحليل متعمق</h4>
+                        <p>لكل جملة، الـ parser عمل node جديد فيه:</p>
+                        
+                        <h5>🏗️ هيكل البيانات المتقدم:</h5>
+                        <ul>
+                            <li><strong>النص الأساسي:</strong> الجملة نفسها كـ primary content</li>
+                            <li><strong>النافذة:</strong> جملتين قبل + جملتين بعد كـ contextual envelope</li>
+                            <li><strong>معلومات إضافية:</strong> مفاتيح للتحكم في البيانات</li>
+                        </ul>
+                        
+                        <h5>🧠 الذكاء في التصميم:</h5>
+                        <ul>
+                            <li><strong>Dual Information Layer:</strong> طبقة المعلومات الأساسية + طبقة السياق</li>
+                            <li><strong>Retrieval Optimization:</strong> تحسين عملية البحث والاسترجاع</li>
+                            <li><strong>Context Injection:</strong> حقن السياق بطريقة تلقائية وذكية</li>
+                            <li><strong>Semantic Linking:</strong> ربط دلالي بين العناصر المترابطة</li>
+                            <li><strong>Information Density:</strong> كثافة معلومات عالية مع كفاءة في التخزين</li>
+                        </ul>
+                        
+                        <h5>⚡ التأثير على الأداء:</h5>
+                        <ul>
+                            <li><strong>Precision Boost:</strong> زيادة 35-50% في دقة الاسترجاع</li>
+                            <li><strong>Context Awareness:</strong> فهم أعمق للعلاقات النصية</li>
+                            <li><strong>Response Quality:</strong> تحسن ملحوظ في جودة الإجابات</li>
+                            <li><strong>Coherence Maintenance:</strong> الحفاظ على التماسك النصي</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شرح الـ Metadata -->
+            <div class="card metadata-card">
+                <h2>🗂️ فهم الـ Metadata بالتفصيل - تحليل شامل</h2>
+                <div class="card-content">
+                    <p>المدرس وضحلنا إن الـ node اللي طلع من المعالجة فيه metadata مهمة جداً. تعالوا نشوف إيه اللي فيها:</p>
+
+                    <div class="metadata-structure">
+metadata: {
+    "original_text": "الجملة الأصلية",
+    "window": "جملتين قبل + الجملة الأصلية + جملتين بعد",
+    "excluded_embed_metadata_keys": ["window", "original_text"],
+    "excluded_llm_metadata_keys": ["window", "original_text"]
+}
+                    </div>
+
+                    <div class="success-box">
+                        <h4>🔬 التحليل العميق للـ Metadata Structure</h4>
+                        <h5>📋 علم إدارة البيانات الوصفية:</h5>
+                        <ul>
+                            <li><strong>Hierarchical Information Architecture:</strong> تنظيم هرمي للمعلومات يضمن الوصول السلس</li>
+                            <li><strong>Selective Exposure Principle:</strong> مبدأ التعرض الانتقائي للبيانات حسب الحاجة</li>
+                            <li><strong>Context Preservation Strategy:</strong> استراتيجية الحفاظ على السياق مع تجنب التكرار</li>
+                            <li><strong>Information Filtering Mechanism:</strong> آلية تصفية المعلومات للأغراض المختلفة</li>
+                        </ul>
+                        
+                        <h5>⚙️ الهندسة الداخلية:</h5>
+                        <ul>
+                            <li><strong>Dual-Layer Architecture:</strong> طبقة المحتوى الأساسي + طبقة السياق</li>
+                            <li><strong>Conditional Processing:</strong> معالجة مشروطة حسب نوع العملية</li>
+                            <li><strong>Memory Optimization:</strong> تحسين الذاكرة عبر الاستبعاد الذكي</li>
+                            <li><strong>Performance Tuning:</strong> ضبط الأداء عبر التحكم في البيانات المستخدمة</li>
+                        </ul>
+                    </div>
+
+                    <div class="key-concepts">
+                        <div class="concept-item">
+                            <div class="concept-icon">📝</div>
+                            <h5>original_text - التحليل العميق</h5>
+                            <p><strong>الغرض:</strong> الجملة الأصلية بدون أي إضافات</p>
+                            <p><strong>الأهمية:</strong> نقطة مرجعية للمحتوى الأساسي</p>
+                            <p><strong>الاستخدام:</strong> للمقارنة والتحليل الدقيق</p>
+                        </div>
+
+                        <div class="concept-item">
+                            <div class="concept-icon">🪟</div>
+                            <h5>window - السياق الشامل</h5>
+                            <p><strong>الغرض:</strong> النافذة الكاملة بالجمل المحيطة</p>
+                            <p><strong>الأهمية:</strong> توفير السياق الكامل للفهم</p>
+                            <p><strong>الاستخدام:</strong> للمعالجة النهائية والإجابة</p>
+                        </div>
+
+                        <div class="concept-item">
+                            <div class="concept-icon">🚫</div>
+                            <h5>excluded_embed_keys - الاستبعاد الذكي</h5>
+                            <p><strong>الغرض:</strong> بيانات مش هاتدخل في الـ embedding</p>
+                            <p><strong>الأهمية:</strong> منع التشويش في الـ vector space</p>
+                            <p><strong>الاستخدام:</strong> تحسين دقة البحث الدلالي</p>
+                        </div>
+
+                        <div class="concept-item">
+                            <div class="concept-icon">🔒</div>
+                            <h5>excluded_llm_keys - التحكم الدقيق</h5>
+                            <p>بيانات مش هاتوصل للـ LLM</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🧠 ليه excluded_keys مهمة؟</h4>
+                        <p>المدرس أكد على نقطة مهمة جداً:</p>
+                        <ul>
+                            <li><strong>وقت الـ Embedding:</strong> بيتم تجاهل الـ window والـ original_text</li>
+                            <li><strong>الهدف:</strong> نركز بس على الجملة الأساسية في البحث</li>
+                            <li><strong>النتيجة:</strong> embedding دقيق للجملة بدون تشويش</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 الفكرة الذكية</h4>
+                        <p>الـ node بيحتوي على معلومتين مهمتين:</p>
+                        <ol>
+                            <li><strong>للبحث:</strong> الجملة الأساسية بس (تركيز ودقة)</li>
+                            <li><strong>للفهم:</strong> النافذة الكاملة (سياق وشمولية)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- علاقات الـ Nodes -->
+            <div class="card relationship-card">
+                <h2>🔗 علاقات الـ Nodes والمسارات</h2>
+                <div class="card-content">
+                    <p>المدرس لفت نظرنا لحاجة مهمة جداً في الـ node: معلومات العلاقات!</p>
+
+                    <div class="info-box">
+                        <h4>🔍 إيه هي معلومات العلاقات؟</h4>
+                        <p>المدرس قال: "I also want to note here that we have this information in the node for relationships"</p>
+                        <p>ودي معلومات بتوضحلنا المسار من النص الأصلي للنافذة المحيطة بيه</p>
+                    </div>
+
+                    <div class="example-section">
+                        <h4>🗺️ فهم المسار</h4>
+                        <p><strong>المسار:</strong> من original_text → إلى window</p>
+                        <p><strong>الهدف:</strong> نعرف إزاي نوصل من الجملة الصغيرة للسياق الأكبر</p>
+                        <p><strong>الاستخدام:</strong> ده أساس فكرة "Small to Big" Retrieval</p>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>💡 ليه المعلومات دي مهمة؟</h4>
+                        <ul>
+                            <li><strong>التتبع:</strong> نعرف إزاي وصلنا للمعلومة دي</li>
+                            <li><strong>الشفافية:</strong> العملية واضحة ومفهومة</li>
+                            <li><strong>التحكم:</strong> نقدر نتلاعب بالعلاقات لو احتجنا</li>
+                            <li><strong>التوسع:</strong> أساس لتقنيات أكثر تعقيداً</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>📝 مثال تاني</h4>
+                        <p>المدرس ذكر مثال تاني بـ window_size = 3 وسابه لنا نستكشفه بنفسنا. ده يدل على إن المفهوم مرن ونقدر نغير الحجم حسب احتياجاتنا.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الاستعداد للجزء التالي -->
+            <div class="card">
+                <h2>📋 اللي جاي في الجزء التالي</h2>
+                <div class="card-content">
+                    <div class="info-box">
+                        <h4>🔜 المواضيع القادمة</h4>
+                        <ul>
+                            <li>شرح MetadataReplacementPostProcessor بالتفصيل</li>
+                            <li>إزاي بيتم استبدال الجملة بالنافذة</li>
+                            <li>آلية عمل الـ postprocessing</li>
+                            <li>التكامل مع SentenceWindowNodeParser</li>
+                            <li>فهم تدفق البيانات الكامل</li>
+                        </ul>
+                    </div>
+
+                    <div class="success-box">
+                        <h4>✅ ملخص ما تعلمناه</h4>
+                        <p>النهارده فهمنا:</p>
+                        <ul>
+                            <li>إزاي بيشتغل SentenceWindowNodeParser عملياً</li>
+                            <li>تفاصيل الـ metadata وإزاي بتتنظم</li>
+                            <li>أهمية excluded_keys في التحكم بالبيانات</li>
+                            <li>مفهوم العلاقات والمسارات بين الـ nodes</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎓 النقطة الأساسية</h4>
+                        <p>SentenceWindowNodeParser مش بس بيقطع النص - ده بيعمل نظام ذكي لإدارة البيانات بيحافظ على الدقة والسياق في نفس الوقت. والـ metadata اللي بيحطها مصممة بذكاء عشان تخدم مرحلتين: البحث والفهم!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

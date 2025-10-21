@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقدمة عن Node Post-processing</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .card h3 { color: #34495e; font-size: 1.4em; margin: 20px 0 15px 0; }
+        .intro-section { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .importance-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .comparison-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .comparison-table th, .comparison-table td { border: 1px solid #ddd; padding: 12px; text-align: right; }
+        .comparison-table th { background: #3498db; color: white; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 مقدمة عن Node Post-processing في RAG</h1>
+            <p>الدرس الأول: فهم أساسيات معالجة العقد بعد الاسترجاع</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 إيه هو Node Post-processing؟</h2>
+            <div class="intro-section">
+                <p>Node Post-processing ده واحد من أهم المراحل في نظام RAG، وده المرحلة اللي بتيجي بعد ما النظام يجيب النتائج من قاعدة البيانات. تخيل إنك بتدور على حاجة في جوجل، بعد ما جوجل يجيبلك النتائج، بيرتبها ويصفيها عشان يديك الأحسن الأول.</p>
+                
+                <p>في RAG، بعد ما نجيب النودز (قطع البيانات) من الـ vector database، ممكن نكون محتاجين نعمل عليها شوية تحسينات قبل ما نديها للـ language model عشان يولد الإجابة النهائية.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🤔 ليه محتاجين Node Post-processing؟</h2>
+            <div class="importance-box">
+                <h3>المشاكل اللي بيحلها:</h3>
+                <ul>
+                    <li><strong>نودز غير مناسبة:</strong> أوقات نجيب نودز similarity score بتاعها منخفض</li>
+                    <li><strong>معلومات مش مرتبة:</strong> النودز مش مرتبة بالطريقة الأمثل للـ LLM</li>
+                    <li><strong>نودز كتيرة جداً:</strong> نجيب نودز أكتر من اللازم ونحتاج نقللها</li>
+                    <li><strong>محتوى مش متخصص:</strong> النودز مش مفلترة حسب كلمات معينة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 مقارنة: بدون وبـ Post-processing</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>الجانب</th>
+                        <th>بدون Post-processing</th>
+                        <th>بـ Post-processing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>جودة النتائج</td>
+                        <td>متوسطة - نودز مش مفلترة</td>
+                        <td>عالية - نودز مختارة بعناية</td>
+                    </tr>
+                    <tr>
+                        <td>سرعة المعالجة</td>
+                        <td>بطيئة - نودز كتيرة</td>
+                        <td>أسرع - نودز مُحسَّنة</td>
+                    </tr>
+                    <tr>
+                        <td>دقة الإجابات</td>
+                        <td>متغيرة</td>
+                        <td>مستقرة ودقيقة</td>
+                    </tr>
+                    <tr>
+                        <td>استهلاك الـ tokens</td>
+                        <td>عالي</td>
+                        <td>محسن ومقلل</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>🔄 متى نستخدم Post-processing؟</h2>
+            <div class="intro-section">
+                <h3>الحالات المناسبة:</h3>
+                <ul>
+                    <li><strong>لما النتائج كتيرة:</strong> عندك top-k عالي وعايز تقلل النودز</li>
+                    <li><strong>لما عايز دقة أكتر:</strong> تفلتر بناء على similarity threshold</li>
+                    <li><strong>لما عندك keywords معينة:</strong> تدور على نودز فيها كلمات محددة</li>
+                    <li><strong>لما بتستخدم long context:</strong> ترتب النودز عشان الـ LLM يفهم أحسن</li>
+                    <li><strong>لما عايز تحسن الجمل:</strong> تاخد أهم الجمل بس من كل نود</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎓 النمط التعليمي</h2>
+            <div class="importance-box">
+                <p>المدرس بيوضح إنه مش هيشغل كل الكود، وإن الطلاب المفروض يطبقوا بنفسهم. ده نمط تعليمي ممتاز لأنه:</p>
+                <ul>
+                    <li>بيخلي الطالب يفكر ويحلل</li>
+                    <li>بيبني الثقة في النفس</li>
+                    <li>بيركز على فهم المفاهيم مش بس الكود</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 انتهى الجزء الأول | الجزء التالي: تعريف Node Postprocessor وأنواعه</p>
+        </div>
+    </div>
+</body>
+</html>

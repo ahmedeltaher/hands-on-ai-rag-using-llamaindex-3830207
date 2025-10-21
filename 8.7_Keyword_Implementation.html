@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق Keyword Postprocessor - التقنيات تحت الغطاء</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .algorithm-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .spacy-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .process-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .logic-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .tech-box { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .performance-box { background: linear-gradient(120deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 تطبيق Keyword Postprocessor - التقنيات تحت الغطاء</h1>
+            <p>الدرس السابع: فهم عميق لآلية البحث والفلترة بالكلمات المفتاحية</p>
+        </div>
+
+        <div class="card">
+            <h2>🔄 نظرة عامة على العملية</h2>
+            <div class="algorithm-box">
+                <h3>📋 الخطوات الأساسية:</h3>
+                <p>المدرس بيوضح إن الـ Keyword Postprocessor بيمر بخطوات منظمة لفلترة العقد بناءً على الكلمات المطلوبة والممنوعة.</p>
+                
+                <h3>🎯 الهدف النهائي:</h3>
+                <p>إرجاع قائمة مفلترة من الـ <strong>NodeWithScore objects</strong> اللي بتحتوي على كل الكلمات المطلوبة ومبتحتويش على أي كلمات ممنوعة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>1️⃣ التكرار على العقد</h2>
+            <div class="process-box">
+                <h3>🔄 معالجة كل عقدة منفردة:</h3>
+                <p>بيعمل iteration على كل <strong>NodeWithScore object</strong> في القائمة اللي جايه من الـ retriever.</p>
+                
+                <h3>📊 إيه اللي بيتاخد من كل عقدة:</h3>
+                <ul>
+                    <li><strong>Node content:</strong> النص الأصلي للعقدة</li>
+                    <li><strong>Score:</strong> درجة التشابه (لو موجودة)</li>
+                    <li><strong>Metadata:</strong> المعلومات الإضافية</li>
+                </ul>
+                
+                <h3>⚡ الكفاءة:</h3>
+                <p>العملية خطية (O(n)) حيث n هو عدد العقد، مما يجعلها سريعة حتى مع مجموعات بيانات كبيرة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>2️⃣ استخراج ومعالجة المحتوى</h2>
+            <div class="spacy-box">
+                <h3>📝 استخراج النص:</h3>
+                <p>لكل عقدة، بيتم استخراج المحتوى النصي وتجهيزه للمعالجة.</p>
+                
+                <h3>🧠 المعالجة باستخدام spaCy:</h3>
+                <p>هنا بيجي دور <strong>spaCy library</strong> - مكتبة معالجة اللغات الطبيعية المتقدمة.</p>
+                
+                <h3>🎯 ليه spaCy؟</h3>
+                <ul>
+                    <li><strong>سرعة عالية:</strong> محسنة للأداء</li>
+                    <li><strong>دقة في التحليل:</strong> بتفهم تراكيب اللغة</li>
+                    <li><strong>دعم لغات متعددة:</strong> مش بس إنجليزي</li>
+                    <li><strong>PhraseMatcher قوي:</strong> مش مجرد بحث نصي</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3️⃣ spaCy's PhraseMatcher - القلب النابض</h2>
+            <div class="tech-box">
+                <h3>🔍 إيه هو PhraseMatcher؟</h3>
+                <p>أداة متقدمة في spaCy بتدور على patterns في النص، مش مجرد string matching بسيط.</p>
+                
+                <h3>💪 قوة PhraseMatcher:</h3>
+                <ul>
+                    <li><strong>فهم السياق:</strong> بيفهم إن "machine learning" phrase واحدة</li>
+                    <li><strong>مرونة في التطابق:</strong> بيتعامل مع التنوعات النحوية</li>
+                    <li><strong>كفاءة في البحث:</strong> أسرع من regex أو string search تقليدي</li>
+                    <li><strong>حساسية للغة:</strong> بيراعي قواعد اللغة</li>
+                </ul>
+                
+                <h3>🎯 إزاي بيشتغل:</h3>
+                <ul>
+                    <li><strong>يقسم النص:</strong> لـ tokens منطقية</li>
+                    <li><strong>يحلل التراكيب:</strong> يفهم العلاقات بين الكلمات</li>
+                    <li><strong>يطابق الـ patterns:</strong> يدور على الكلمات المطلوبة</li>
+                    <li><strong>يرجع النتائج:</strong> مع معلومات عن المكان والسياق</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>4️⃣ منطق الفلترة - الشروط والقرارات</h2>
+            <div class="logic-box">
+                <h3>✅ فحص الكلمات المطلوبة (Required Keywords):</h3>
+                <p><strong>الشرط:</strong> إذا كان فيه required keywords محددة</p>
+                <p><strong>الفحص:</strong> هل محتوى العقدة بيطابق <strong>كل</strong> الكلمات المطلوبة؟</p>
+                <p><strong>النتيجة:</strong> لو مطابقش أي واحدة، العقدة بتترفض (<strong>skip</strong>)</p>
+                
+                <h3>❌ فحص الكلمات الممنوعة (Exclude Keywords):</h3>
+                <p><strong>الشرط:</strong> إذا كان فيه exclude keywords محددة</p>
+                <p><strong>الفحص:</strong> هل محتوى العقدة بيطابق <strong>أي</strong> من الكلمات الممنوعة؟</p>
+                <p><strong>النتيجة:</strong> لو طابق أي واحدة، العقدة بتتרفض (<strong>skip</strong>)</p>
+                
+                <h3>🎉 الحالة المثالية:</h3>
+                <p>العقدة اللي <strong>تعدي</strong> فحص الكلمات المطلوبة <strong>والممنوعة</strong> بتتضاف للنتائج النهائية!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>5️⃣ النتيجة النهائية</h2>
+            <div class="algorithm-box">
+                <h3>📦 إيه اللي بيرجع:</h3>
+                <p>قائمة مفلترة من <strong>NodeWithScore objects</strong> اللي عدت كل الاختبارات بنجاح.</p>
+                
+                <h3>🏆 خصائص النتيجة:</h3>
+                <ul>
+                    <li><strong>محتوى عالي الجودة:</strong> كل عقدة متعلقة بالموضوع المطلوب</li>
+                    <li><strong>خالية من المحتوى المرفوض:</strong> مفيش أي محتوى ممنوع</li>
+                    <li><strong>محافظة على التنسيق:</strong> نفس بنية NodeWithScore</li>
+                    <li><strong>جاهزة للمعالجة:</strong> تمرر للـ language model مباشرة</li>
+                </ul>
+                
+                <h3>🔄 التسلسل في Pipeline:</h3>
+                <p>النتيجة دي بتتمرر للخطوة التالية في الـ RAG pipeline، اللي هي response synthesis بواسطة الـ LLM.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ أداء ومميزات التنفيذ</h2>
+            <div class="performance-box">
+                <h3>🚀 السرعة:</h3>
+                <ul>
+                    <li><strong>معالجة خطية:</strong> O(n) حيث n عدد العقد</li>
+                    <li><strong>spaCy محسنة:</strong> مكتوبة بـ Cython للسرعة</li>
+                    <li><strong>ذاكرة كفؤة:</strong> مبتحملش البيانات كلها في نفس الوقت</li>
+                </ul>
+                
+                <h3>🎯 الدقة:</h3>
+                <ul>
+                    <li><strong>فهم لغوي:</strong> مش مجرد string matching</li>
+                    <li><strong>حساسية للسياق:</strong> بيفهم العبارات المركبة</li>
+                    <li><strong>مرونة في التطابق:</strong> بيتعامل مع تنوعات اللغة</li>
+                </ul>
+                
+                <h3>🔧 قابلية التخصيص:</h3>
+                <ul>
+                    <li><strong>دعم لغات متعددة:</strong> مش مقتصر على الإنجليزي</li>
+                    <li><strong>patterns مرنة:</strong> كلمات أو عبارات</li>
+                    <li><strong>تحكم دقيق:</strong> required + excluded في نفس الوقت</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ نصائح للاستفادة القصوى</h2>
+            <div class="process-box">
+                <h3>🎯 تحسين الأداء:</h3>
+                <ul>
+                    <li><strong>استخدم patterns محددة:</strong> تجنب الكلمات الشائعة جداً</li>
+                    <li><strong>اختبر على عينات:</strong> قبل تطبيق على البيانات كلها</li>
+                    <li><strong>راقب الذاكرة:</strong> مع البيانات الكبيرة</li>
+                </ul>
+                
+                <h3>📊 ضبط الجودة:</h3>
+                <ul>
+                    <li><strong>اختبر التركيبات:</strong> required + excluded مع بعض</li>
+                    <li><strong>راقب النتائج:</strong> عدد ونوعية العقد اللي بتطلع</li>
+                    <li><strong>عدل تدريجياً:</strong> ضيف أو شيل كلمات حسب النتايج</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 دلوقتي إنت فاهم إزاي spaCy بتخلي الـ Keyword Postprocessor ذكي وقوي!</p>
+        </div>
+    </div>
+</body>
+</html>

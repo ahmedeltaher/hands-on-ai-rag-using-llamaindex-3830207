@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشاكل الـ Naive RAG وحلول الـ Self-Correcting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .problem-list {
+            background: #fff5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #ff6b6b;
+        }
+        
+        .problem-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .problem-number {
+            background: #e74c3c;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+        
+        .solution-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 مشاكل الـ Naive RAG وحلول الـ Self-Correcting</h1>
+            <p>فهم عميق لمشاكل أنظمة الاسترجاع التقليدية وازاي نحلها</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🚨 إيه هي مشاكل الـ Naive RAG؟</div>
+            </div>
+            <div class="content">
+                <p>الـ Naive RAG (Retrieval-Augmented Generation) ده نظام بسيط جداً لاسترجاع المعلومات وتوليد الإجابات، بس للأسف عنده مشاكل كبيرة خالص. حتى لو استخدمنا تقنيات متقدمة شوية، لسه المشاكل دي موجودة.</p>
+                
+                <div class="highlight">
+                    <strong>🎯 المشكلة الأساسية:</strong> النظام مش بيفكر ولا بيراجع نفسه - بيشتغل أعمى تماماً!
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📋 المشاكل الثلاثة الرئيسية</div>
+            </div>
+            <div class="content">
+                <div class="problem-list">
+                    <div class="problem-item">
+                        <div class="problem-number">1</div>
+                        <div>
+                            <h4>🔍 استرجاع عشوائي للمعلومات</h4>
+                            <p>النظام بيجيب معلومات لأي سؤال، حتى لو المعلومات دي مالهاش لازمة أو مش مفيدة خالص. يعني لو سألته عن الطقس، ممكن يجيبلك معلومات عن الطبخ!</p>
+                            <div class="highlight">
+                                <strong>مثال:</strong> لو سألت "إيه أحسن طريقة لتعلم البرمجة؟" - ممكن يجيبلك معلومات عن تاريخ الكمبيوتر بدل ما يجاوب على سؤالك المحدد.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="problem-item">
+                        <div class="problem-number">2</div>
+                        <div>
+                            <h4>❌ مافيش تحقق من صلة المعلومات</h4>
+                            <p>النظام مش بيتأكد إن المعلومات اللي جابها فعلاً لها علاقة بالسؤال. بيحط المعلومات في السياق كده على الفاضي والمليان من غير ما يفكر.</p>
+                            <div class="highlight">
+                                <strong>التشبيه:</strong> زي واحد بيقولك "اسأل أي سؤال" وبعدين يفتح كتاب عشوائي ويقرألك أي صفحة من غير ما يشوف السؤال أصلاً!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="problem-item">
+                        <div class="problem-number">3</div>
+                        <div>
+                            <h4>🎯 مافيش ضمان لدقة الإجابة</h4>
+                            <p>مافيش أي آلية تتأكد إن الإجابة اللي طلعها الـ Language Model صحيحة أو لها علاقة بالسؤال. النظام بيولد إجابة وخلاص، مش مهم صح ولا غلط.</p>
+                            <div class="highlight">
+                                <strong>المشكلة:</strong> ده معناه إنك ممكن تاخد إجابات غلط أو مضللة وانت مش واخد بالك!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">💡 ليه المشاكل دي مهمة؟</div>
+            </div>
+            <div class="content">
+                <p>المشاكل دي مش مجرد عيوب بسيطة، دي مشاكل جوهرية بتأثر على:</p>
+                
+                <div class="highlight">
+                    <ul style="padding-right: 20px; margin: 15px 0;">
+                        <li><strong>🎯 دقة النتايج:</strong> مش هتحصل على إجابات صحيحة ومفيدة</li>
+                        <li><strong>⏱️ الوقت:</strong> هتضيع وقت في قراءة معلومات مالهاش لازمة</li>
+                        <li><strong>💰 التكلفة:</strong> استهلاك موارد حاسوبية في حاجات مش مفيدة</li>
+                        <li><strong>🤝 الثقة:</strong> المستخدمين مش هيثقوا في النظام</li>
+                    </ul>
+                </div>
+                
+                <p>عشان كده محتاجين نظام ذكي يعرف يراجع نفسه ويحسن من أداؤه باستمرار - وده بالظبط اللي بيعمله الـ <strong>Self-Correcting RAG</strong>!</p>
+            </div>
+        </div>
+
+        <div class="solution-card">
+            <div class="card-title">✨ الحل: Self-Correcting RAG</div>
+            <div style="margin-top: 15px; line-height: 1.8;">
+                <p>الـ Self-Correcting RAG ده نظام ذكي بيعرف يراجع نفسه ويصحح أخطاؤه. بدل ما النظام يشتغل أعمى، هو بيفكر ويقيم كل خطوة ويحسن من أداؤه لحد ما يوصل لأحسن إجابة ممكنة.</p>
+                
+                <div class="highlight" style="background: rgba(255,255,255,0.2); border-left-color: white; margin-top: 20px;">
+                    <strong>🎯 الهدف:</strong> نحصل على أحسن إجابات ممكنة باستمرار، مش مجرد إجابة عشوائية!
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

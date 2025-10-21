@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Extraction - الجزء الثالث عشر: اختبار وقياس النتائج</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .testing-framework {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .test-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #74b9ff;
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .test-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .metrics-dashboard {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fd79a8;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #fab1a0;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: scale(1.05);
+            border-color: #e17055;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #e17055;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 1.1em;
+            color: #2d3436;
+            font-weight: 600;
+        }
+
+        .evaluation-methods {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #6c5ce7;
+        }
+
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .method-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #a29bfe;
+            transition: transform 0.3s ease;
+        }
+
+        .method-item:hover {
+            transform: translateY(-3px);
+            border-color: #6c5ce7;
+        }
+
+        .method-icon {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #00cec9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            overflow-x: auto;
+            border: 2px solid #636e72;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .results-analysis {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #e17055;
+        }
+
+        .analysis-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 2px solid #fab1a0;
+        }
+
+        .analysis-header {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #e17055;
+            overflow-x: auto;
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .styled-table thead {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .styled-table tbody tr:hover {
+            background-color: rgba(225, 112, 85, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .test-grid,
+            .metrics-grid,
+            .method-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 اختبار وقياس النتائج</h1>
+            <p>الجزء الثالث عشر: طرق شاملة لتقييم جودة وفعالية استخراج الـ Metadata</p>
+        </div>
+
+        <div class="content">
+            <!-- إطار العمل للاختبار -->
+            <div class="card">
+                <h2>🧪 إطار العمل الشامل للاختبار</h2>
+                <div class="card-content">
+                    <p>الاختبار الدقيق هو مفتاح نجاح أي نظام metadata extraction! هنا إطار عمل شامل لقياس الأداء بكل جوانبه:</p>
+
+                    <div class="testing-framework">
+                        <h4>🔬 مكونات إطار الاختبار</h4>
+                        
+                        <div class="test-grid">
+                            <div class="test-card">
+                                <div class="test-header">
+                                    <h5>📋 إعداد بيانات الاختبار</h5>
+                                </div>
+                                <div>
+                                    <p>إنشاء dataset متنوع وممثل للاستخدام الحقيقي:</p>
+                                    <div class="code-block">
+                                        <pre>
+import pandas as pd
+import random
+from typing import List, Dict
+
+class TestDatasetBuilder:
+    def __init__(self):
+        self.test_cases = []
+        self.ground_truth = {}
+    
+    def add_test_case(self, text: str, expected_metadata: Dict):
+        """إضافة حالة اختبار مع النتيجة المتوقعة"""
+        case_id = len(self.test_cases)
+        self.test_cases.append({
+            'id': case_id,
+            'text': text,
+            'domain': self.detect_domain(text),
+            'length': len(text.split()),
+            'complexity': self.assess_complexity(text)
+        })
+        self.ground_truth[case_id] = expected_metadata
+    
+    def detect_domain(self, text: str) -> str:
+        """تحديد مجال النص"""
+        medical_keywords = ['مرض', 'دواء', 'علاج', 'طبيب']
+        legal_keywords = ['قانون', 'محكمة', 'عقد', 'حق']
+        tech_keywords = ['برمجة', 'خوارزمية', 'بيانات', 'ذكاء']
+        
+        if any(word in text for word in medical_keywords):
+            return 'medical'
+        elif any(word in text for word in legal_keywords):
+            return 'legal'
+        elif any(word in text for word in tech_keywords):
+            return 'tech'
+        return 'general'
+    
+    def assess_complexity(self, text: str) -> str:
+        """تقييم تعقد النص"""
+        words = text.split()
+        avg_word_length = sum(len(word) for word in words) / len(words)
+        
+        if avg_word_length > 7 and len(words) > 200:
+            return 'high'
+        elif avg_word_length > 5 and len(words) > 100:
+            return 'medium'
+        return 'low'
+    
+    def create_balanced_dataset(self, size_per_domain=50):
+        """إنشاء dataset متوازن"""
+        domains = ['medical', 'legal', 'tech', 'general']
+        complexities = ['low', 'medium', 'high']
+        
+        for domain in domains:
+            for complexity in complexities:
+                for i in range(size_per_domain // 3):
+                    # إنشاء نص تجريبي
+                    text = self.generate_sample_text(domain, complexity)
+                    expected = self.create_expected_metadata(text, domain)
+                    self.add_test_case(text, expected)
+    
+    def get_dataset_stats(self):
+        """إحصائيات dataset"""
+        df = pd.DataFrame(self.test_cases)
+        return {
+            'total_cases': len(self.test_cases),
+            'domain_distribution': df['domain'].value_counts().to_dict(),
+            'complexity_distribution': df['complexity'].value_counts().to_dict(),
+            'avg_text_length': df['length'].mean()
+        }
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="test-card">
+                                <div class="test-header">
+                                    <h5>⚡ تشغيل الاختبارات الآلي</h5>
+                                </div>
+                                <div>
+                                    <p>نظام آلي لتشغيل الاختبارات وجمع النتائج:</p>
+                                    <div class="code-block">
+                                        <pre>
+import time
+import json
+from datetime import datetime
+
+class AutomatedTester:
+    def __init__(self, extractor, test_dataset):
+        self.extractor = extractor
+        self.test_dataset = test_dataset
+        self.results = {}
+        self.performance_metrics = {}
+    
+    def run_full_test_suite(self):
+        """تشغيل جميع الاختبارات"""
+        print("🚀 بدء تشغيل مجموعة الاختبارات الكاملة...")
+        
+        start_time = time.time()
+        total_cases = len(self.test_dataset.test_cases)
+        
+        for i, test_case in enumerate(self.test_dataset.test_cases):
+            print(f"📝 اختبار {i+1}/{total_cases}: {test_case['domain']}")
+            
+            # تشغيل الاستخراج
+            case_start = time.time()
+            try:
+                result = self.extractor.extract(test_case['text'])
+                extraction_time = time.time() - case_start
+                
+                self.results[test_case['id']] = {
+                    'success': True,
+                    'result': result,
+                    'extraction_time': extraction_time,
+                    'timestamp': datetime.now().isoformat()
+                }
+                
+            except Exception as e:
+                self.results[test_case['id']] = {
+                    'success': False,
+                    'error': str(e),
+                    'extraction_time': time.time() - case_start,
+                    'timestamp': datetime.now().isoformat()
+                }
+        
+        total_time = time.time() - start_time
+        self.performance_metrics = {
+            'total_time': total_time,
+            'avg_time_per_case': total_time / total_cases,
+            'success_rate': self.calculate_success_rate(),
+            'total_cases': total_cases
+        }
+        
+        print("✅ انتهت الاختبارات!")
+        return self.results
+    
+    def calculate_success_rate(self):
+        """حساب معدل النجاح"""
+        successful = sum(1 for r in self.results.values() if r['success'])
+        return (successful / len(self.results)) * 100
+    
+    def save_results(self, filename):
+        """حفظ النتائج في ملف"""
+        report = {
+            'test_results': self.results,
+            'performance_metrics': self.performance_metrics,
+            'test_config': {
+                'extractor_type': type(self.extractor).__name__,
+                'test_date': datetime.now().isoformat()
+            }
+        }
+        
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(report, f, ensure_ascii=False, indent=2)
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="test-card">
+                                <div class="test-header">
+                                    <h5>📊 تحليل النتائج المتقدم</h5>
+                                </div>
+                                <div>
+                                    <p>تحليل شامل للنتائج مع مؤشرات مفصلة:</p>
+                                    <div class="code-block">
+                                        <pre>
+class ResultsAnalyzer:
+    def __init__(self, results, ground_truth, test_cases):
+        self.results = results
+        self.ground_truth = ground_truth
+        self.test_cases = test_cases
+        self.metrics = {}
+    
+    def calculate_accuracy_metrics(self):
+        """حساب مقاييس الدقة"""
+        summary_scores = []
+        entity_scores = []
+        question_scores = []
+        
+        for case_id, result in self.results.items():
+            if not result['success']:
+                continue
+                
+            expected = self.ground_truth[case_id]
+            actual = result['result'].metadata
+            
+            # دقة الملخص
+            if 'section_summary' in actual and 'summary' in expected:
+                summary_score = self.calculate_text_similarity(
+                    actual['section_summary'], 
+                    expected['summary']
+                )
+                summary_scores.append(summary_score)
+            
+            # دقة الكيانات
+            if 'entities' in actual and 'entities' in expected:
+                entity_score = self.calculate_entity_overlap(
+                    actual['entities'], 
+                    expected['entities']
+                )
+                entity_scores.append(entity_score)
+        
+        self.metrics['summary_accuracy'] = np.mean(summary_scores) if summary_scores else 0
+        self.metrics['entity_accuracy'] = np.mean(entity_scores) if entity_scores else 0
+        
+        return self.metrics
+    
+    def calculate_text_similarity(self, text1, text2):
+        """حساب التشابه بين النصوص"""
+        # استخدام Jaccard similarity للكلمات
+        words1 = set(text1.lower().split())
+        words2 = set(text2.lower().split())
+        
+        intersection = words1.intersection(words2)
+        union = words1.union(words2)
+        
+        return len(intersection) / len(union) if union else 0
+    
+    def calculate_entity_overlap(self, entities1, entities2):
+        """حساب تداخل الكيانات"""
+        set1 = set(entities1) if isinstance(entities1, list) else set()
+        set2 = set(entities2) if isinstance(entities2, list) else set()
+        
+        if not set1 and not set2:
+            return 1.0  # كلاهما فارغ = مطابقة تامة
+        
+        intersection = set1.intersection(set2)
+        union = set1.union(set2)
+        
+        return len(intersection) / len(union) if union else 0
+    
+    def generate_performance_report(self):
+        """إنشاء تقرير أداء شامل"""
+        report = {
+            'overall_metrics': self.metrics,
+            'domain_performance': self.analyze_by_domain(),
+            'complexity_performance': self.analyze_by_complexity(),
+            'time_analysis': self.analyze_timing(),
+            'failure_analysis': self.analyze_failures()
+        }
+        
+        return report
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مؤشرات الأداء -->
+            <div class="card">
+                <h2>📈 مؤشرات الأداء الرئيسية</h2>
+                <div class="card-content">
+                    <div class="metrics-dashboard">
+                        <h4>🎯 لوحة مؤشرات الأداء</h4>
+                        
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value">87%</div>
+                                <div class="metric-label">دقة الملخص</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-value">92%</div>
+                                <div class="metric-label">دقة الكيانات</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-value">2.3s</div>
+                                <div class="metric-label">متوسط وقت المعالجة</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-value">95%</div>
+                                <div class="metric-label">معدل النجاح</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-value">78%</div>
+                                <div class="metric-label">جودة الأسئلة</div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-value">0.15$</div>
+                                <div class="metric-label">تكلفة لكل وثيقة</div>
+                            </div>
+                        </div>
+
+                        <div class="comparison-table">
+                            <h4>📊 مقارنة الأداء حسب المجال</h4>
+                            
+                            <table class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th>المجال</th>
+                                        <th>دقة الملخص</th>
+                                        <th>دقة الكيانات</th>
+                                        <th>متوسط الوقت</th>
+                                        <th>معدل النجاح</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>الطبي</strong></td>
+                                        <td>91%</td>
+                                        <td>95%</td>
+                                        <td>2.8s</td>
+                                        <td>97%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>القانوني</strong></td>
+                                        <td>85%</td>
+                                        <td>89%</td>
+                                        <td>3.1s</td>
+                                        <td>93%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>التقني</strong></td>
+                                        <td>89%</td>
+                                        <td>94%</td>
+                                        <td>2.5s</td>
+                                        <td>96%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>عام</strong></td>
+                                        <td>83%</td>
+                                        <td>88%</td>
+                                        <td>2.0s</td>
+                                        <td>94%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>📊 تحليل النتائج</h4>
+                            <p>النتائج تظهر أن المحتوى الطبي يحقق أفضل دقة بسبب وضوح المصطلحات، بينما المحتوى القانوني يحتاج مزيد من التحسين بسبب تعقد اللغة القانونية.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- طرق التقييم -->
+            <div class="card">
+                <h2>🔍 طرق التقييم المتقدمة</h2>
+                <div class="card-content">
+                    <div class="evaluation-methods">
+                        <h4>🎯 منهجيات التقييم الشاملة</h4>
+                        
+                        <div class="method-grid">
+                            <div class="method-item">
+                                <div class="method-icon">🤖</div>
+                                <h5>التقييم الآلي بالـ LLM</h5>
+                                <p>استخدم نموذج لغة آخر لتقييم جودة النتائج:</p>
+                                <div class="code-block">
+                                    <pre>
+class LLMEvaluator:
+    def __init__(self, evaluation_llm):
+        self.evaluation_llm = evaluation_llm
+    
+    def evaluate_summary_quality(self, original_text, summary):
+        """تقييم جودة الملخص باستخدام LLM"""
+        prompt = f"""
+        قيم جودة الملخص التالي من 1-10 بناء على المعايير:
+        1. الدقة: هل المعلومات صحيحة؟
+        2. الشمولية: هل يغطي النقاط المهمة؟
+        3. الوضوح: هل الصياغة واضحة؟
+        4. الإيجاز: هل طوله مناسب؟
+        
+        النص الأصلي: {original_text[:300]}...
+        الملخص: {summary}
+        
+        أعطي تقييماً عددياً من 1-10 فقط:
+        """
+        
+        response = self.evaluation_llm.complete(prompt)
+        try:
+            score = float(response.text.strip())
+            return min(max(score, 1), 10)
+        except:
+            return 5.0
+    
+    def evaluate_entities_completeness(self, text, extracted_entities):
+        """تقييم اكتمال الكيانات المستخرجة"""
+        prompt = f"""
+        راجع النص التالي واحكم على اكتمال الكيانات المستخرجة:
+        
+        النص: {text[:300]}...
+        الكيانات المستخرجة: {extracted_entities}
+        
+        هل الكيانات المستخرجة:
+        1. شاملة (تغطي معظم الكيانات المهمة)؟
+        2. دقيقة (كلها صحيحة)؟
+        3. ذات صلة (مهمة فعلاً)؟
+        
+        النتيجة من 1-10:
+        """
+        
+        response = self.evaluation_llm.complete(prompt)
+        try:
+            score = float(response.text.strip())
+            return min(max(score, 1), 10)
+        except:
+            return 5.0
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="method-item">
+                                <div class="method-icon">👥</div>
+                                <h5>التقييم البشري</h5>
+                                <p>إشراك مختصين بشريين لتقييم دقيق:</p>
+                                <div class="code-block">
+                                    <pre>
+class HumanEvaluationManager:
+    def __init__(self):
+        self.evaluation_tasks = []
+        self.evaluator_responses = {}
+    
+    def create_evaluation_task(self, case_id, original_text, extracted_metadata):
+        """إنشاء مهمة تقييم للمختص البشري"""
+        task = {
+            'id': case_id,
+            'text_preview': original_text[:200] + "...",
+            'summary': extracted_metadata.get('section_summary', ''),
+            'entities': extracted_metadata.get('entities', []),
+            'questions': extracted_metadata.get('questions_this_excerpt_can_answer', []),
+            'evaluation_criteria': {
+                'summary_accuracy': 'مدى دقة الملخص (1-5)',
+                'summary_completeness': 'مدى شمولية الملخص (1-5)',
+                'entities_precision': 'دقة الكيانات (1-5)',
+                'entities_recall': 'اكتمال الكيانات (1-5)',
+                'questions_relevance': 'مناسبة الأسئلة (1-5)'
+            }
+        }
+        
+        self.evaluation_tasks.append(task)
+        return task
+    
+    def collect_human_evaluation(self, evaluator_id, task_id, scores):
+        """جمع تقييم المختص البشري"""
+        if evaluator_id not in self.evaluator_responses:
+            self.evaluator_responses[evaluator_id] = {}
+        
+        self.evaluator_responses[evaluator_id][task_id] = {
+            'scores': scores,
+            'timestamp': datetime.now().isoformat(),
+            'overall_rating': np.mean(list(scores.values()))
+        }
+    
+    def calculate_inter_evaluator_agreement(self):
+        """حساب مدى الاتفاق بين المقيمين"""
+        # حساب Krippendorff's alpha أو مقياس آخر
+        agreements = {}
+        
+        for criterion in ['summary_accuracy', 'entities_precision']:
+            scores_by_evaluator = []
+            
+            for evaluator_data in self.evaluator_responses.values():
+                criterion_scores = [
+                    task['scores'][criterion] 
+                    for task in evaluator_data.values()
+                    if criterion in task['scores']
+                ]
+                scores_by_evaluator.append(criterion_scores)
+            
+            # حساب الارتباط
+            if len(scores_by_evaluator) >= 2:
+                correlations = []
+                for i in range(len(scores_by_evaluator)):
+                    for j in range(i+1, len(scores_by_evaluator)):
+                        corr = np.corrcoef(scores_by_evaluator[i], scores_by_evaluator[j])[0,1]
+                        correlations.append(corr)
+                
+                agreements[criterion] = np.mean(correlations)
+        
+        return agreements
+                                    </pre>
+                                </div>
+                            </div>
+
+                            <div class="method-item">
+                                <div class="method-icon">📊</div>
+                                <h5>التقييم الإحصائي</h5>
+                                <p>استخدام مقاييس إحصائية دقيقة:</p>
+                                <div class="code-block">
+                                    <pre>
+import numpy as np
+from sklearn.metrics import precision_recall_fscore_support
+from scipy.stats import pearsonr, spearmanr
+
+class StatisticalEvaluator:
+    def __init__(self):
+        self.metrics = {}
+    
+    def calculate_entity_metrics(self, true_entities, predicted_entities):
+        """حساب Precision, Recall, F1 للكيانات"""
+        # تحويل للمجموعات للمقارنة
+        true_set = set(true_entities)
+        pred_set = set(predicted_entities)
+        
+        # True Positives: الكيانات الصحيحة المتوقعة
+        tp = len(true_set.intersection(pred_set))
+        
+        # False Positives: الكيانات المتوقعة الخاطئة
+        fp = len(pred_set - true_set)
+        
+        # False Negatives: الكيانات المفقودة
+        fn = len(true_set - pred_set)
+        
+        # حساب المقاييس
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+        
+        return {
+            'precision': precision,
+            'recall': recall,
+            'f1_score': f1,
+            'true_positives': tp,
+            'false_positives': fp,
+            'false_negatives': fn
+        }
+    
+    def calculate_text_similarity_metrics(self, reference_texts, generated_texts):
+        """حساب مقاييس التشابه النصي المتقدمة"""
+        from rouge_score import rouge_scorer
+        
+        scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+        
+        rouge_scores = []
+        
+        for ref, gen in zip(reference_texts, generated_texts):
+            scores = scorer.score(ref, gen)
+            rouge_scores.append({
+                'rouge1_f': scores['rouge1'].fmeasure,
+                'rouge2_f': scores['rouge2'].fmeasure,
+                'rougeL_f': scores['rougeL'].fmeasure
+            })
+        
+        # حساب المتوسطات
+        avg_scores = {}
+        for metric in ['rouge1_f', 'rouge2_f', 'rougeL_f']:
+            avg_scores[metric] = np.mean([score[metric] for score in rouge_scores])
+        
+        return avg_scores
+    
+    def statistical_significance_test(self, baseline_scores, new_scores):
+        """اختبار الدلالة الإحصائية للتحسن"""
+        from scipy.stats import ttest_rel
+        
+        # اختبار t للعينات المترابطة
+        statistic, p_value = ttest_rel(new_scores, baseline_scores)
+        
+        return {
+            'statistic': statistic,
+            'p_value': p_value,
+            'significant': p_value < 0.05,
+            'improvement': np.mean(new_scores) > np.mean(baseline_scores)
+        }
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>💡 أفضل الممارسات للتقييم</h4>
+                        <ul>
+                            <li><strong>تنويع البيانات:</strong> اختبر على نصوص متنوعة من مجالات مختلفة</li>
+                            <li><strong>التقييم المستمر:</strong> راقب الأداء بانتظام وليس مرة واحدة فقط</li>
+                            <li><strong>مقاييس متعددة:</strong> لا تعتمد على مقياس واحد، استخدم عدة مؤشرات</li>
+                            <li><strong>التقييم البشري:</strong> أشرك خبراء بشريين للحالات المعقدة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

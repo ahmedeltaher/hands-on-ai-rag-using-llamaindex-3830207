@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق Similarity Postprocessor - تحت الغطاء</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .algorithm-box { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .step-box { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .logic-box { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-box { background: #f8f9fa; padding: 20px; border-radius: 15px; margin: 20px 0; direction: ltr; text-align: left; border: 2px solid #3498db; }
+        .output-box { background: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%); padding: 20px; border-radius: 15px; margin: 20px 0; border-right: 5px solid #e74c3c; }
+        .implementation-box { background: linear-gradient(120deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 تطبيق Similarity Postprocessor - تحت الغطاء</h1>
+            <p>الدرس الخامس: فهم عميق لآلية عمل فلترة التشابه</p>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ الخوارزمية خطوة بخطوة</h2>
+            <div class="algorithm-box">
+                <h3>🎯 نظرة عامة على العملية:</h3>
+                <p>المدرس بيشرح بالتفصيل إيه اللي بيحصل جوه الـ Similarity Postprocessor عشان نفهم ليه هو شغال كده وإزاي نستفيد منه أحسن استفادة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>1️⃣ فحص إعدادات similarity_cutoff</h2>
+            <div class="step-box">
+                <h3>🔍 الخطوة الأولى:</h3>
+                <p>أول حاجة بيعملها الـ postprocessor إنه يشوف هل الـ <strong>similarity_cutoff</strong> اتضبط ولا لأ.</p>
+                
+                <h3>⚙️ القيمة الافتراضية:</h3>
+                <ul>
+                    <li><strong>Default value:</strong> None</li>
+                    <li><strong>المعنى:</strong> لو مضبطش حاجة، مش هيفلتر أي حاجة</li>
+                    <li><strong>السلوك:</strong> كل العقد هتعدي بدون فلترة</li>
+                </ul>
+                
+                <h3>💡 الحكمة من ده:</h3>
+                <p>لو إنت مش عايز فلترة، مش محتاج تحدد قيمة - الـ postprocessor هيسيب كل حاجة زي ما هي.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>2️⃣ التكرار على العقد</h2>
+            <div class="step-box">
+                <h3>🔄 عملية الفحص:</h3>
+                <p>بعد كده، بيعمل iteration على كل عقدة في القائمة اللي جايه من الـ retriever.</p>
+                
+                <h3>📊 إيه اللي بيتفحص:</h3>
+                <ul>
+                    <li><strong>كل عقدة لوحدها:</strong> مفيش batch processing هنا</li>
+                    <li><strong>درجة التشابه:</strong> بيشوف الـ similarity score بتاعت كل عقدة</li>
+                    <li><strong>المقارنة بالحد:</strong> بيقارن بالـ cutoff اللي إنت حددته</li>
+                </ul>
+                
+                <h3>⚡ الكفاءة:</h3>
+                <p>العملية دي سريعة جداً لأنها مجرد مقارنات رقمية بسيطة، مفيش حسابات معقدة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3️⃣ منطق اتخاذ القرار</h2>
+            <div class="logic-box">
+                <h3>❌ حالات الاستبعاد:</h3>
+                <p>العقدة <strong>مش هتتضمن</strong> في النتائج النهائية لو:</p>
+                <ul>
+                    <li><strong>similarity score = None:</strong> مفيش درجة تشابه محسوبة</li>
+                    <li><strong>similarity score < cutoff:</strong> الدرجة أقل من الحد المطلوب</li>
+                </ul>
+                
+                <h3>✅ حالات القبول:</h3>
+                <p>العقدة <strong>هتتضمن</strong> في النتائج النهائية لو:</p>
+                <ul>
+                    <li><strong>similarity score ≥ cutoff:</strong> الدرجة أعلى من أو تساوي الحد</li>
+                    <li><strong>similarity_cutoff = None:</strong> مفيش فلترة أصلاً</li>
+                </ul>
+                
+                <h3>🤔 التعامل مع القيم المفقودة:</h3>
+                <p>لو الـ similarity score مش موجود (None)، ده معناه إن فيه مشكلة في حساب التشابه، فالعقدة دي مش هتتقبل عشان الأمان.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>4️⃣ النتيجة النهائية</h2>
+            <div class="output-box">
+                <h3>📦 إيه اللي بيرجع:</h3>
+                <p>الـ method بيرجع <strong>filtered list</strong> من الـ <code>NodeWithScore objects</code>.</p>
+                
+                <h3>🎯 مكونات NodeWithScore:</h3>
+                <ul>
+                    <li><strong>Node:</strong> المحتوى الأصلي للعقدة</li>
+                    <li><strong>Score:</strong> درجة التشابه</li>
+                    <li><strong>Metadata:</strong> معلومات إضافية إن وجدت</li>
+                </ul>
+                
+                <h3>📈 تأثير الفلترة:</h3>
+                <ul>
+                    <li><strong>حجم أقل:</strong> عدد أقل من العقد</li>
+                    <li><strong>جودة أعلى:</strong> كل العقد مرتبطة بالسؤال</li>
+                    <li><strong>ترتيب محفوظ:</strong> ترتيب العقد الأصلي مبيتغيرش</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💻 كيفية إنشاء Similarity Postprocessor</h2>
+            <div class="implementation-box">
+                <h3>📚 الاستيراد المطلوب:</h3>
+            </div>
+            
+            <div class="code-box">
+                <pre><code>from llama_index.core.postprocessor import SimilarityPostprocessor</code></pre>
+            </div>
+            
+            <div class="implementation-box">
+                <h3>🔧 طرق الإنشاء المختلفة:</h3>
+            </div>
+            
+            <div class="code-box">
+                <pre><code># طريقة 1: بدون فلترة (Default)
+postprocessor = SimilarityPostprocessor()
+
+# طريقة 2: فلترة متوسطة
+postprocessor = SimilarityPostprocessor(similarity_cutoff=0.6)
+
+# طريقة 3: فلترة صارمة
+postprocessor = SimilarityPostprocessor(similarity_cutoff=0.8)
+
+# طريقة 4: فلترة مرنة
+postprocessor = SimilarityPostprocessor(similarity_cutoff=0.4)
+</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 نصائح للاستخدام الأمثل</h2>
+            <div class="algorithm-box">
+                <h3>📊 اختبار القيم:</h3>
+                <ul>
+                    <li><strong>ابدأ بـ 0.6:</strong> قيمة متوازنة للبداية</li>
+                    <li><strong>راقب النتائج:</strong> شوف عدد العقد اللي بتطلع</li>
+                    <li><strong>اضبط تدريجياً:</strong> ارفع أو قلل حسب الحاجة</li>
+                </ul>
+                
+                <h3>⚖️ توازن الجودة والكمية:</h3>
+                <ul>
+                    <li><strong>قيمة عالية:</strong> جودة أعلى، كمية أقل</li>
+                    <li><strong>قيمة منخفضة:</strong> كمية أكبر، جودة أقل</li>
+                    <li><strong>اختبر مع داتا حقيقية:</strong> كل dataset مختلف</li>
+                </ul>
+                
+                <h3>🔧 التطوير التدريجي:</h3>
+                <ul>
+                    <li><strong>ابدأ بدون فلترة:</strong> شوف كل النتائج الأول</li>
+                    <li><strong>ضيف الفلترة تدريجياً:</strong> وشوف التأثير</li>
+                    <li><strong>اختبر مع مستخدمين:</strong> هما اللي يقولولك لو النتائج كويسة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎯 دلوقتي إنت فاهم إزاي الـ Similarity Postprocessor بيشتغل من جوه - استعد للنوع التالي!</p>
+        </div>
+    </div>
+</body>
+</html>

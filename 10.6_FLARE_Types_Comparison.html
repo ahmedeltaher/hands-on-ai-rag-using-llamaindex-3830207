@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنواع FLARE: FLAREinstruct vs FLAREdirect</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); min-height: 100vh; padding: 20px; line-height: 1.8; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #2c3e50; font-size: 1.8em; margin-bottom: 20px; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; }
+        .instruct-box { background: linear-gradient(120deg, #74b9ff 0%, #0984e3 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .direct-box { background: linear-gradient(120deg, #fd79a8 0%, #e84393 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .comparison-box { background: linear-gradient(120deg, #fdcb6e 0%, #e17055 100%); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .confidence-box { background: linear-gradient(120deg, #6c5ce7 0%, #a29bfe 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .implementation-box { background: linear-gradient(120deg, #00b894 0%, #00cec9 100%); padding: 20px; border-radius: 15px; margin: 20px 0; color: white; }
+        .footer { background: rgba(44, 62, 80, 0.9); color: white; text-align: center; padding: 20px; border-radius: 15px; }
+        .vs-badge { background: #e74c3c; color: white; padding: 10px 20px; border-radius: 25px; font-weight: bold; display: inline-block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ أنواع FLARE: FLAREinstruct vs FLAREdirect</h1>
+            <p>الدرس السادس: اختلاف الاستراتيجيات وطرق التحكم</p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 نظرة عامة على النوعين</h2>
+            <p>FLARE له نسختين مختلفتين، كل واحدة ليها طريقة مختلفة في التعامل مع الثقة واتخاذ قرار البحث:</p>
+            
+            <div class="vs-badge">FLAREinstruct VS FLAREdirect</div>
+            
+            <h3>🔍 الفكرة الأساسية:</h3>
+            <ul>
+                <li><strong>نفس الهدف:</strong> تحسين RAG عن طريق البحث النشط</li>
+                <li><strong>نفس المبدأ:</strong> استخدام الثقة لاتخاذ قرار البحث</li>
+                <li><strong>اختلاف التطبيق:</strong> طريقة قياس الثقة وتحديد نقاط البحث</li>
+                <li><strong>اختلاف التعقيد:</strong> مستوى التحكم والدقة في كل نوع</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>📘 FLAREinstruct: النوع المُوجَّه</h2>
+            <div class="instruct-box">
+                <h3>💡 فكرة العمل:</h3>
+                <p>FLAREinstruct بيعتمد على <strong>توجيه النموذج بوضوح</strong> لتحديد نقاط عدم الثقة والبحث المطلوب.</p>
+                
+                <h3>🎯 خصائص مميزة:</h3>
+                <ul>
+                    <li><strong>التوجيه الواضح:</strong> إرشادات صريحة للنموذج</li>
+                    <li><strong>التحكم الدقيق:</strong> تحديد دقيق لنقاط التوقف</li>
+                    <li><strong>الشفافية:</strong> وضوح في عملية اتخاذ القرار</li>
+                    <li><strong>القابلية للتعديل:</strong> سهولة تخصيص السلوك</li>
+                </ul>
+                
+                <h3>⚙️ آلية العمل:</h3>
+                <ul>
+                    <li><strong>Instruction Prompting:</strong> توجيهات واضحة في الprompt</li>
+                    <li><strong>Explicit Markers:</strong> علامات واضحة لنقاط عدم الثقة</li>
+                    <li><strong>Structured Output:</strong> إخراج منظم ومتوقع</li>
+                    <li><strong>Rule-based Decisions:</strong> قرارات مبنية على قواعد واضحة</li>
+                </ul>
+                
+                <h3>📝 مثال على التوجيه:</h3>
+                <p>"إذا لم تكن متأكداً من معلومة معينة، ضع علامة [SEARCH] قبل المعلومة غير المؤكدة"</p>
+                
+                <h3>✅ المميزات:</h3>
+                <ul>
+                    <li><strong>سهولة التطبيق:</strong> واضح ومباشر</li>
+                    <li><strong>التحكم الكامل:</strong> تحكم دقيق في السلوك</li>
+                    <li><strong>قابلية الفهم:</strong> سهل الفهم والتطوير</li>
+                    <li><strong>الاستقرار:</strong> نتائج متسقة ومتوقعة</li>
+                </ul>
+                
+                <h3>⚠️ التحديات:</h3>
+                <ul>
+                    <li><strong>اعتماد على النموذج:</strong> يحتاج نموذج ذكي يتبع التعليمات</li>
+                    <li><strong>طول الprompt:</strong> قد يحتاج توجيهات مطولة</li>
+                    <li><strong>صلابة:</strong> أقل مرونة في المواقف غير المتوقعة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔥 FLAREdirect: النوع المباشر</h2>
+            <div class="direct-box">
+                <h3>💡 فكرة العمل:</h3>
+                <p>FLAREdirect بيعتمد على <strong>قياس الثقة مباشرة</strong> من إخراج النموذج بدون توجيهات صريحة.</p>
+                
+                <h3>🎯 خصائص مميزة:</h3>
+                <ul>
+                    <li><strong>القياس المباشر:</strong> حساب الثقة من probability scores</li>
+                    <li><strong>الطبيعية:</strong> لا يحتاج تعديل في الprompt</li>
+                    <li><strong>المرونة:</strong> تكيف طبيعي مع أي محتوى</li>
+                    <li><strong>الكفاءة:</strong> أقل تعقيد في التطبيق</li>
+                </ul>
+                
+                <h3>⚙️ آلية العمل:</h3>
+                <ul>
+                    <li><strong>Token Probabilities:</strong> تحليل احتمالات كل token</li>
+                    <li><strong>Confidence Thresholds:</strong> حدود ثقة محددة مسبقاً</li>
+                    <li><strong>Automatic Detection:</strong> اكتشاف تلقائي لنقاط الضعف</li>
+                    <li><strong>Dynamic Retrieval:</strong> بحث ديناميكي حسب الحاجة</li>
+                </ul>
+                
+                <h3>📊 مثال على القياس:</h3>
+                <p>إذا كان احتمال token معين أقل من 0.7، يعتبر نقطة ضعف تحتاج بحث</p>
+                
+                <h3>✅ المميزات:</h3>
+                <ul>
+                    <li><strong>الطبيعية:</strong> لا يحتاج تدخل في الprompt</li>
+                    <li><strong>الدقة:</strong> قياس رقمي دقيق للثقة</li>
+                    <li><strong>المرونة:</strong> يتكيف مع أي نوع محتوى</li>
+                    <li><strong>الكفاءة:</strong> أقل overhead في المعالجة</li>
+                </ul>
+                
+                <h3>⚠️ التحديات:</h3>
+                <ul>
+                    <li><strong>تعقيد التطبيق:</strong> يحتاج access لprobability scores</li>
+                    <li><strong>ضبط العتبات:</strong> تحديد الthresholds المناسبة</li>
+                    <li><strong>اعتماد على النموذج:</strong> جودة probability calibration</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚖️ مقارنة تفصيلية</h2>
+            <div class="comparison-box">
+                <h3>🔍 المعايير الأساسية:</h3>
+                
+                <h4>📊 سهولة التطبيق:</h4>
+                <ul>
+                    <li><strong>FLAREinstruct:</strong> ⭐⭐⭐⭐⭐ (بسيط ومباشر)</li>
+                    <li><strong>FLAREdirect:</strong> ⭐⭐⭐ (يحتاج فهم probability scores)</li>
+                </ul>
+                
+                <h4>🎯 دقة التحكم:</h4>
+                <ul>
+                    <li><strong>FLAREinstruct:</strong> ⭐⭐⭐⭐⭐ (تحكم كامل)</li>
+                    <li><strong>FLAREdirect:</strong> ⭐⭐⭐⭐ (تحكم رقمي دقيق)</li>
+                </ul>
+                
+                <h4>🚀 المرونة:</h4>
+                <ul>
+                    <li><strong>FLAREinstruct:</strong> ⭐⭐⭐ (محدود بالتوجيهات)</li>
+                    <li><strong>FLAREdirect:</strong> ⭐⭐⭐⭐⭐ (مرونة كاملة)</li>
+                </ul>
+                
+                <h4>⚡ الأداء:</h4>
+                <ul>
+                    <li><strong>FLAREinstruct:</strong> ⭐⭐⭐⭐ (مستقر ومتوقع)</li>
+                    <li><strong>FLAREdirect:</strong> ⭐⭐⭐⭐⭐ (أداء متفوق مع الضبط الصحيح)</li>
+                </ul>
+                
+                <h4>🛠️ متطلبات التطوير:</h4>
+                <ul>
+                    <li><strong>FLAREinstruct:</strong> prompt engineering مهارات</li>
+                    <li><strong>FLAREdirect:</strong> فهم probability theory ومعالجة البيانات</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎚️ Confidence-based Retrieval</h2>
+            <div class="confidence-box">
+                <h3>📊 أساس العمل في النوعين:</h3>
+                <p>رغم الاختلاف، النوعين بيعتمدوا على <strong>مستوى الثقة</strong> كمحرك للبحث.</p>
+                
+                <h3>🔢 قياس الثقة في FLAREinstruct:</h3>
+                <ul>
+                    <li><strong>Binary Decision:</strong> إما واثق أو غير واثق</li>
+                    <li><strong>Explicit Markers:</strong> علامات واضحة للشك</li>
+                    <li><strong>Rule-based Logic:</strong> قرارات مبنية على قواعد</li>
+                    <li><strong>Human-like Reasoning:</strong> منطق قريب من التفكير البشري</li>
+                </ul>
+                
+                <h3>📈 قياس الثقة في FLAREdirect:</h3>
+                <ul>
+                    <li><strong>Probability Scores:</strong> درجات احتمالية دقيقة</li>
+                    <li><strong>Threshold-based:</strong> حدود عتبة للثقة</li>
+                    <li><strong>Statistical Analysis:</strong> تحليل إحصائي للثقة</li>
+                    <li><strong>Machine-optimized:</strong> مُحسَّن للآلة</li>
+                </ul>
+                
+                <h3>⚙️ آلية اتخاذ القرار:</h3>
+                <ul>
+                    <li><strong>تحديد نقاط الضعف:</strong> اكتشاف المناطق غير المؤكدة</li>
+                    <li><strong>تقييم الحاجة:</strong> هل البحث ضروري؟</li>
+                    <li><strong>تنفيذ البحث:</strong> جلب معلومات إضافية</li>
+                    <li><strong>دمج النتائج:</strong> تحسين الإجابة بالمعلومات الجديدة</li>
+                </ul>
+                
+                <h3>🎯 ضبط مستوى الحساسية:</h3>
+                <ul>
+                    <li><strong>عالي الحساسية:</strong> بحث أكتر، دقة أعلى، وقت أطول</li>
+                    <li><strong>متوسط الحساسية:</strong> توازن بين السرعة والدقة</li>
+                    <li><strong>منخفض الحساسية:</strong> بحث أقل، سرعة أعلى، دقة مقبولة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 التطبيق العملي</h2>
+            <div class="implementation-box">
+                <h3>🎯 اختيار النوع المناسب:</h3>
+                
+                <h4>✅ استخدم FLAREinstruct إذا:</h4>
+                <ul>
+                    <li><strong>التحكم مهم:</strong> تحتاج سيطرة كاملة على السلوك</li>
+                    <li><strong>الوضوح مطلوب:</strong> تريد فهم واضح لكل قرار</li>
+                    <li><strong>البداية:</strong> أول مرة تطبق FLARE</li>
+                    <li><strong>التطوير السريع:</strong> تريد prototype سريع</li>
+                </ul>
+                
+                <h4>✅ استخدم FLAREdirect إذا:</h4>
+                <ul>
+                    <li><strong>الأداء الأقصى:</strong> تريد أفضل نتائج ممكنة</li>
+                    <li><strong>التكامل السلس:</strong> تريد تكامل طبيعي مع النظام</li>
+                    <li><strong>البيانات المتنوعة:</strong> تتعامل مع محتوى متغير</li>
+                    <li><strong>الإنتاج:</strong> نظام production متقدم</li>
+                </ul>
+                
+                <h3>🛠️ خطوات التطبيق:</h3>
+                <ul>
+                    <li><strong>تحليل الاحتياج:</strong> فهم متطلبات المشروع</li>
+                    <li><strong>اختيار النوع:</strong> FLAREinstruct أو FLAREdirect</li>
+                    <li><strong>ضبط المعاملات:</strong> thresholds وparameters</li>
+                    <li><strong>الاختبار:</strong> تجربة على بيانات متنوعة</li>
+                    <li><strong>التحسين:</strong> ضبط دقيق للأداء الأمثل</li>
+                </ul>
+                
+                <h3>📊 مؤشرات الأداء:</h3>
+                <ul>
+                    <li><strong>دقة الإجابات:</strong> مدى صحة المعلومات</li>
+                    <li><strong>سرعة الاستجابة:</strong> وقت الحصول على الإجابة</li>
+                    <li><strong>عدد البحثات:</strong> كمية البحث المطلوبة</li>
+                    <li><strong>رضا المستخدم:</strong> جودة التجربة العامة</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚡ النوعان مكملان لبعض: FLAREinstruct للتحكم، FLAREdirect للأداء!</p>
+        </div>
+    </div>
+</body>
+</html>

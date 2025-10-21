@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Extraction - الجزء الرابع: الإضافة اليدوية للـ Metadata</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .manual-approach {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #74b9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .example-card:hover {
+            transform: translateY(-3px);
+            border-color: #0984e3;
+        }
+
+        .example-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .pros-cons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .pros-section {
+            background: rgba(39, 174, 96, 0.1);
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+
+        .cons-section {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+
+        .implementation-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fdcb6e;
+        }
+
+        .step-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .step-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #e17055;
+            position: relative;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+        }
+
+        .code-card {
+            background: #2d3436;
+            color: #00cec9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            direction: ltr;
+            text-align: left;
+            border: 2px solid #636e72;
+        }
+
+        .code-comment {
+            color: #74b9ff;
+            font-style: italic;
+        }
+
+        .code-string {
+            color: #fd79a8;
+        }
+
+        .code-keyword {
+            color: #00b894;
+            font-weight: bold;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .example-grid,
+            .pros-cons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-card {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✋ الإضافة اليدوية للـ Metadata</h1>
+            <p>الجزء الرابع: الطريقة التقليدية والأساسية لإضافة البيانات الوصفية</p>
+        </div>
+
+        <div class="content">
+            <!-- فهم الطريقة اليدوية -->
+            <div class="card">
+                <h2>🛠️ ما هي الطريقة اليدوية؟</h2>
+                <div class="card-content">
+                    <p>الطريقة اليدوية هي أبسط وأوضح طريقة لإضافة metadata للـ chunks. انت بنفسك تحدد البيانات الوصفية لكل قطعة نص.</p>
+
+                    <div class="manual-approach">
+                        <h4>💡 الفكرة الأساسية</h4>
+                        <p>بدل ما تسيب الكمبيوتر يخمن إيه البيانات المناسبة، انت بنفسك تحط المعلومات اللي تشوفها مناسبة ودقيقة للمحتوى.</p>
+
+                        <div class="technical-detail">
+                            <h4>🎯 مثال من المدرس</h4>
+                            <p>المدرس استخدم مثال بسيط وذكي جداً:</p>
+                            <ul>
+                                <li><strong>المشكلة:</strong> عندك chunks من مؤلفين مختلفين</li>
+                                <li><strong>الحل:</strong> إضافة metadata tag اسمه "known_for"</li>
+                                <li><strong>الهدف:</strong> يوضح كل مؤلف مشهور بإيه</li>
+                                <li><strong>النتيجة:</strong> النظام يقدر يميز بين أنواع المحتوى المختلفة</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="example-grid">
+                        <div class="example-card">
+                            <div class="example-header">
+                                <h5>📖 Naval Ravikant</h5>
+                            </div>
+                            <div>
+                                <p><strong>known_for:</strong> "مشهور بنصائحه حول بناء الثروة وتحقيق السعادة"</p>
+                                <p><strong>الفائدة:</strong> لما حد يسأل عن الثروة أو السعادة، النظام يعرف يدور في محتوى Naval</p>
+                            </div>
+                        </div>
+
+                        <div class="example-card">
+                            <div class="example-header">
+                                <h5>🥋 Bruce Lee</h5>
+                            </div>
+                            <div>
+                                <p><strong>known_for:</strong> "يقدم حكمة عميقة حول تطوير الذات والنمو الشخصي"</p>
+                                <p><strong>الفائدة:</strong> لما حد يسأل عن تطوير الذات، النظام يدور في محتوى Bruce Lee</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مميزات وعيوب الطريقة اليدوية -->
+            <div class="card">
+                <h2>⚖️ مميزات وعيوب الطريقة اليدوية</h2>
+                <div class="card-content">
+                    <p>زي أي طريقة، الإضافة اليدوية ليها مميزات وعيوب. هنشوف الاتنين بصراحة:</p>
+
+                    <div class="pros-cons-grid">
+                        <div class="pros-section">
+                            <h5>✅ المميزات</h5>
+                            <ul>
+                                <li><strong>دقة عالية:</strong> انت بتحط البيانات بناء على فهمك للمحتوى</li>
+                                <li><strong>تحكم كامل:</strong> تقدر تحدد بالضبط إيه المعلومات المهمة</li>
+                                <li><strong>مناسبة للسياق:</strong> تراعي خصوصية مجالك أو مشروعك</li>
+                                <li><strong>بساطة في التطبيق:</strong> مافيش تعقيدات تقنية</li>
+                                <li><strong>فهم عميق:</strong> تعكس فهمك الحقيقي للمحتوى</li>
+                                <li><strong>مرونة كاملة:</strong> تقدر تغير أو تعدل أي وقت</li>
+                            </ul>
+                        </div>
+
+                        <div class="cons-section">
+                            <h5>❌ العيوب</h5>
+                            <ul>
+                                <li><strong>وقت كتير:</strong> محتاجة جهد ووقت كبير</li>
+                                <li><strong>مش عملية للمشاريع الكبيرة:</strong> لو عندك آلاف الوثائق</li>
+                                <li><strong>عرضة للأخطاء البشرية:</strong> ممكن تنسى أو تخطئ</li>
+                                <li><strong>صعوبة في الاتساق:</strong> مش سهل تحافظ على نفس المعايير</li>
+                                <li><strong>محتاجة خبرة:</strong> لازم تفهم المحتوى كويس</li>
+                                <li><strong>صعوبة في التحديث:</strong> لو المحتوى اتغير</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ متى تستخدم الطريقة اليدوية؟</h4>
+                        <ul>
+                            <li><strong>المشاريع الصغيرة:</strong> أقل من 1000 وثيقة</li>
+                            <li><strong>المحتوى المتخصص:</strong> يحتاج فهم عميق ودقيق</li>
+                            <li><strong>الجودة أهم من السرعة:</strong> لما الدقة أولوية</li>
+                            <li><strong>بداية المشروع:</strong> عشان تفهم نوعية البيانات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- خطوات التطبيق العملي -->
+            <div class="card">
+                <h2>🔧 خطوات التطبيق العملي</h2>
+                <div class="card-content">
+                    <p>هنشوف إزاي نطبق الطريقة اليدوية خطوة بخطوة، بناء على شرح المدرس:</p>
+
+                    <div class="implementation-section">
+                        <h4>📋 خطوات التنفيذ</h4>
+                        
+                        <div class="step-flow">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <h5>📊 تحليل المحتوى</h5>
+                                <p>ادرس المحتوى اللي عندك وحدد إيه أهم المعلومات اللي ممكن تساعد في عملية البحث والاسترجاع.</p>
+                            </div>
+
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <h5>🏷️ تحديد أنواع الـ Tags</h5>
+                                <p>اختار أنواع الـ metadata اللي هاتضيفها. مثلاً: known_for, topic, audience, type, difficulty_level</p>
+                            </div>
+
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <h5>📝 إنشاء Dictionary</h5>
+                                <p>اعمل dictionary يحتوي على كل الـ metadata لكل مؤلف أو نوع محتوى.</p>
+                            </div>
+
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <h5>🔗 ربط البيانات</h5>
+                                <p>اربط الـ metadata بالـ documents المناسبة ليها.</p>
+                            </div>
+
+                            <div class="step-item">
+                                <div class="step-number">5</div>
+                                <h5>✅ فحص النتائج</h5>
+                                <p>اطلع على عينة من النتائج وتأكد إن الـ metadata اتضافت صح.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>💡 نصائح للنجاح</h4>
+                        <ul>
+                            <li><strong>ابدأ بسيط:</strong> ابدأ بـ tag واحد أو اتنين</li>
+                            <li><strong>كن محدد:</strong> استخدم أوصاف واضحة ومحددة</li>
+                            <li><strong>فكر في المستخدم:</strong> إيه اللي هايساعده في البحث؟</li>
+                            <li><strong>اختبر:</strong> جرب تدور باستخدام الـ metadata الجديدة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مثال تطبيقي -->
+            <div class="card">
+                <h2>💻 مثال تطبيقي: إضافة known_for tag</h2>
+                <div class="card-content">
+                    <p>هنشوف مثال عملي لإزاي نضيف الـ metadata يدوياً، بناء على شرح المدرس:</p>
+
+                    <div class="code-card">
+<span class="code-comment"># إنشاء dictionary للـ metadata</span>
+<span class="code-keyword">author_metadata</span> = {
+    <span class="code-string">"Naval Ravikant"</span>: {
+        <span class="code-string">"known_for"</span>: <span class="code-string">"مشهور بنصائحه حول بناء الثروة وتحقيق السعادة"</span>,
+        <span class="code-string">"expertise"</span>: <span class="code-string">"ريادة الأعمال والاستثمار"</span>,
+        <span class="code-string">"audience"</span>: <span class="code-string">"رجال الأعمال والمستثمرين"</span>
+    },
+    <span class="code-string">"Bruce Lee"</span>: {
+        <span class="code-string">"known_for"</span>: <span class="code-string">"حكمة عميقة حول تطوير الذات والنمو الشخصي"</span>,
+        <span class="code-string">"expertise"</span>: <span class="code-string">"الفلسفة والفنون القتالية"</span>,
+        <span class="code-string">"audience"</span>: <span class="code-string">"الباحثين عن التطوير الذاتي"</span>
+    }
+}
+
+<span class="code-comment"># إضافة الـ metadata للوثائق</span>
+<span class="code-keyword">for</span> document <span class="code-keyword">in</span> documents:
+    author = document.metadata.get(<span class="code-string">"author"</span>)
+    <span class="code-keyword">if</span> author <span class="code-keyword">in</span> author_metadata:
+        <span class="code-comment"># إضافة الـ metadata الجديدة</span>
+        document.metadata.update(author_metadata[author])
+
+<span class="code-comment"># فحص النتيجة</span>
+sample_doc = documents[<span class="code-string">0</span>]
+<span class="code-keyword">print</span>(sample_doc.metadata)
+                    </div>
+
+                    <div class="info-box">
+                        <h4>📊 النتيجة المتوقعة</h4>
+                        <p>هاتلاقي في metadata الوثيقة معلومات زي:</p>
+                        <ul>
+                            <li><strong>page_number:</strong> رقم الصفحة</li>
+                            <li><strong>file_name:</strong> اسم الملف</li>
+                            <li><strong>title:</strong> عنوان الوثيقة</li>
+                            <li><strong>author:</strong> اسم المؤلف</li>
+                            <li><strong>known_for:</strong> المؤلف مشهور بإيه</li>
+                            <li><strong>expertise:</strong> مجال تخصصه</li>
+                            <li><strong>audience:</strong> الجمهور المستهدف</li>
+                        </ul>
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🎯 الفوائد المحققة</h4>
+                        <p>مع الـ metadata الجديدة دي، النظام هايقدر:</p>
+                        <ul>
+                            <li><strong>يفهم السياق:</strong> يعرف نوع المحتوى وطبيعته</li>
+                            <li><strong>يحسن البحث:</strong> يدور في المحتوى المناسب للسؤال</li>
+                            <li><strong>يصنف بدقة:</strong> يجمع المحتوى المتشابه</li>
+                            <li><strong>يخصص النتائج:</strong> يختار حسب الجمهور المناسب</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

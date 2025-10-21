@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary Index - الجزء السادس: التطبيق العملي والكود</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #00b894;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #ddd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 5px solid #00b894;
+        }
+
+        .code-explanation {
+            background: rgba(116, 185, 255, 0.1);
+            border: 2px solid #74b9ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .implementation-steps {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #fd79a8;
+        }
+
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #fd79a8;
+            position: relative;
+        }
+
+        .step-card::after {
+            content: '↓';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em;
+            color: #fd79a8;
+            font-weight: bold;
+        }
+
+        .step-card:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .api-comparison {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #6c5ce7;
+        }
+
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .api-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #a29bfe;
+            transition: transform 0.3s ease;
+        }
+
+        .api-card:hover {
+            transform: translateY(-3px);
+            border-color: #6c5ce7;
+        }
+
+        .api-header {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .config-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid #e17055;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #e17055;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            border-color: #d63031;
+        }
+
+        .feature-icon {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .api-grid,
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💻 Document Summary Index - التطبيق العملي</h1>
+            <p>الجزء السادس: شوف الكود الحقيقي واتعلم إزاي تطبقه</p>
+        </div>
+
+        <div class="content">
+            <!-- مقدمة التطبيق -->
+            <div class="card">
+                <h2>🚀 مقدمة التطبيق العملي</h2>
+                <div class="card-content">
+                    <p>دلوقتي هندخل في الجزء العملي ونشوف إزاي نطبق Document Summary Index بالكود الحقيقي:</p>
+
+                    <div class="code-section">
+                        <h4>📋 المتطلبات الأساسية</h4>
+                        
+                        <div class="code-block">
+# تنصيب المكتبات المطلوبة
+pip install llama-index
+pip install openai
+pip install chromadb  # للـ vector storage
+pip install PyPDF2   # لقراءة ملفات PDF
+                        </div>
+
+                        <div class="code-explanation">
+                            <h5>🔧 شرح المكتبات</h5>
+                            <ul>
+                                <li><strong>llama-index:</strong> المكتبة الأساسية للـ RAG وDocument Summary</li>
+                                <li><strong>openai:</strong> للوصول لنماذج OpenAI (GPT وembedding)</li>
+                                <li><strong>chromadb:</strong> قاعدة بيانات vector محلية وسريعة</li>
+                                <li><strong>PyPDF2:</strong> لقراءة ملفات PDF وتحويلها لنص</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الإعداد الأساسي -->
+            <div class="card">
+                <h2>⚙️ الإعداد الأساسي والتكوين</h2>
+                <div class="card-content">
+                    <div class="config-section">
+                        <h4>🔑 إعداد المفاتيح والنماذج</h4>
+                        
+                        <div class="code-block">
+import os
+from llama_index.core import Settings
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
+
+# إعداد مفتاح OpenAI
+os.environ["OPENAI_API_KEY"] = "your-api-key-here"
+
+# إعداد النماذج الافتراضية
+Settings.llm = OpenAI(
+    model="gpt-4o-mini",  # أو gpt-4 للجودة الأعلى
+    temperature=0.1
+)
+
+Settings.embed_model = OpenAIEmbedding(
+    model="text-embedding-3-small"  # أو text-embedding-3-large
+)
+                        </div>
+
+                        <div class="code-explanation">
+                            <h5>📝 شرح الإعدادات</h5>
+                            <ul>
+                                <li><strong>gpt-4o-mini:</strong> نموذج سريع ومنخفض التكلفة للتلخيص</li>
+                                <li><strong>temperature=0.1:</strong> للحصول على نتائج متسقة وأقل عشوائية</li>
+                                <li><strong>text-embedding-3-small:</strong> نموذج embedding حديث وفعال</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تحميل البيانات -->
+            <div class="card">
+                <h2>📄 تحميل البيانات وتجهيزها</h2>
+                <div class="card-content">
+                    <div class="implementation-steps">
+                        <h4>📚 طرق مختلفة لتحميل البيانات</h4>
+                        
+                        <div class="step-container">
+                            <div class="step-card">
+                                <div class="step-number">الطريقة الأولى</div>
+                                <h5>📂 تحميل من مجلد</h5>
+                                <div class="code-block">
+from llama_index.core import SimpleDirectoryReader
+
+# تحميل كل الملفات من مجلد
+documents = SimpleDirectoryReader(
+    input_dir="./data",
+    recursive=True,  # للبحث في المجلدات الفرعية
+    file_extractor={
+        ".pdf": "PyPDF2Reader",
+        ".docx": "DocxReader",
+        ".txt": "TextFileReader"
+    }
+).load_data()
+
+print(f"تم تحميل {len(documents)} مستند")
+                                </div>
+                            </div>
+
+                            <div class="step-card">
+                                <div class="step-number">الطريقة التانية</div>
+                                <h5>🌐 تحميل من URLs</h5>
+                                <div class="code-block">
+from llama_index.readers.web import SimpleWebPageReader
+
+# قائمة URLs للمواقع أو المقالات
+urls = [
+    "https://example.com/article1",
+    "https://example.com/article2",
+    "https://example.com/article3"
+]
+
+# تحميل المحتوى من الإنترنت
+web_documents = SimpleWebPageReader(
+    html_to_text=True
+).load_data(urls)
+
+print(f"تم تحميل {len(web_documents)} صفحة ويب")
+                                </div>
+                            </div>
+
+                            <div class="step-card">
+                                <div class="step-number">الطريقة التالتة</div>
+                                <h5>📝 إنشاء documents يدوياً</h5>
+                                <div class="code-block">
+from llama_index.core.schema import Document
+
+# إنشاء مستندات من نصوص جاهزة
+texts = [
+    "هذا النص الأول يتحدث عن الذكاء الاصطناعي...",
+    "النص الثاني يغطي تطبيقات التعلم الآلي...",
+    "المستند الثالث يشرح تقنيات معالجة اللغات الطبيعية..."
+]
+
+documents = [
+    Document(
+        text=text,
+        metadata={"source": f"document_{i+1}"}
+    ) for i, text in enumerate(texts)
+]
+
+print(f"تم إنشاء {len(documents)} مستند")
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>💡 نصايح تحميل البيانات</h4>
+                            <ul>
+                                <li><strong>اختار الطريقة المناسبة:</strong> حسب مصدر بياناتك</li>
+                                <li><strong>أضف metadata:</strong> معلومات إضافية مفيدة للفلترة</li>
+                                <li><strong>نظف النصوص:</strong> احذف المحتوى غير المفيد</li>
+                                <li><strong>جرب على عينة صغيرة:</strong> قبل ما تحمل كل البيانات</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إنشاء الـ Index -->
+            <div class="card">
+                <h2>🏗️ إنشاء Document Summary Index</h2>
+                <div class="card-content">
+                    <div class="api-comparison">
+                        <h4>🔧 طريقتين للإنشاء: High-level vs Low-level</h4>
+                        
+                        <div class="api-grid">
+                            <div class="api-card">
+                                <div class="api-header">
+                                    <h5>🎯 High-level API (السهل والسريع)</h5>
+                                </div>
+                                <div>
+                                    <div class="code-block">
+from llama_index.core import DocumentSummaryIndex
+
+# الطريقة البسيطة والمباشرة
+index = DocumentSummaryIndex.from_documents(
+    documents,
+    show_progress=True,  # لعرض شريط التقدم
+    summary_template="اكتب ملخص شامل لهذا المستند: {context_str}"
+)
+
+print("تم إنشاء الـ index بنجاح!")
+                                    </div>
+                                    
+                                    <div class="code-explanation">
+                                        <h5>📋 مزايا الطريقة دي</h5>
+                                        <ul>
+                                            <li>بسيطة ومباشرة</li>
+                                            <li>إعدادات افتراضية جيدة</li>
+                                            <li>مناسبة للمبتدئين</li>
+                                            <li>أقل أكواد مطلوبة</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="api-card">
+                                <div class="api-header">
+                                    <h5>⚙️ Low-level API (المتقدم والمرن)</h5>
+                                </div>
+                                <div>
+                                    <div class="code-block">
+from llama_index.core import DocumentSummaryIndex
+from llama_index.core.response_synthesizers import ResponseMode
+from llama_index.core.storage.docstore import SimpleDocumentStore
+from llama_index.core.storage.index_store import SimpleIndexStore
+from llama_index.core.vector_stores import SimpleVectorStore
+from llama_index.core import StorageContext
+
+# إعداد التخزين المخصص
+docstore = SimpleDocumentStore()
+index_store = SimpleIndexStore()
+vector_store = SimpleVectorStore()
+
+storage_context = StorageContext.from_defaults(
+    docstore=docstore,
+    index_store=index_store,
+    vector_store=vector_store
+)
+
+# إنشاء الـ index مع تحكم كامل
+index = DocumentSummaryIndex.from_documents(
+    documents,
+    storage_context=storage_context,
+    response_mode=ResponseMode.TREE_SUMMARIZE,
+    summary_template="""
+    اكتب ملخص شامل ومفصل لهذا المستند:
+    
+    المحتوى: {context_str}
+    
+    يجب أن يتضمن الملخص:
+    1. الموضوع الرئيسي
+    2. النقاط الأساسية
+    3. التفاصيل المهمة
+    4. الاستنتاجات
+    """,
+    show_progress=True
+)
+                                    </div>
+                                    
+                                    <div class="code-explanation">
+                                        <h5>🎛️ مزايا الطريقة دي</h5>
+                                        <ul>
+                                            <li>تحكم كامل في كل جزء</li>
+                                            <li>إمكانية التخصيص العميق</li>
+                                            <li>أداء محسن</li>
+                                            <li>مرونة في التكوين</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <h4>🤔 أيهما أختار؟</h4>
+                            <ul>
+                                <li><strong>High-level:</strong> لو بتبدأ أو محتاج حاجة سريعة</li>
+                                <li><strong>Low-level:</strong> لو عايز تحكم أكبر أو أداء محسن</li>
+                                <li><strong>نصيحة:</strong> ابدأ بـ high-level، وبعدين انتقل للـ low-level لما تحتاج</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الحفظ والتحميل -->
+            <div class="card">
+                <h2>💾 حفظ وتحميل الـ Index</h2>
+                <div class="card-content">
+                    <div class="implementation-steps">
+                        <h4>🗃️ إدارة دورة حياة الـ Index</h4>
+                        
+                        <div class="step-container">
+                            <div class="step-card">
+                                <div class="step-number">الحفظ</div>
+                                <h5>💾 حفظ الـ Index للاستخدام لاحقاً</h5>
+                                <div class="code-block">
+# حفظ الـ index في مجلد
+index.storage_context.persist(persist_dir="./storage")
+
+print("تم حفظ الـ index بنجاح!")
+
+# أو حفظ في مكان مخصص
+index.storage_context.persist(
+    persist_dir="./my_document_summary_index"
+)
+                                </div>
+                            </div>
+
+                            <div class="step-card">
+                                <div class="step-number">التحميل</div>
+                                <h5>📂 تحميل Index محفوظ مسبقاً</h5>
+                                <div class="code-block">
+from llama_index.core import StorageContext, load_index_from_storage
+
+# تحميل الـ storage context
+storage_context = StorageContext.from_defaults(
+    persist_dir="./storage"
+)
+
+# تحميل الـ index
+loaded_index = load_index_from_storage(storage_context)
+
+print("تم تحميل الـ index بنجاح!")
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="warning-box">
+                            <h4>⚠️ نصايح مهمة للحفظ والتحميل</h4>
+                            <ul>
+                                <li><strong>احفظ دائماً:</strong> بناء الـ index ياخد وقت وفلوس</li>
+                                <li><strong>نظم الملفات:</strong> استخدم أسماء واضحة للمجلدات</li>
+                                <li><strong>نسخ احتياطية:</strong> احتفظ بنسخ متعددة</li>
+                                <li><strong>اختبر التحميل:</strong> تأكد إن الـ index بيتحمل صح</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الاستعلام والبحث -->
+            <div class="card">
+                <h2>🔍 الاستعلام والبحث</h2>
+                <div class="card-content">
+                    <div class="api-comparison">
+                        <h4>⚡ طرق مختلفة للاستعلام</h4>
+                        
+                        <div class="api-grid">
+                            <div class="api-card">
+                                <div class="api-header">
+                                    <h5>🎯 الطريقة البسيطة</h5>
+                                </div>
+                                <div>
+                                    <div class="code-block">
+# إنشاء query engine بسيط
+query_engine = index.as_query_engine()
+
+# طرح سؤال
+response = query_engine.query(
+    "ما هي أهم النقاط في هذه المستندات؟"
+)
+
+print("الإجابة:", response.response)
+print("المصادر:", response.source_nodes)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="api-card">
+                                <div class="api-header">
+                                    <h5>⚙️ الطريقة المتقدمة</h5>
+                                </div>
+                                <div>
+                                    <div class="code-block">
+# query engine مع إعدادات متقدمة
+query_engine = index.as_query_engine(
+    response_mode="tree_summarize",
+    similarity_top_k=5,  # عدد النتائج المُسترجعة
+    verbose=True,        # لعرض التفاصيل
+    streaming=True       # للإجابة التدريجية
+)
+
+# استعلام مع سياق إضافي
+response = query_engine.query(
+    """
+    بناءً على المستندات المتاحة، أريد:
+    1. ملخص شامل للمواضيع الرئيسية
+    2. أهم التوصيات أو النتائج
+    3. نقاط القوة والضعف إن وجدت
+    """
+)
+
+# عرض النتائج مع التفاصيل
+print("الإجابة الكاملة:")
+print(response.response)
+print("\nالمصادر المستخدمة:")
+for i, node in enumerate(response.source_nodes):
+    print(f"{i+1}. {node.metadata.get('source', 'غير محدد')}")
+    print(f"   النص: {node.text[:200]}...")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إعدادات متقدمة -->
+            <div class="card">
+                <h2>🎛️ إعدادات وتحسينات متقدمة</h2>
+                <div class="card-content">
+                    <div class="config-section">
+                        <h4>⚡ تحسين الأداء والجودة</h4>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">🎯</div>
+                                <h5>تخصيص نموذج التلخيص</h5>
+                                <div class="code-block">
+# استخدام نموذج مختلف للتلخيص
+from llama_index.llms.openai import OpenAI
+
+summary_llm = OpenAI(
+    model="gpt-4",  # نموذج أقوى للتلخيص
+    temperature=0.2,
+    max_tokens=500
+)
+
+index = DocumentSummaryIndex.from_documents(
+    documents,
+    service_context=ServiceContext.from_defaults(
+        llm=summary_llm
+    )
+)
+                                </div>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🔧</div>
+                                <h5>تحسين الـ Retrieval</h5>
+                                <div class="code-block">
+# إعدادات متقدمة للاستعلام
+query_engine = index.as_query_engine(
+    retriever_mode="embedding",  # أو "llm"
+    response_mode="compact",     # أكثر كفاءة
+    similarity_top_k=3,         # أقل عدد لسرعة أكبر
+    node_postprocessors=[       # معالجة إضافية
+        SimilarityPostprocessor(
+            similarity_cutoff=0.7
+        )
+    ]
+)
+                                </div>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">💰</div>
+                                <h5>تقليل التكاليف</h5>
+                                <div class="code-block">
+# استخدام نماذج أقل تكلفة
+Settings.llm = OpenAI(
+    model="gpt-3.5-turbo",  # أرخص من GPT-4
+    temperature=0.1
+)
+
+Settings.embed_model = OpenAIEmbedding(
+    model="text-embedding-ada-002"  # أرخص
+)
+
+# تقليل عدد الـ API calls
+index = DocumentSummaryIndex.from_documents(
+    documents,
+    summary_template="ملخص مختصر: {context_str}"
+)
+                                </div>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">📊</div>
+                                <h5>مراقبة الأداء</h5>
+                                <div class="code-block">
+import time
+
+# قياس وقت البناء
+start_time = time.time()
+index = DocumentSummaryIndex.from_documents(documents)
+build_time = time.time() - start_time
+
+print(f"وقت البناء: {build_time:.2f} ثانية")
+
+# قياس وقت الاستعلام
+start_time = time.time()
+response = query_engine.query("سؤال تجريبي")
+query_time = time.time() - start_time
+
+print(f"وقت الاستعلام: {query_time:.2f} ثانية")
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="highlight-box">
+                            <h4>🚀 نصائح لأفضل أداء</h4>
+                            <ul>
+                                <li><strong>ابدأ بالبسيط:</strong> استخدم الإعدادات الافتراضية الأول</li>
+                                <li><strong>قيس الأداء:</strong> راقب الوقت والتكلفة</li>
+                                <li><strong>جرب التحسينات:</strong> واحدة واحدة عشان تشوف الفرق</li>
+                                <li><strong>احفظ النتائج:</strong> لتجنب إعادة المعالجة</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- مثال شامل -->
+            <div class="card">
+                <h2>🎪 مثال شامل ومتكامل</h2>
+                <div class="card-content">
+                    <div class="code-section">
+                        <h4>🔥 كود كامل جاهز للاستخدام</h4>
+                        
+                        <div class="code-block">
+import os
+from llama_index.core import (
+    Settings, 
+    SimpleDirectoryReader, 
+    DocumentSummaryIndex,
+    StorageContext,
+    load_index_from_storage
+)
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
+
+def setup_environment():
+    """إعداد البيئة والنماذج"""
+    os.environ["OPENAI_API_KEY"] = "your-api-key-here"
+    
+    Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)
+    Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small")
+    
+    print("✅ تم إعداد البيئة بنجاح")
+
+def create_or_load_index(data_dir="./data", storage_dir="./storage"):
+    """إنشاء أو تحميل الـ index"""
+    try:
+        # محاولة تحميل index موجود
+        storage_context = StorageContext.from_defaults(persist_dir=storage_dir)
+        index = load_index_from_storage(storage_context)
+        print("✅ تم تحميل index موجود")
+        return index
+    except:
+        # إنشاء index جديد
+        print("📚 إنشاء index جديد...")
+        
+        documents = SimpleDirectoryReader(
+            input_dir=data_dir,
+            recursive=True
+        ).load_data()
+        
+        print(f"📄 تم تحميل {len(documents)} مستند")
+        
+        index = DocumentSummaryIndex.from_documents(
+            documents,
+            show_progress=True,
+            summary_template="""
+            اكتب ملخص شامل لهذا المستند يشمل:
+            1. الموضوع الرئيسي
+            2. النقاط الأساسية  
+            3. المعلومات المهمة
+            
+            المحتوى: {context_str}
+            """
+        )
+        
+        # حفظ للاستخدام لاحقاً
+        index.storage_context.persist(persist_dir=storage_dir)
+        print("✅ تم إنشاء وحفظ الـ index")
+        
+        return index
+
+def interactive_query(index):
+    """نظام استعلام تفاعلي"""
+    query_engine = index.as_query_engine(
+        response_mode="tree_summarize",
+        similarity_top_k=3,
+        verbose=True
+    )
+    
+    print("\n🤖 مرحباً! اسأل أي سؤال عن مستنداتك")
+    print("اكتب 'خروج' للانتهاء\n")
+    
+    while True:
+        question = input("السؤال: ").strip()
+        
+        if question.lower() in ['خروج', 'exit', 'quit']:
+            print("👋 وداعاً!")
+            break
+            
+        if not question:
+            continue
+            
+        try:
+            print("🔍 جاري البحث...")
+            response = query_engine.query(question)
+            
+            print(f"\n📝 الإجابة:")
+            print(response.response)
+            
+            if response.source_nodes:
+                print(f"\n📚 المصادر المستخدمة:")
+                for i, node in enumerate(response.source_nodes[:3]):
+                    source = node.metadata.get('file_name', 'غير محدد')
+                    print(f"{i+1}. {source}")
+            
+            print("\n" + "="*50 + "\n")
+            
+        except Exception as e:
+            print(f"❌ خطأ: {e}")
+
+def main():
+    """الدالة الرئيسية"""
+    print("🚀 بدء تشغيل Document Summary Index")
+    
+    # إعداد البيئة
+    setup_environment()
+    
+    # إنشاء أو تحميل الـ index
+    index = create_or_load_index()
+    
+    # بدء النظام التفاعلي
+    interactive_query(index)
+
+if __name__ == "__main__":
+    main()
+                        </div>
+
+                        <div class="technical-detail">
+                            <h4>💡 مميزات المثال ده</h4>
+                            <ul>
+                                <li><strong>شامل ومتكامل:</strong> يغطي كل الخطوات المطلوبة</li>
+                                <li><strong>ذكي في التحميل:</strong> يتحقق من وجود index محفوظ</li>
+                                <li><strong>تفاعلي:</strong> يسمح بأسئلة متعددة</li>
+                                <li><strong>معالجة الأخطاء:</strong> يتعامل مع المشاكل بسلاسة</li>
+                                <li><strong>سهل التخصيص:</strong> ممكن تعديل أي جزء بسهولة</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الخلاصة -->
+            <div class="card">
+                <h2>🎯 الخلاصة العملية</h2>
+                <div class="card-content">
+                    <div class="highlight-box">
+                        <h4>📋 إيه اللي اتعلمناه؟</h4>
+                        <ul>
+                            <li>إعداد البيئة والمكتبات المطلوبة</li>
+                            <li>طرق مختلفة لتحميل البيانات</li>
+                            <li>إنشاء Document Summary Index بطريقتين</li>
+                            <li>حفظ وتحميل الـ Index</li>
+                            <li>طرق مختلفة للاستعلام والبحث</li>
+                            <li>تحسينات متقدمة للأداء</li>
+                            <li>مثال شامل وجاهز للاستخدام</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>⏭️ الخطوات الجاية</h4>
+                        <ul>
+                            <li>شوف أمثلة حقيقية لحالات استخدام مختلفة</li>
+                            <li>اتعلم تحسينات أكثر تقدماً</li>
+                            <li>ادمج التقنية مع أنظمة أخرى</li>
+                            <li>بناء تطبيقات كاملة</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ نصائح مهمة قبل ما تبدأ</h4>
+                        <ul>
+                            <li><strong>جرب على بيانات صغيرة:</strong> قبل ما تشتغل على مجموعة كبيرة</li>
+                            <li><strong>راقب التكاليف:</strong> API calls ممكن تبقى غالية</li>
+                            <li><strong>احفظ شغلك:</strong> بناء الـ index ياخد وقت</li>
+                            <li><strong>اختبر الجودة:</strong> تأكد إن النتائج مرضية</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

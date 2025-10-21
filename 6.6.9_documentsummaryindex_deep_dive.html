@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary Index - الجزء التاسع: الـ DocumentSummaryIndex في LlamaIndex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            margin: 1.5rem 0;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 1.5rem;
+            margin: 0;
+            font-size: 1.8em;
+            border-top: 5px solid #667eea;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .code-block {
+            background: #2d3436;
+            color: #ddd;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            border-left: 5px solid #00b894;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #00a085;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #e17055 0%, #fab1a0 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #2d3436;
+        }
+
+        .technical-detail {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 5px solid #d63031;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 DocumentSummaryIndex في LlamaIndex</h1>
+            <p>الجزء التاسع: فهم عميق للكلاس الأساسي وخصائصه</p>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>🎯 مقدمة DocumentSummaryIndex</h2>
+                <div class="card-content">
+                    <p>دلوقتي هندخل في تفاصيل الـ DocumentSummaryIndex كما هو موجود في مكتبة LlamaIndex:</p>
+
+                    <div class="highlight-box">
+                        <h4>💡 فهم الـ DocumentSummaryIndex</h4>
+                        <p>الـ DocumentSummaryIndex هو نوع خاص من الـ indices في LlamaIndex بيخلينا نعمل ملخصات للمستندات ونستخدمها للبحث والاستعلام.</p>
+                    </div>
+
+                    <div class="code-block">
+from llama_index.core import DocumentSummaryIndex
+from llama_index.core.schema import Document
+
+# إنشاء مستندات تجريبية
+documents = [
+    Document(text="هذا مستند عن الذكاء الاصطناعي..."),
+    Document(text="مستند آخر عن التعلم الآلي..."),
+]
+
+# إنشاء DocumentSummaryIndex
+index = DocumentSummaryIndex.from_documents(documents)
+
+print("تم إنشاء DocumentSummaryIndex بنجاح!")
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🔍 الميزة الأساسية</h4>
+                        <p>الـ DocumentSummaryIndex بيولد ملخص لكل مستند باستخدام LLM، وبعدين بيستخدم الملخصات دي للبحث بدلاً من النص الأصلي مباشرة.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚙️ كيف يعمل DocumentSummaryIndex</h2>
+                <div class="card-content">
+                    <div class="technical-detail">
+                        <h4>🔧 العملية الداخلية</h4>
+                        <p>الـ DocumentSummaryIndex بيمر بالمراحل التالية:</p>
+                        <ul>
+                            <li>قراءة كل مستند</li>
+                            <li>توليد ملخص للمستند باستخدام LLM</li>
+                            <li>حفظ الملخص مع ربطه بالمستند الأصلي</li>
+                            <li>استخدام الملخصات للبحث والاستعلام</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-block">
+# مثال على إعداد مخصص
+from llama_index.core import Settings
+from llama_index.llms.openai import OpenAI
+
+# تخصيص الـ LLM للتلخيص
+Settings.llm = OpenAI(
+    model="gpt-4",
+    temperature=0.1,
+    max_tokens=500
+)
+
+# template مخصص للتلخيص
+summary_template = """
+اكتب ملخص شامل للمستند التالي:
+
+{context_str}
+
+الملخص يجب أن يتضمن:
+- الموضوع الرئيسي
+- النقاط الأساسية
+- الاستنتاجات المهمة
+"""
+
+# إنشاء Index مع template مخصص
+index = DocumentSummaryIndex.from_documents(
+    documents,
+    summary_template=summary_template,
+    show_progress=True
+)
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ ملاحظة مهمة</h4>
+                        <p>إنشاء DocumentSummaryIndex قد يستغرق وقت أطول من الأنواع الأخرى لأنه يحتاج لتوليد ملخصات لكل مستند باستخدام LLM.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🚀 استخدام DocumentSummaryIndex للاستعلام</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# إنشاء query engine
+query_engine = index.as_query_engine()
+
+# طرح استعلام
+response = query_engine.query("ما هي أهم النقاط حول الذكاء الاصطناعي؟")
+
+print("الإجابة:", response.response)
+print("المصادر:", len(response.source_nodes))
+                    </div>
+
+                    <div class="code-block">
+# استعلام متقدم مع إعدادات
+query_engine = index.as_query_engine(
+    response_mode="tree_summarize",  # طريقة التلخيص
+    similarity_top_k=3,              # عدد النتائج
+    verbose=True                     # عرض التفاصيل
+)
+
+response = query_engine.query(
+    "قارن بين الذكاء الاصطناعي والتعلم الآلي"
+)
+
+print(response.response)
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🎛️ خيارات الاستعلام</h4>
+                        <ul>
+                            <li><strong>response_mode:</strong> كيفية دمج النتائج ("tree_summarize", "compact", "simple_summarize")</li>
+                            <li><strong>similarity_top_k:</strong> عدد أفضل النتائج للاسترجاع</li>
+                            <li><strong>verbose:</strong> عرض تفاصيل العملية</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 مقارنة أنواع الاستعلام</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# مقارنة response modes مختلفة
+query = "ما هي تطبيقات الذكاء الاصطناعي؟"
+
+# Simple summarize
+engine_simple = index.as_query_engine(response_mode="simple_summarize")
+response_simple = engine_simple.query(query)
+
+# Tree summarize  
+engine_tree = index.as_query_engine(response_mode="tree_summarize")
+response_tree = engine_tree.query(query)
+
+# Compact
+engine_compact = index.as_query_engine(response_mode="compact")
+response_compact = engine_compact.query(query)
+
+print("Simple:", response_simple.response[:200])
+print("Tree:", response_tree.response[:200])
+print("Compact:", response_compact.response[:200])
+                    </div>
+
+                    <div class="info-box">
+                        <h4>📋 متى تستخدم كل نوع؟</h4>
+                        <ul>
+                            <li><strong>simple_summarize:</strong> للاستعلامات البسيطة والسريعة</li>
+                            <li><strong>tree_summarize:</strong> للتحليل العميق والمعقد</li>
+                            <li><strong>compact:</strong> للتوازن بين السرعة والجودة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💾 حفظ وتحميل DocumentSummaryIndex</h2>
+                <div class="card-content">
+                    <div class="code-block">
+# حفظ الـ index
+index.storage_context.persist(persist_dir="./doc_summary_storage")
+
+print("تم حفظ DocumentSummaryIndex")
+                    </div>
+
+                    <div class="code-block">
+# تحميل index محفوظ
+from llama_index.core import StorageContext, load_index_from_storage
+
+# تحميل من التخزين
+storage_context = StorageContext.from_defaults(
+    persist_dir="./doc_summary_storage"
+)
+
+loaded_index = load_index_from_storage(storage_context)
+
+# استخدام الـ index المحمل
+loaded_query_engine = loaded_index.as_query_engine()
+response = loaded_query_engine.query("سؤال تجريبي")
+
+print("تم تحميل واستخدام الـ index بنجاح")
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>💡 فائدة الحفظ</h4>
+                        <p>حفظ DocumentSummaryIndex مهم جداً لأن إنشاءه يتطلب وقت ومال (API calls للتلخيص)، فالحفظ يوفر هذه الموارد في الاستخدامات التالية.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎪 مثال شامل وعملي</h2>
+                <div class="card-content">
+                    <div class="code-block">
+import os
+from llama_index.core import (
+    DocumentSummaryIndex, 
+    Settings,
+    SimpleDirectoryReader,
+    StorageContext,
+    load_index_from_storage
+)
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
+
+def create_document_summary_system():
+    # إعداد البيئة
+    os.environ["OPENAI_API_KEY"] = "your-api-key"
+    
+    Settings.llm = OpenAI(model="gpt-4o-mini", temperature=0.1)
+    Settings.embed_model = OpenAIEmbedding(model="text-embedding-3-small")
+    
+    # تحميل المستندات
+    documents = SimpleDirectoryReader("./data").load_data()
+    print(f"تم تحميل {len(documents)} مستند")
+    
+    # template مخصص للتلخيص
+    arabic_summary_template = """
+    قم بكتابة ملخص شامل باللغة العربية للمستند التالي:
+    
+    المحتوى: {context_str}
+    
+    الملخص يجب أن يشمل:
+    1. الموضوع الرئيسي
+    2. النقاط الأساسية (3-5 نقاط)
+    3. الاستنتاجات أو التوصيات
+    4. أي معلومات مهمة أخرى
+    
+    الملخص:
+    """
+    
+    # إنشاء DocumentSummaryIndex
+    try:
+        # محاولة تحميل index موجود
+        storage_context = StorageContext.from_defaults(
+            persist_dir="./doc_summary_storage"
+        )
+        index = load_index_from_storage(storage_context)
+        print("تم تحميل DocumentSummaryIndex موجود")
+        
+    except:
+        # إنشاء index جديد
+        print("إنشاء DocumentSummaryIndex جديد...")
+        index = DocumentSummaryIndex.from_documents(
+            documents,
+            summary_template=arabic_summary_template,
+            show_progress=True
+        )
+        
+        # حفظ للاستخدام لاحقاً
+        index.storage_context.persist(persist_dir="./doc_summary_storage")
+        print("تم حفظ DocumentSummaryIndex")
+    
+    return index
+
+def interactive_query_system(index):
+    # إعداد query engine متقدم
+    query_engine = index.as_query_engine(
+        response_mode="tree_summarize",
+        similarity_top_k=3,
+        verbose=False
+    )
+    
+    print("\n🤖 نظام الاستعلام التفاعلي")
+    print("اكتب سؤالك أو 'خروج' للإنهاء")
+    
+    while True:
+        question = input("\n❓ سؤالك: ").strip()
+        
+        if question.lower() in ['خروج', 'exit', 'quit']:
+            print("👋 شكراً لاستخدام النظام!")
+            break
+        
+        if not question:
+            continue
+        
+        try:
+            print("🔍 جاري البحث...")
+            response = query_engine.query(question)
+            
+            print(f"\n📝 الإجابة:\n{response.response}")
+            
+            if hasattr(response, 'source_nodes') and response.source_nodes:
+                print(f"\n📚 عدد المصادر المستخدمة: {len(response.source_nodes)}")
+                
+        except Exception as e:
+            print(f"❌ حدث خطأ: {e}")
+
+# تشغيل النظام
+if __name__ == "__main__":
+    index = create_document_summary_system()
+    interactive_query_system(index)
+                    </div>
+
+                    <div class="technical-detail">
+                        <h4>🎯 مميزات هذا المثال</h4>
+                        <ul>
+                            <li>إعداد شامل للبيئة والنماذج</li>
+                            <li>template باللغة العربية للتلخيص</li>
+                            <li>حفظ وتحميل ذكي للـ index</li>
+                            <li>نظام استعلام تفاعلي</li>
+                            <li>معالجة الأخطاء والاستثناءات</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 الخلاصة والنقاط المهمة</h2>
+                <div class="card-content">
+                    <div class="highlight-box">
+                        <h4>✅ ما تعلمناه عن DocumentSummaryIndex</h4>
+                        <ul>
+                            <li>كيفية إنشاء DocumentSummaryIndex من المستندات</li>
+                            <li>تخصيص templates التلخيص</li>
+                            <li>استخدام query engines مختلفة</li>
+                            <li>حفظ وتحميل الـ index</li>
+                            <li>بناء نظام تفاعلي كامل</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🎯 نصائح للاستخدام الأمثل</h4>
+                        <ul>
+                            <li>استخدم templates مخصصة للمجال</li>
+                            <li>احفظ الـ index لتوفير الوقت والمال</li>
+                            <li>اختر response_mode المناسب للاستعلام</li>
+                            <li>راقب استهلاك API للتحكم في التكاليف</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ تذكر دائماً</h4>
+                        <p>DocumentSummaryIndex قوي جداً لكن يحتاج موارد أكثر من الأنواع الأخرى. استخدمه عندما تكون جودة الفهم والتلخيص أهم من السرعة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
