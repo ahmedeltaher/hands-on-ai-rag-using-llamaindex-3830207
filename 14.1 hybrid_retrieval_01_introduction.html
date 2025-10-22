@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقدمة عن Hybrid Retrieval - الاسترجاع المختلط</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid;
+        }
+        
+        .pre-retrieval {
+            border-left-color: #3b82f6;
+        }
+        
+        .post-retrieval {
+            border-left-color: #10b981;
+        }
+        
+        .at-retrieval {
+            border-left-color: #f59e0b;
+        }
+        
+        .benefit-list {
+            background: #d1f2eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .benefit-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .benefit-list li {
+            background: white;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .concept-box {
+            background: #e8f4fd;
+            border: 2px solid #3182ce;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Hybrid Retrieval</h1>
+            <p>الجزء الأول: فهم مفهوم الاسترجاع المختلط في RAG</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 إيه هو Hybrid Retrieval؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🏪 تشبيه بسيط:</h3>
+                    <p>تخيل إنك بتدور على حاجة في محل كبير. ممكن تستخدم طريقتين: الأولى إنك تسأل البواب على اسم المنتج بالضبط، والثانية إنك تشرحله إيه اللي محتاجه حتى لو مش عارف اسمه بالضبط. Hybrid Retrieval بيجمع الطريقتين عشان يديك أحسن نتايج!</p>
+                </div>
+                
+                <p>Hybrid Retrieval هو تقنية بتجمع بين أكثر من طريقة للبحث عن المعلومات في نفس الوقت. بدل ما تعتمد على طريقة واحدة بس، بتستخدم طرق متعددة وتجمع النتايج عشان تحصل على إجابات أدق وأشمل.</p>
+                
+                <div class="highlight">
+                    <h3>🎯 الفكرة الأساسية:</h3>
+                    <p>جمع قوة البحث النصي التقليدي (Text Search) مع قوة البحث الدلالي (Semantic Search) عشان نحصل على نتايج أحسن من أي طريقة لوحدها.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🤔 فين بيتصنف Hybrid Retrieval؟</h2>
+            <div class="card-content">
+                <p>المدرس بيقول إن في جدال حول فين نحط Hybrid Retrieval في تصنيف تقنيات RAG:</p>
+                
+                <div class="comparison-grid">
+                    <div class="comparison-item pre-retrieval">
+                        <h4>🔍 Pre-Retrieval</h4>
+                        <p>التقنيات اللي بتحصل قبل البحث، زي معالجة النص وتحضير الاستعلام</p>
+                    </div>
+                    
+                    <div class="comparison-item post-retrieval">
+                        <h4>⚡ Post-Retrieval</h4>
+                        <p>التقنيات اللي بتحصل بعد البحث، زي إعادة ترتيب النتايج وتصفيتها</p>
+                    </div>
+                </div>
+                
+                <div class="comparison-item at-retrieval">
+                    <h4>🎯 At-Retrieval Time</h4>
+                    <p><strong>وده المكان الصحيح لـ Hybrid Retrieval</strong> - لأنه بيحصل أثناء عملية البحث نفسها، مش قبلها ولا بعدها</p>
+                </div>
+                
+                <div class="concept-box">
+                    <h3>💡 ليه التصنيف ده مهم؟</h3>
+                    <p>لأن Hybrid Retrieval بيغير من آلية البحث نفسها، مش بيضيف خطوة قبلها أو بعدها. هو بيدمج أكثر من تقنية بحث في نفس العملية، عشان كده بنقول عليه "At-Retrieval".</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🌟 ليه Hybrid Retrieval مهم؟</h2>
+            <div class="card-content">
+                <div class="benefit-list">
+                    <h3>🎉 الفوائد الأساسية:</h3>
+                    <ul>
+                        <li><strong>دقة أعلى:</strong> بيجمع مميزات أكثر من طريقة بحث عشان يحصل على نتايج أحسن</li>
+                        <li><strong>تغطية أشمل:</strong> ممكن يلاقي نتايج ما كانتش هتطلع بطريقة واحدة بس</li>
+                        <li><strong>مرونة أكبر:</strong> يقدر يتعامل مع أنواع مختلفة من الاستعلامات</li>
+                        <li><strong>توازن في النتايج:</strong> بيوازن بين البحث الحرفي والبحث الدلالي</li>
+                        <li><strong>تحسين الأداء:</strong> أداء أحسن من الطرق التقليدية الواحدة</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎭 مقارنة بين الطرق المختلفة</h2>
+            <div class="card-content">
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <h4>🔤 البحث النصي التقليدي</h4>
+                        <p><strong>المميزات:</strong></p>
+                        <ul>
+                            <li>سريع جداً</li>
+                            <li>دقيق للكلمات المحددة</li>
+                            <li>ما بيحتاجش موارد كتير</li>
+                        </ul>
+                        <p><strong>العيوب:</strong></p>
+                        <ul>
+                            <li>ما بيفهمش المعنى</li>
+                            <li>لازم الكلمات تكون موجودة حرفياً</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <h4>🧠 البحث الدلالي (Vector Search)</h4>
+                        <p><strong>المميزات:</strong></p>
+                        <ul>
+                            <li>بيفهم المعنى والسياق</li>
+                            <li>يقدر يلاقي حاجات مشابهة</li>
+                            <li>مش محتاج كلمات محددة</li>
+                        </ul>
+                        <p><strong>العيوب:</strong></p>
+                        <ul>
+                            <li>أبطأ شوية</li>
+                            <li>ممكن يجيب حاجات مش مطلوبة</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <h3>🎯 الحل المثالي:</h3>
+                    <p><strong>Hybrid Retrieval</strong> بيجمع مميزات الاتنين ويقلل من عيوبهم. بيديك سرعة البحث النصي مع ذكاء البحث الدلالي!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🏗️ بداية رحلة التعلم</h2>
+            <div class="card-content">
+                <p>المدرس هيبدأ يورينا إزاي نطبق Hybrid Retrieval عملياً باستخدام:</p>
+                
+                <div class="concept-box">
+                    <h3>🛠️ الأدوات اللي هنستخدمها:</h3>
+                    <ul>
+                        <li><strong>BM25 Retriever:</strong> للبحث النصي التقليدي</li>
+                        <li><strong>Vector Search:</strong> للبحث الدلالي</li>
+                        <li><strong>Quadrant Cloud:</strong> كـ Vector Database</li>
+                        <li><strong>Document Store:</strong> لحفظ وإدارة الوثائق</li>
+                    </ul>
+                </div>
+                
+                <p>الهدف إننا نفهم إزاي نجمع بين التقنيات دي ونخرج بنظام بحث قوي وفعال يقدر يخدم احتياجات مختلفة.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎓 إيه اللي هنتعلمه؟</h2>
+            <div class="card-content">
+                <div class="benefit-list">
+                    <h3>📚 خطة التعلم:</h3>
+                    <ul>
+                        <li><strong>إعداد البيئة:</strong> تحضير الأدوات والمكتبات اللازمة</li>
+                        <li><strong>فهم Document Store:</strong> إزاي نخزن ونسترجع الوثائق</li>
+                        <li><strong>Vector Store:</strong> إزاي نشتغل مع قواعد البيانات الشعاعية</li>
+                        <li><strong>Query Modes:</strong> أنواع مختلفة من طرق الاستعلام</li>
+                        <li><strong>Fusion Techniques:</strong> تقنيات دمج النتايج</li>
+                        <li><strong>التطبيق العملي:</strong> بناء نظام hybrid كامل</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="hybrid_retrieval_02_setup.html" class="nav-button">التالي: إعداد النظام ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

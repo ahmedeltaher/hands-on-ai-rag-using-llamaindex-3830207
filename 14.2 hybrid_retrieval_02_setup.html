@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد البيئة والأدوات - Hybrid Retrieval</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .setup-step {
+            background: #f8f9ff;
+            border: 2px solid #6366f1;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 5px solid #4f46e5;
+        }
+        
+        .tool-card {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #38a169;
+        }
+        
+        .comparison-table {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            direction: rtl;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .comparison-table th {
+            background: #4f46e5;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .important-note {
+            background: #fff8e1;
+            border: 2px solid #ffb74d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .process-flow {
+            background: #e8f4fd;
+            border: 2px solid #3182ce;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .flow-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛠️ إعداد البيئة والأدوات</h1>
+            <p>الجزء الثاني: تحضير كل حاجة عشان نبني نظام Hybrid Retrieval</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📦 الأدوات اللي هنحتاجها</h2>
+            <div class="card-content">
+                <p>قبل ما نبدأ نشتغل على Hybrid Retrieval، لازم نحضر مجموعة من الأدوات المهمة. كل أداة ليها دور مهم في النظام:</p>
+                
+                <div class="tool-card">
+                    <h4>🔍 BM25 Retriever</h4>
+                    <p>ده المسئول عن البحث النصي التقليدي. BM25 هو خوارزمية قديمة وقوية جداً للبحث النصي، وهنحتاجه عشان نعمل البحث الحرفي في النصوص.</p>
+                </div>
+                
+                <div class="tool-card">
+                    <h4>☁️ Quadrant Cloud</h4>
+                    <p>ده Vector Database هنستخدمه عشان نخزن ونسترجع الـ embeddings (التمثيل الشعاعي للنصوص). المدرس اختاره لأسباب معينة هيوضحها.</p>
+                </div>
+                
+                <div class="tool-card">
+                    <h4>🤖 LLM و Embedding Model</h4>
+                    <p>محتاجين نموذج لغة للإجابة على الأسئلة، ونموذج تحويل النصوص لـ vectors عشان نقدر نعمل semantic search.</p>
+                </div>
+                
+                <div class="tool-card">
+                    <h4>📚 Document Store</h4>
+                    <p>ده مخزن الوثائق الأساسي اللي هيحتوي على كل النصوص والبيانات اللي هنبحث فيها.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔧 خطوات الإعداد بالتفصيل</h2>
+            <div class="card-content">
+                <div class="process-flow">
+                    <h3>📝 خطوات التحضير:</h3>
+                    
+                    <div class="flow-step">
+                        <strong>الخطوة 1: تثبيت BM25 Retriever</strong>
+                        <p>أول حاجة هنعملها إننا نثبت مكتبة BM25 اللي هتساعدنا نعمل البحث النصي التقليدي.</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <strong>الخطوة 2: استيراد المكتبات اللازمة</strong>
+                        <p>هنجيب كل الـ imports اللي محتاجينها للمشروع، بما في ذلك مكتبات LlamaIndex ومكتبات التعامل مع Quadrant.</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <strong>الخطوة 3: إعداد LLM و Embedding Model</strong>
+                        <p>هنجهز نموذج اللغة والـ embedding model اللي هنستخدمهم في العمليات.</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <strong>الخطوة 4: إنشاء Document Store</strong>
+                        <p>هنا بنعمل حاجة مختلفة شوية - هنحمل الوثائق من القرص الصلب ونحولها لـ Python variable، وبعدين نعمل منها LlamaIndex document store object.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📁 Document Store - إيه الجديد؟</h2>
+            <div class="card-content">
+                <div class="important-note">
+                    <h3>🆕 طريقة مختلفة:</h3>
+                    <p>المدرس بيقول إننا هنعمل حاجة مختلفة شوية هنا. بدل ما نستخدم الطريقة العادية، هنعمل الآتي:</p>
+                </div>
+                
+                <div class="setup-step">
+                    <h4>📂 تحميل البيانات من القرص</h4>
+                    <p>أول حاجة هنحمل كل الوثائق من الملفات المخزنة على الجهاز ونجيبها لمتغير Python عادي.</p>
+                </div>
+                
+                <div class="setup-step">
+                    <h4>🏗️ إنشاء Document Store Object</h4>
+                    <p>بعدين هناخد المتغير ده اللي فيه كل الوثائق ونعمل منه LlamaIndex Simple Document Store object.</p>
+                </div>
+                
+                <div class="setup-step">
+                    <h4>☁️ ربط مع Quadrant Vector Store</h4>
+                    <p>وأخيراً هننشئ Quadrant Vector Store وهنستخدم Storage Context عشان نربط الاتنين مع بعض.</p>
+                </div>
+                
+                <div class="highlight">
+                    <h3>🤔 ليه الطريقة دي؟</h3>
+                    <p>لأن Hybrid Retrieval محتاج يدمج بين Document Store (للبحث النصي) والـ Vector Store (للبحث الدلالي). عشان كده لازم نعرّف Document Store بشكل منفصل وواضح.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔗 Storage Context - الربط بين المكونات</h2>
+            <div class="card-content">
+                <p>Storage Context ده مفهوم مهم جداً في LlamaIndex. هو اللي بيربط بين المكونات المختلفة ويخليهم يشتغلوا مع بعض:</p>
+                
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المكون</th>
+                                <th>الوظيفة</th>
+                                <th>نوع البحث</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Document Store</td>
+                                <td>حفظ النصوص والبيانات الخام</td>
+                                <td>البحث النصي المباشر</td>
+                            </tr>
+                            <tr>
+                                <td>Vector Store</td>
+                                <td>حفظ الـ embeddings</td>
+                                <td>البحث الدلالي</td>
+                            </tr>
+                            <tr>
+                                <td>Storage Context</td>
+                                <td>ربط المكونات مع بعض</td>
+                                <td>تنسيق العمليات</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="important-note">
+                    <h3>⚠️ ملاحظة مهمة:</h3>
+                    <p>المدرس قال إنه استغنى عن استخدام الـ ingest abstraction واستخدم الـ vector store index مباشرةً. ده قرار تقني مهم لأنه بيدي مرونة أكبر في التحكم في العملية.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">☁️ ليه Quadrant Cloud بالذات؟</h2>
+            <div class="card-content">
+                <p>المدرس اختار Quadrant Cloud كـ Vector Database لأسباب معينة، وقال إنه هيوضح السبب بعدين. لكن خلينا نفهم إيه المميزات العامة:</p>
+                
+                <div class="tool-card">
+                    <h4>🚀 الأداء العالي</h4>
+                    <p>Quadrant معروف بأدائه الممتاز في البحث الشعاعي والتعامل مع كميات كبيرة من البيانات.</p>
+                </div>
+                
+                <div class="tool-card">
+                    <h4>🔧 سهولة التكامل</h4>
+                    <p>يتكامل بسهولة مع LlamaIndex ومكتباته، ويدعم الـ Storage Context اللي محتاجينه.</p>
+                </div>
+                
+                <div class="tool-card">
+                    <h4>☁️ الخدمة السحابية</h4>
+                    <p>النسخة السحابية بتوفر مرونة أكبر وما تحتاجش إعداد معقد للخوادم.</p>
+                </div>
+                
+                <div class="tool-card">
+                    <h4>🔄 دعم Hybrid Search</h4>
+                    <p>يدعم أنواع مختلفة من البحث ويسمح بدمجها مع بعض، وده اللي محتاجينه بالضبط.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 الاستعداد للخطوة التالية</h2>
+            <div class="card-content">
+                <p>بعد ما نخلص من إعداد كل الأدوات دي، هنكون جاهزين نشوف إزاي النظام بيشتغل في الواقع. المدرس هيورينا:</p>
+                
+                <div class="process-flow">
+                    <h3>🎬 اللي جاي:</h3>
+                    
+                    <div class="flow-step">
+                        <strong>شرح Vector Store Query Modes</strong>
+                        <p>أنواع مختلفة من طرق الاستعلام اللي ممكن نستخدمها</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <strong>الفرق بين Dense و Sparse Vectors</strong>
+                        <p>فهم أنواع مختلفة من التمثيل الشعاعي للبيانات</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <strong>تطبيق عملي</strong>
+                        <p>شوف النظام وهو شغال على بيانات حقيقية</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <h3>🎯 الهدف النهائي:</h3>
+                    <p>بناء نظام بحث متقدم يجمع بين قوة البحث النصي التقليدي وذكاء البحث الدلالي، ويدي نتايج أحسن من أي طريقة لوحدها.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="hybrid_retrieval_01_introduction.html" class="nav-button">⬅️ السابق: المقدمة</a>
+            <a href="hybrid_retrieval_03_hybrid_system.html" class="nav-button">التالي: فهم النظام المختلط ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

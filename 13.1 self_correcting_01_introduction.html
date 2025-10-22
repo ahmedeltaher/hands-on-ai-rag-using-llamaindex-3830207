@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقدمة عن Self-Correcting RAG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .problems-list {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .problems-list h3 {
+            color: #c53030;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .problems-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .problems-list li {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #e53e3e;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .solution-box {
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .solution-box h3 {
+            color: #2f855a;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Self-Correcting RAG Systems</h1>
+            <p>الجزء الأول: فهم المشكلة والحل</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🤔 إيه هي المشكلة في أنظمة RAG العادية؟</h2>
+            <div class="card-content">
+                <p>تخيل إنك بتسأل صديقك سؤال، وهو بدل ما يفكر كويس ويديك إجابة مناسبة، يقوم يجيب أي كلام من دماغه ويحطه قدامك ويقولك "اهو كده". ده بالضبط اللي بيحصل مع أنظمة RAG العادية (Naive RAG) والمتقدمة كمان أحياناً.</p>
+                
+                <div class="problems-list">
+                    <h3>🚨 المشاكل الأساسية:</h3>
+                    <ul>
+                        <li><strong>استرجاع عشوائي:</strong> النظام بيجيب معلومات لأي سؤال حتى لو مش متعلقة بالموضوع خالص. يعني زي واحد يسألك عن الطبخ وإنت تجيبله معلومات عن كرة القدم!</li>
+                        
+                        <li><strong>عدم فحص الصلة:</strong> بعد ما يجيب المعلومات، مش بيتأكد إن دي مناسبة للسؤال ولا لأ. بيحطها كده في السياق على الفاضي والمليان.</li>
+                        
+                        <li><strong>عدم ضمان دقة الإجابة:</strong> مفيش آلية تتأكد إن الإجابة اللي طلعت من الموديل صحيحة ومناسبة للسؤال. ممكن يطلع كلام خطأ وإحنا مش واخدين بالنا.</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <h3>🎯 النتيجة النهائية:</h3>
+                    <p>إحنا محتاجين طريقة نضمن بيها إننا نحصل على أحسن إجابات من النظام بتاعنا، ونخليه يراجع نفسه ويحسن من إجاباته لوحده. وده اللي هنعمله بـ Self-Correcting RAG!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">💡 إيه هو Self-Correcting RAG؟</h2>
+            <div class="card-content">
+                <p>Self-Correcting RAG هو نظام ذكي بيعرف يراجع نفسه ويصحح أخطاؤه، زي الطالب الشاطر اللي بيراجع إجابته قبل ما يسلم الامتحان.</p>
+                
+                <div class="solution-box">
+                    <h3>🛠️ الحل الذكي:</h3>
+                    <p>بدل ما نقبل أول إجابة تطلع من النظام، هنخليه يفكر تاني ويتأكد إن إجابته صحيحة ومناسبة. ولو مش كده، هيعيد المحاولة بطريقة أحسن.</p>
+                </div>
+                
+                <p><strong>ليه ده مهم؟</strong></p>
+                <ul style="margin: 15px 0; padding-right: 20px;">
+                    <li>بيضمن جودة الإجابات</li>
+                    <li>بيوفر وقت المراجعة اليدوية</li>
+                    <li>بيخلي النظام يتعلم من أخطاؤه</li>
+                    <li>بيزيد ثقة المستخدمين في النظام</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔧 الثلاث أنواع الرئيسية من Self-Correcting</h2>
+            <div class="card-content">
+                <p>هنتكلم عن 3 تقنيات مختلفة، كل واحدة ليها طريقتها الخاصة في التصحيح:</p>
+                
+                <div style="display: grid; gap: 20px; margin-top: 20px;">
+                    <div style="background: #e8f4fd; border: 2px solid #3182ce; border-radius: 10px; padding: 20px;">
+                        <h4 style="color: #2b6cb0; margin-bottom: 10px;">1️⃣ Retry Query Engine</h4>
+                        <p>بيستخدم مُقيِّم (Evaluator) عشان يحسن الإجابة من محرك الاستعلام الأساسي. لو الإجابة مش كويسة، بيعيد المحاولة بطريقة مختلفة.</p>
+                    </div>
+                    
+                    <div style="background: #f0fff4; border: 2px solid #38a169; border-radius: 10px; padding: 20px;">
+                        <h4 style="color: #2f855a; margin-bottom: 10px;">2️⃣ Retry Source Query Engine</h4>
+                        <p>بيعدل على مصادر البيانات (Source Nodes) عن طريق تصفية المصادر الموجودة بناءً على تقييم الـ LLM ليها.</p>
+                    </div>
+                    
+                    <div style="background: #fdf2e9; border: 2px solid #dd6b20; border-radius: 10px; padding: 20px;">
+                        <h4 style="color: #c05621; margin-bottom: 10px;">3️⃣ Retry Guideline Query Engine</h4>
+                        <p>بيستخدم إرشادات محددة عشان يوجه سلوك المُقيِّم. ممكن تخصص الإرشادات دي بنفسك، ولو الإجابة مش مطابقة للإرشادات، بيعدل السؤال ويعيد المحاولة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 متى نستخدم كل نوع؟</h2>
+            <div class="card-content">
+                <div style="display: grid; gap: 15px;">
+                    <div style="background: #f7fafc; border-left: 5px solid #4299e1; padding: 15px; border-radius: 5px;">
+                        <strong>Retry Query Engine:</strong> لما تكون عايز تحسن جودة الإجابات بشكل عام ومش عارف إيه المشكلة بالضبط.
+                    </div>
+                    
+                    <div style="background: #f7fafc; border-left: 5px solid #48bb78; padding: 15px; border-radius: 5px;">
+                        <strong>Retry Source Query Engine:</strong> لما تكون المشكلة في المصادر المسترجعة نفسها، وعايز تتأكد إن المصادر مناسبة.
+                    </div>
+                    
+                    <div style="background: #f7fafc; border-left: 5px solid #ed8936; padding: 15px; border-radius: 5px;">
+                        <strong>Retry Guideline Query Engine:</strong> لما تكون عندك معايير محددة أو قواعد لازم الإجابة تلتزم بيها.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="self_correcting_02_retry_query_engine.html" class="nav-button">التالي: Retry Query Engine ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

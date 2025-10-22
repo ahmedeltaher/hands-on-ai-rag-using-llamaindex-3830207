@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خوارزمية BM25 - قوة البحث النصي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .formula-box {
+            background: #fff8e1;
+            border: 2px solid #ffa726;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .formula {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #e65100;
+            margin: 15px 0;
+            direction: ltr;
+            text-align: center;
+        }
+        
+        .parameter-explanation {
+            background: #f3e5f5;
+            border: 2px solid #ba68c8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .parameter-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #9c27b0;
+        }
+        
+        .example-box {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .step-by-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #4caf50;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .math-explanation {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 خوارزمية BM25</h1>
+            <p>الجزء الثامن: فهم عميق لقوة البحث النصي</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 إيه هي خوارزمية BM25؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🏆 تشبيه مسابقة الطبخ:</h3>
+                    <p>تخيل إنك حكم في مسابقة طبخ، وعايز تقيّم الأطباق. مش هتدي نقاط بس على طعم الأكل، ده هتشوف كمان: هل المكونات متوفرة بكمية مناسبة؟ هل الطبق متوازن؟ هل فيه تنوع؟ BM25 بيعمل نفس الحاجة مع النصوص - بيقيم مدى ملائمة الوثيقة للبحث بناءً على عوامل متعددة ذكية!</p>
+                </div>
+                
+                <p>BM25 (Best Matching 25) هي واحدة من أقوى خوارزميات البحث النصي في العالم، وهي الأساس اللي بيستخدمه محركات البحث الكبيرة زي Elasticsearch. الخوارزمية دي مش بس بتدور على الكلمات في النص، ده بتفهم أهمية كل كلمة وإزاي توزيعها في الوثيقة بيأثر على الصلة.</p>
+                
+                <div class="highlight">
+                    <h3>🧠 الذكاء في BM25:</h3>
+                    <p>الخوارزمية بتفهم إن تكرار الكلمة مهم، بس لحد معين. يعني لو كلمة اتكررت كتير قوي، مش معنى كده إن الوثيقة أحسن لانهاية - في نقطة تشبع بتخلي التكرار الزيادة مش مفيد!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🧮 المعادلة الرياضية لـ BM25</h2>
+            <div class="card-content">
+                <div class="formula-box">
+                    <h3>📐 المعادلة الأساسية:</h3>
+                    <div class="formula">
+                        BM25(D,Q) = Σ IDF(qi) × (f(qi,D) × (k1 + 1)) / (f(qi,D) + k1 × (1 - b + b × |D| / avgdl))
+                    </div>
+                    <p>متخافش من المعادلة دي - هنفهمها جزء جزء!</p>
+                </div>
+                
+                <div class="parameter-explanation">
+                    <h3>🔤 شرح كل جزء في المعادلة:</h3>
+                    
+                    <div class="parameter-item">
+                        <strong>D:</strong> الوثيقة اللي بنقيمها
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>Q:</strong> الاستعلام (الكلمات اللي بندور عليها)
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>qi:</strong> كلمة واحدة من كلمات الاستعلام
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>f(qi,D):</strong> عدد مرات ظهور الكلمة qi في الوثيقة D
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>|D|:</strong> طول الوثيقة (عدد الكلمات فيها)
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>avgdl:</strong> متوسط طول الوثائق في المجموعة
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>k1:</strong> معامل يتحكم في تأثير تكرار الكلمات (عادة بين 1.2 و 2.0)
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>b:</strong> معامل يتحكم في تأثير طول الوثيقة (عادة 0.75)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📈 فهم IDF - وزن أهمية الكلمة</h2>
+            <div class="card-content">
+                <div class="math-explanation">
+                    <h3>🎯 إيه هو IDF؟</h3>
+                    <p>IDF يعني Inverse Document Frequency، وده بيقيس نادرة الكلمة في المجموعة كلها:</p>
+                    
+                    <div class="formula">
+                        IDF(qi) = log((N - df(qi) + 0.5) / (df(qi) + 0.5))
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>N:</strong> إجمالي عدد الوثائق
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>df(qi):</strong> عدد الوثائق اللي فيها الكلمة qi
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>💎 تشبيه الأحجار الكريمة:</h3>
+                    <p>تخيل إنك بتدور على أحجار كريمة. الماس نادر فهو غالي، الحصى موجود كتير فهو مش مهم قوي. IDF بيعمل نفس الحاجة - الكلمات النادرة (زي "خوارزمية" أو "ذكاء اصطناعي") تاخد وزن عالي، الكلمات الشائعة (زي "في" أو "من") تاخد وزن قليل.</p>
+                </div>
+                
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <strong>كلمة شائعة:</strong>
+                        <p>"في" - موجودة في 90% من الوثائق<br>
+                        IDF منخفض = أهمية قليلة</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>كلمة نادرة:</strong>
+                        <p>"خوارزمية" - موجودة في 5% من الوثائق<br>
+                        IDF عالي = أهمية كبيرة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⚖️ التوازن في BM25</h2>
+            <div class="card-content">
+                <p>الجمال في BM25 إنها بتحقق توازن ذكي بين عوامل مختلفة:</p>
+                
+                <div class="example-box">
+                    <h3>🎭 مثال عملي شامل:</h3>
+                    
+                    <div class="step-by-step">
+                        <strong>الوضع:</strong> بندور على "machine learning algorithms"
+                    </div>
+                    
+                    <div class="step-by-step">
+                        <strong>وثيقة طويلة (1000 كلمة):</strong>
+                        <p>فيها "machine" 5 مرات، "learning" 4 مرات، "algorithms" 3 مرات</p>
+                        <p>BM25 هتقلل النقاط شوية عشان الوثيقة طويلة (معامل b)</p>
+                    </div>
+                    
+                    <div class="step-by-step">
+                        <strong>وثيقة قصيرة (100 كلمة):</strong>
+                        <p>فيها "machine" 3 مرات، "learning" 2 مرات، "algorithms" 2 مرات</p>
+                        <p>BM25 هتديها نقاط أعلى نسبياً عشان التكرار ده في وثيقة قصيرة مؤشر قوي</p>
+                    </div>
+                    
+                    <div class="step-by-step">
+                        <strong>وثيقة متوسطة (500 كلمة):</strong>
+                        <p>فيها "machine" 50 مرة، "learning" 40 مرة، "algorithms" 30 مرة</p>
+                        <p>BM25 هتطبق saturation - التكرار الزيادة مش هيزود النقاط بنفس النسبة</p>
+                    </div>
+                </div>
+                
+                <div class="parameter-explanation">
+                    <h3>🔧 تأثير المعاملات:</h3>
+                    
+                    <div class="parameter-item">
+                        <strong>k1 عالي (2.0):</strong> التكرار يأثر أكتر على النتيجة
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>k1 منخفض (1.2):</strong> التكرار تأثيره أقل، التركيز أكتر على جودة المحتوى
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>b عالي (0.8):</strong> الوثائق الطويلة تتعاقب أكتر
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <strong>b منخفض (0.5):</strong> طول الوثيقة أثره أقل
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🚀 ليه BM25 قوية كده؟</h2>
+            <div class="card-content">
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <strong>🎯 دقة عالية:</strong>
+                        <p>بتفهم أهمية الكلمات وتوزيعها بطريقة ذكية</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>⚡ سرعة فائقة:</strong>
+                        <p>الحسابات بسيطة نسبياً ومحسنة للأداء</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>🔧 قابلة للتخصيص:</strong>
+                        <p>المعاملات k1 و b ممكن تتضبط حسب طبيعة البيانات</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>📊 مثبتة عملياً:</strong>
+                        <p>مستخدمة في أكبر محركات البحث في العالم</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <h3>🏆 النتيجة النهائية:</h3>
+                    <p>BM25 مش مجرد خوارزمية بحث، ده فن متوازن يجمع بين البساطة والذكاء. ولما نستخدمها مع Vector Search في Hybrid Retrieval، بنحصل على قوة خارقة في استرجاع المعلومات!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="hybrid_retrieval_07_fusion.html" class="nav-button">⬅️ السابق: Hybrid Fusion</a>
+            <a href="hybrid_retrieval_09_fusion_modes.html" class="nav-button">التالي: أنماط الدمج ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

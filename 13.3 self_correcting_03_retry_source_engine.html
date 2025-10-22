@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retry Source Query Engine - التحكم في مصادر البيانات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .process-flow {
+            background: #f8f9ff;
+            border: 2px solid #6366f1;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .process-step {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 5px solid #6366f1;
+        }
+        
+        .arguments-grid {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .argument-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #4f46e5;
+        }
+        
+        .comparison-table {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            direction: rtl;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .comparison-table th {
+            background: #4f46e5;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .example-box {
+            background: #fff8e1;
+            border: 2px solid #ffb74d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .benefit-list {
+            background: #d1f2eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .benefit-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .benefit-list li {
+            background: white;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .deep-dive {
+            background: #e8f4fd;
+            border: 2px solid #3182ce;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Retry Source Query Engine</h1>
+            <p>الجزء الثالث: تنقيح مصادر البيانات الذكي</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🤔 إيه الفكرة وراء Retry Source Query Engine؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🍽️ تشبيه بسيط:</h3>
+                    <p>تخيل إنك بتعمل وجبة طعام، وإنت عندك مجموعة مكونات مختلفة. بعد ما تطبخ الأكل، تذوقه فتلاقيه مش حلو. بدل ما ترمي كل حاجة وتبدأ من الأول، إنت بتشوف المكونات اللي خربت الطعم وتشيلها، وتستخدم المكونات الكويسة بس.</p>
+                </div>
+                
+                <p>ده بالضبط اللي بيعمله Retry Source Query Engine! لما الإجابة الأولى تكون مش مرضية، بدل ما يرمي كل المصادر ويبدأ من الأول، هو بيفحص كل مصدر لوحده ويشيل المصادر اللي مش مناسبة، ويخلي المصادر الكويسة بس.</p>
+                
+                <div class="highlight">
+                    <h3>🎯 الهدف الأساسي:</h3>
+                    <p>تحسين جودة الإجابات عن طريق التحكم الذكي في مصادر البيانات المستخدمة، مش بس في طريقة الاستعلام.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔧 مكونات النظام</h2>
+            <div class="card-content">
+                <p>النظام ده بسيط في مكوناته، بس قوي في فعاليته:</p>
+                
+                <div class="arguments-grid">
+                    <div class="argument-card">
+                        <h4>🏗️ Query Engine (محرك الاستعلام الأساسي)</h4>
+                        <p>ده المحرك اللي هيعمل الاستعلامات الفعلية. هو نقطة البداية لكل العملية.</p>
+                    </div>
+                    
+                    <div class="argument-card">
+                        <h4>🔍 Evaluator (المُقيِّم)</h4>
+                        <p>ده اللي هيقيم الإجابات والمصادر. هو اللي هيقرر مين من المصادر كويس ومين لأ.</p>
+                    </div>
+                    
+                    <div class="argument-card">
+                        <h4>🔄 Max Retries (عدد المحاولات القصوى)</h4>
+                        <p>عدد المرات اللي النظام ممكن يعيد فيها العملية بمصادر جديدة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⚙️ إزاي بيشتغل النظام بالتفصيل؟</h2>
+            <div class="card-content">
+                <p>دلوقتي نخش في التفاصيل ونشوف إيه اللي بيحصل جوا النظام:</p>
+                
+                <div class="process-flow">
+                    <h3>🚀 دورة العمل الكاملة:</h3>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 1:</strong> النظام بيستقبل استعلام جديد
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 2:</strong> الاستعلام بيتبعت للـ Base Query Engine اللي بيرجع إجابة مع مجموعة Source Nodes
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 3:</strong> الـ Evaluator بيقيم الإجابة النهائية - هل هي مرضية ولا لأ؟
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 4:</strong> لو الإجابة مرضية ✅ - النظام بيرجعها زي ما هي
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 5:</strong> لو الإجابة مش مرضية ❌ - النظام بيبدأ عملية التنقيح
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 6:</strong> الـ Evaluator بيقيم كل Source Node لوحده - مين منهم كويس ومين مش كويس
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 7:</strong> بيتم إنشاء Index جديد بالـ Source Nodes اللي عدت التقييم بس
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 8:</strong> بيتم إنشاء RetrieverQueryEngine جديد بالـ Index الجديد
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 9:</strong> بيتم إنشاء RetrySourceQueryEngine جديد بعدد محاولات أقل
+                    </div>
+                    
+                    <div class="process-step">
+                        <strong>الخطوة 10:</strong> العملية بتتكرر لحد ما نحصل على إجابة مرضية أو نوصل للحد الأقصى من المحاولات
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔄 مقارنة مع Retry Query Engine العادي</h2>
+            <div class="card-content">
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الجانب</th>
+                                <th>Retry Query Engine</th>
+                                <th>Retry Source Query Engine</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>التركيز الأساسي</strong></td>
+                                <td>تعديل الاستعلام نفسه</td>
+                                <td>تنقيح مصادر البيانات</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المشكلة المستهدفة</strong></td>
+                                <td>طريقة صياغة السؤال</td>
+                                <td>جودة المصادر المسترجعة</td>
+                            </tr>
+                            <tr>
+                                <td><strong>آلية التحسين</strong></td>
+                                <td>تعديل النص</td>
+                                <td>فلترة المصادر</td>
+                            </tr>
+                            <tr>
+                                <td><strong>مستوى التدخل</strong></td>
+                                <td>على مستوى الاستعلام</td>
+                                <td>على مستوى البيانات</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 متى نستخدم Retry Source Query Engine؟</h2>
+            <div class="card-content">
+                <div class="deep-dive">
+                    <h3>🔍 الحالات المناسبة:</h3>
+                    
+                    <div class="arguments-grid">
+                        <div class="argument-card">
+                            <h4>📚 مكتبات ضخمة مختلطة الجودة</h4>
+                            <p>لما يكون عندك مجموعة كبيرة من الوثائق، بعضها دقيق وبعضها مشكوك فيه، والنظام محتاج يختار الأفضل.</p>
+                        </div>
+                        
+                        <div class="argument-card">
+                            <h4>🔬 البحث العلمي</h4>
+                            <p>في الأبحاث العلمية حيث بعض المصادر أوثق من غيرها، ومحتاج تعتمد على المصادر الموثوقة بس.</p>
+                        </div>
+                        
+                        <div class="argument-card">
+                            <h4>📰 تحليل الأخبار</h4>
+                            <p>عند تحليل الأخبار والتقارير، حيث بعض المصادر ممكن تكون متحيزة أو غير دقيقة.</p>
+                        </div>
+                        
+                        <div class="argument-card">
+                            <h4>💼 قواعد البيانات التجارية</h4>
+                            <p>في البيئات التجارية حيث البيانات جاية من مصادر متعددة وبجودات مختلفة.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🌟 مميزات وفوائد النظام</h2>
+            <div class="card-content">
+                <div class="benefit-list">
+                    <h3>🎉 الفوائد الأساسية:</h3>
+                    <ul>
+                        <li><strong>تحسين دقة المصادر:</strong> بيضمن إن المعلومات المستخدمة في الإجابة من مصادر موثوقة</li>
+                        <li><strong>توفير الوقت:</strong> بدل ما تراجع كل مصدر بنفسك، النظام بيعمل ده تلقائياً</li>
+                        <li><strong>تقليل التضليل:</strong> بيقلل احتمالية الحصول على معلومات خاطئة أو مضللة</li>
+                        <li><strong>مرونة في المعايير:</strong> ممكن تحدد معايير مختلفة لتقييم المصادر</li>
+                        <li><strong>استغلال أمثل للبيانات:</strong> بيستخدم أحسن ما عندك من معلومات</li>
+                        <li><strong>شفافية أكبر:</strong> ممكن تشوف إيه المصادر اللي اتستخدمت وإيه اللي اترفض</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">💡 مثال عملي مفصل</h2>
+            <div class="card-content">
+                <div class="example-box">
+                    <h3>🏥 مثال: نظام استشارات طبية</h3>
+                    
+                    <p><strong>السيناريو:</strong> عندك نظام بيقدم استشارات طبية، والمستخدم سأل: "إيه أعراض مرض السكري؟"</p>
+                    
+                    <p><strong>المشكلة:</strong> النظام رجع معلومات من مصادر مختلفة، بعضها من مجلات علمية موثوقة، وبعضها من مواقع غير دقيقة.</p>
+                    
+                    <p><strong>الحل باستخدام Retry Source Query Engine:</strong></p>
+                    <ul>
+                        <li>النظام بيقيم كل مصدر حسب مستوى الثقة فيه</li>
+                        <li>بيشيل المصادر اللي من مواقع غير موثوقة</li>
+                        <li>بيعيد تكوين الإجابة بناءً على المصادر الموثوقة بس</li>
+                        <li>النتيجة: إجابة دقيقة وموثوقة طبياً</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⚠️ تحديات وحلول</h2>
+            <div class="card-content">
+                <div class="deep-dive">
+                    <h3>🚧 التحديات المحتملة:</h3>
+                    
+                    <div class="arguments-grid">
+                        <div class="argument-card">
+                            <h4>⏱️ زيادة وقت المعالجة</h4>
+                            <p><strong>المشكلة:</strong> تقييم كل مصدر لوحده بياخد وقت إضافي</p>
+                            <p><strong>الحل:</strong> استخدم معايير تقييم سريعة وفعالة، وحدد عدد مناسب للمحاولات</p>
+                        </div>
+                        
+                        <div class="argument-card">
+                            <h4>💸 زيادة التكلفة</h4>
+                            <p><strong>المشكلة:</strong> كل عملية تقييم بتستهلك موارد إضافية</p>
+                            <p><strong>الحل:</strong> وازن بين التكلفة والجودة، واستخدم النظام للاستعلامات المهمة بس</p>
+                        </div>
+                        
+                        <div class="argument-card">
+                            <h4>🎯 صعوبة تحديد معايير التقييم</h4>
+                            <p><strong>المشكلة:</strong> ازاي تحدد إيه المصدر الكويس وإيه المصدر الوحش؟</p>
+                            <p><strong>الحل:</strong> ابدأ بمعايير بسيطة زي مصدر البيانات أو تاريخ النشر، وطور تدريجياً</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="self_correcting_02_retry_query_engine.html" class="nav-button">⬅️ السابق: Retry Query Engine</a>
+            <a href="self_correcting_04_retry_guideline_engine.html" class="nav-button">التالي: Retry Guideline Engine ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

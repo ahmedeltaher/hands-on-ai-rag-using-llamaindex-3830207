@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التطبيق العملي - Query Modes في العمل</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .function-explanation {
+            background: #e8f4fd;
+            border: 2px solid #3182ce;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .step-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #3182ce;
+        }
+        
+        .code-explanation {
+            background: #f8f9ff;
+            border: 2px solid #6366f1;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .demo-flow {
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .demo-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #38a169;
+        }
+        
+        .results-comparison {
+            background: #fff8e1;
+            border: 2px solid #ffb74d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .dictionary-explanation {
+            background: #d1f2eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .mode-item {
+            background: white;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 التطبيق العملي</h1>
+            <p>الجزء السادس: شوف الـ Query Modes وهي شغالة فعلاً!</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 هندخل في العملي دلوقتي</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🧪 تشبيه المعمل العلمي:</h3>
+                    <p>تخيل إنك في معمل كيميا وعندك مجموعة من التجارب المختلفة. كل تجربة بتستخدم نفس المواد الأساسية، بس بطرق مختلفة، والنتايج بتطلع مختلفة. ده اللي هنعمله دلوقتي - نفس البيانات، بس هنجرب عليها طرق بحث مختلفة ونشوف إيه الفرق في النتايج!</p>
+                </div>
+                
+                <p>المدرس هيورينا دلوقتي إزاي نطبق كل الـ Query Modes اللي اتكلمنا عنها، ونشوف بعنينا الفرق بين كل واحد منهم. ده الجزء الشيق اللي فيه هنشوف النظرية تتحول لتطبيق فعلي!</p>
+                
+                <div class="highlight">
+                    <h3>🎯 الهدف من التطبيق العملي:</h3>
+                    <p>مش بس نفهم النظرية، إنما نشوف بالفعل إيه الفرق بين كل نمط ونتايجه، عشان نقدر نختار النمط المناسب لكل موقف في المستقبل.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔧 إنشاء Function للتجربة</h2>
+            <div class="card-content">
+                <p>المدرس هيعمل function عامة نقدر نستخدمها لتجربة أي نمط من أنماط الاستعلام:</p>
+                
+                <div class="function-explanation">
+                    <h3>📝 مكونات الـ Function:</h3>
+                    
+                    <div class="step-card">
+                        <strong>الخطوة 1: تعريف Function</strong>
+                        <p>هيعمل function تاخد 3 حاجات أساسية:</p>
+                        <ul>
+                            <li><strong>Query String:</strong> النص اللي هنبحث عنه</li>
+                            <li><strong>Index:</strong> الفهرس اللي هنبحث فيه</li>
+                            <li><strong>Keyword Arguments:</strong> الإعدادات الخاصة بكل نمط</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step-card">
+                        <strong>الخطوة 2: إنشاء Retriever Engine</strong>
+                        <p>جوا الـ function هيستخدم as_retriever method على الـ index، وهيمرر الـ keyword arguments اللي جاية من برة.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <strong>الخطوة 3: استرجاع الوثائق</strong>
+                        <p>هيستخدم retrieve method على الـ retriever engine عشان يجيب الوثائق المناسبة للـ query.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <strong>الخطوة 4: عرض النتايج</strong>
+                        <p>هيطبع النتايج بطريقة منظمة، يوريلنا الـ score (درجة التطابق) والنص الفعلي لكل وثيقة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📚 إنشاء Dictionary للأنماط المختلفة</h2>
+            <div class="card-content">
+                <p>المدرس هيعمل dictionary فيه كل الـ query modes اللي عايز يجربها، وده هيخلي الموضوع منظم وسهل:</p>
+                
+                <div class="dictionary-explanation">
+                    <h3>🗂️ تنظيم الأنماط:</h3>
+                    
+                    <div class="mode-item">
+                        <strong>Default Mode:</strong> البحث الشعاعي العادي اللي اتعودنا عليه
+                    </div>
+                    
+                    <div class="mode-item">
+                        <strong>Hybrid Mode:</strong> الجمع بين البحث النصي والشعاعي
+                    </div>
+                    
+                    <div class="mode-item">
+                        <strong>Semantic Hybrid:</strong> نفس الهجين بس مع إعادة ترتيب ذكية
+                    </div>
+                    
+                    <div class="mode-item">
+                        <strong>Text Search:</strong> البحث النصي البحت
+                    </div>
+                    
+                    <div class="mode-item">
+                        <strong>Similarity Top K:</strong> تحديد عدد النتايج المطلوبة
+                    </div>
+                </div>
+                
+                <div class="code-explanation">
+                    <h3>🔄 آلية العمل:</h3>
+                    <p>المدرس هيعمل loop على الـ dictionary ده، يمرر كل نمط للـ function اللي عملها، وهيشوف النتايج المختلفة لنفس السؤال مع كل نمط. ده هيدينا فهم عميق لإيه الفرق بين كل طريقة.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎬 شوف النتايج بعينك</h2>
+            <div class="card-content">
+                <div class="demo-flow">
+                    <h3>👁️ إيه اللي هنشوفه:</h3>
+                    
+                    <div class="demo-step">
+                        <strong>نتايج مختلفة لنفس السؤال</strong>
+                        <p>هنشوف إزاي نفس السؤال بيدي نتايج مختلفة مع كل نمط، وده هيوضحلنا قوة كل طريقة.</p>
+                    </div>
+                    
+                    <div class="demo-step">
+                        <strong>الـ Scores المختلفة</strong>
+                        <p>كل نتيجة هيكون ليها score يوضح درجة التطابق، وده هيساعدنا نفهم إيه الأدق لكل نوع بحث.</p>
+                    </div>
+                    
+                    <div class="demo-step">
+                        <strong>سرعة الاستجابة</strong>
+                        <p>هنلاحظ إن بعض الأنماط أسرع من غيرها، وده مهم لما نختار النمط المناسب للتطبيق.</p>
+                    </div>
+                    
+                    <div class="demo-step">
+                        <strong>جودة النتايج</strong>
+                        <p>هنشوف إن كل نمط ممتاز في حاجات معينة، ومش كويس في حاجات تانية.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔍 تحليل النتايج المتوقعة</h2>
+            <div class="card-content">
+                <div class="results-comparison">
+                    <h3>📊 إيه اللي متوقع نشوفه:</h3>
+                    
+                    <p><strong>مع Default Vector Search:</strong></p>
+                    <ul>
+                        <li>نتايج دلالية قوية</li>
+                        <li>محتوى متعلق بالموضوع حتى لو مفيهوش الكلمات المحددة</li>
+                        <li>فهم جيد للسياق العام</li>
+                    </ul>
+                    
+                    <p><strong>مع Text Search:</strong></p>
+                    <ul>
+                        <li>نتايج دقيقة للكلمات المطلوبة</li>
+                        <li>سرعة عالية في النتايج</li>
+                        <li>مش هيجيب حاجة ما فيهاش الكلمات دي</li>
+                    </ul>
+                    
+                    <p><strong>مع Hybrid Mode:</strong></p>
+                    <ul>
+                        <li>أحسن ما في الاتنين</li>
+                        <li>نتايج شاملة ودقيقة</li>
+                        <li>تغطية أوسع للموضوع</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <h3>💡 الاكتشاف المهم:</h3>
+                    <p>التجربة العملية دي هتخلينا نفهم إن مفيش نمط "الأحسن" بشكل مطلق. كل نمط ليه مكانه وظروف استخدامه المناسبة!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 الدروس المستفادة من التطبيق</h2>
+            <div class="card-content">
+                <div class="function-explanation">
+                    <h3>🎓 إيه اللي هنتعلمه:</h3>
+                    
+                    <div class="step-card">
+                        <strong>فهم عملي للاختلافات</strong>
+                        <p>مش بس نظري، هنشوف بالفعل إزاي كل نمط بيتصرف مع البيانات الحقيقية.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <strong>معايير الاختيار</strong>
+                        <p>هنقدر نحدد إمتى نستخدم كل نمط بناءً على النتايج اللي شفناها.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <strong>أهمية التجربة</strong>
+                        <p>هنفهم إن أهم حاجة في الـ AI هي التجربة والاختبار، مش بس قراءة النظريات.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <strong>قدرات كل نمط</strong>
+                        <p>هنعرف نقاط القوة والضعف لكل نمط من الاستخدام الفعلي.</p>
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>🚀 الانتقال للمستوى التالي:</h3>
+                    <p>بعد التجربة دي، هنكون مستعدين نفهم مفاهيم أعقد زي Hybrid Fusion Retrieval، لأننا هنكون شايفين بعنينا إزاي الأنماط المختلفة بتشتغل!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="hybrid_retrieval_05_vectors.html" class="nav-button">⬅️ السابق: أنواع المتجهات</a>
+            <a href="hybrid_retrieval_07_fusion.html" class="nav-button">التالي: Hybrid Fusion Retrieval ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

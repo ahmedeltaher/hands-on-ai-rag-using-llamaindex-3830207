@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنماط الدمج المختلفة - Fusion Modes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .mode-explanation {
+            background: #f3e5f5;
+            border: 2px solid #ba68c8;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .mode-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #9c27b0;
+        }
+        
+        .similarity-box {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .similarity-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #4caf50;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .practical-example {
+            background: #fff8e1;
+            border: 2px solid #ffb74d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .example-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 أنماط الدمج المختلفة</h1>
+            <p>الجزء التاسع: Fusion Modes و Similarity Top K</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔀 إيه هي أنماط الدمج (Fusion Modes)؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🎨 تشبيه فنان الألوان:</h3>
+                    <p>تخيل فنان عنده لونين أساسيين: أحمر وأزرق. ممكن يمزجهم بطرق مختلفة - يخلط نص نص يطلع بنفسجي، أو يستخدم أحمر أكتر يطلع وردي، أو يطلع أزرق أكتر يطلع سماوي. كل طريقة خلط بتدي تأثير مختلف ومناسب لموقف معين. ده بالضبط اللي بيحصل في Fusion Modes!</p>
+                </div>
+                
+                <p>أنماط الدمج هي الطرق المختلفة اللي نقدر نستخدمها عشان نجمع نتايج البحث الشعاعي مع البحث النصي. كل نمط ليه فلسفة مختلفة في التعامل مع النتايج، وبيناسب ظروف واستخدامات معينة.</p>
+                
+                <div class="highlight">
+                    <h3>🎯 ليه محتاجين أنماط مختلفة؟</h3>
+                    <p>عشان نقدر نتحكم في طريقة الدمج حسب طبيعة البيانات ونوعية الاستعلامات. مثلاً: هل عايزين نركز على الدقة؟ ولا على التنوع؟ ولا على السرعة؟</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔧 الأنماط الرئيسية للدمج</h2>
+            <div class="card-content">
+                <div class="mode-explanation">
+                    <h3>🎪 النمط الأول: Reciprocal Rank Fusion (RRF)</h3>
+                    
+                    <div class="mode-card">
+                        <strong>الفكرة الأساسية:</strong>
+                        <p>بدل ما نجمع الـ scores مباشرة، نشوف ترتيب كل وثيقة في كل طريقة بحث ونديلها نقاط عكسية حسب الترتيب ده.</p>
+                    </div>
+                    
+                    <div class="mode-card">
+                        <strong>إمتى نستخدمه:</strong>
+                        <ul>
+                            <li>لما عايزين نتايج متوازنة من الطريقتين</li>
+                            <li>لما الـ scores بتاعة الطريقتين مختلفة جداً في النطاق</li>
+                            <li>لما عايزين نقلل تأثير الـ outliers</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mode-card">
+                        <strong>مثال عملي:</strong>
+                        <p>وثيقة جاية رقم 1 في Vector Search ورقم 5 في BM25، هتاخد نقاط عالية عشان متفوقة في واحدة على الأقل.</p>
+                    </div>
+                </div>
+                
+                <div class="mode-explanation">
+                    <h3>⚖️ النمط التاني: Weighted Fusion</h3>
+                    
+                    <div class="mode-card">
+                        <strong>الفكرة الأساسية:</strong>
+                        <p>نديله وزن مختلف لكل طريقة بحث، مثلاً 70% للبحث الشعاعي و 30% للبحث النصي.</p>
+                    </div>
+                    
+                    <div class="mode-card">
+                        <strong>إمتى نستخدمه:</strong>
+                        <ul>
+                            <li>لما عارفين إن طريقة معينة أحسن لنوعية البيانات دي</li>
+                            <li>لما عايزين نركز أكتر على نوع معين من النتايج</li>
+                            <li>لما عندنا خبرة سابقة بأداء كل طريقة</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mode-explanation">
+                    <h3>🏆 النمط التالت: Max Score Fusion</h3>
+                    
+                    <div class="mode-card">
+                        <strong>الفكرة الأساسية:</strong>
+                        <p>لكل وثيقة، ناخد أعلى score من الطريقتين. يعني لو جابت 0.8 في Vector و 0.6 في BM25، هناخد 0.8.</p>
+                    </div>
+                    
+                    <div class="mode-card">
+                        <strong>إمتى نستخدمه:</strong>
+                        <ul>
+                            <li>لما عايزين نركز على النتايج الممتازة</li>
+                            <li>لما البحث عن حاجة محددة جداً</li>
+                            <li>لما مستعدين نضحي بالتنوع لصالح الدقة العالية</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 فهم Similarity Top K</h2>
+            <div class="card-content">
+                <p>دي خاصية مهمة جداً بتتحكم في عدد النتايج اللي هنرجعها من كل طريقة بحث قبل ما نعمل الدمج:</p>
+                
+                <div class="similarity-box">
+                    <h3>🔢 إيه معنى Top K؟</h3>
+                    
+                    <div class="similarity-item">
+                        <strong>K = 5:</strong>
+                        <p>كل طريقة بحث ترجع أحسن 5 نتايج بس، بعدين نعمل الدمج على الـ 10 نتايج دول مع بعض.</p>
+                    </div>
+                    
+                    <div class="similarity-item">
+                        <strong>K = 20:</strong>
+                        <p>كل طريقة ترجع أحسن 20 نتيجة، يبقى إجمالي 40 نتيجة للدمج. النتايج أشمل بس هتاخد وقت أكتر.</p>
+                    </div>
+                    
+                    <div class="similarity-item">
+                        <strong>K = 100:</strong>
+                        <p>نتايج شاملة جداً، مناسبة للتحليل العميق، بس بطيئة نسبياً في الأداء.</p>
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>🥇 تشبيه المسابقة الرياضية:</h3>
+                    <p>تخيل مسابقة جري فيها مجموعتين، كل مجموعة بتختار أسرع عدائينها. لو قلنا Top 3، كل مجموعة هتبعت 3 عدائين بس للنهائي. لو قلنا Top 10، هتبعت 10 عدائين. كل ما زودنا العدد، كل ما النهائي بقى أشمل بس أعقد.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🛠️ إزاي نختار الإعدادات المناسبة؟</h2>
+            <div class="card-content">
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <strong>🚀 للسرعة العالية:</strong>
+                        <ul>
+                            <li>Top K = 5-10</li>
+                            <li>RRF Mode (سريع في الحساب)</li>
+                            <li>مناسب للتطبيقات التفاعلية</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>🎯 للدقة القصوى:</strong>
+                        <ul>
+                            <li>Top K = 50-100</li>
+                            <li>Weighted Fusion مع أوزان مضبوطة</li>
+                            <li>مناسب للبحث الأكاديمي</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>⚖️ للتوازن:</strong>
+                        <ul>
+                            <li>Top K = 20-30</li>
+                            <li>RRF مع معاملات متوسطة</li>
+                            <li>مناسب لمعظم التطبيقات</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="practical-example">
+                    <h3>💼 مثال من الواقع العملي:</h3>
+                    
+                    <div class="example-step">
+                        <strong>تطبيق استعلامات طبية:</strong>
+                        <p>Top K = 50 (عشان نضمن تغطية شاملة)، Weighted Fusion بوزن 60% للبحث النصي (للمصطلحات الطبية الدقيقة) و 40% للبحث الشعاعي (للسياق والأعراض المشابهة).</p>
+                    </div>
+                    
+                    <div class="example-step">
+                        <strong>محرك بحث للتجارة الإلكترونية:</strong>
+                        <p>Top K = 15 (عشان سرعة الاستجابة)، RRF Mode (عشان التوازن بين البحث بالاسم والبحث بالوصف).</p>
+                    </div>
+                    
+                    <div class="example-step">
+                        <strong>نظام المساعدة الفنية:</strong>
+                        <p>Top K = 10، Max Score Fusion (عشان نلاقي الحلول الدقيقة للمشاكل التقنية).</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <h3>📈 نصايح للتحسين:</h3>
+                    <ul>
+                        <li><strong>ابدأ بـ RRF و Top K = 20</strong> - دي إعدادات آمنة ومتوازنة</li>
+                        <li><strong>اختبر أداء كل نمط</strong> مع بياناتك الحقيقية</li>
+                        <li><strong>راقب الوقت والذاكرة</strong> لما تزود Top K</li>
+                        <li><strong>اضبط الأوزان</strong> حسب طبيعة استعلامات المستخدمين</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="hybrid_retrieval_08_bm25.html" class="nav-button">⬅️ السابق: خوارزمية BM25</a>
+            <a href="hybrid_retrieval_10_rrf_algorithm.html" class="nav-button">التالي: RRF Algorithm ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

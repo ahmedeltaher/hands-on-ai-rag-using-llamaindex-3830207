@@ -1,326 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Self-Correcting RAG - Complete Guide</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Arial', 'Helvetica', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-        }
-        
-        .header h1 {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .lessons-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        .lesson-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .lesson-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(45deg, var(--accent-color), transparent);
-            border-radius: 0 0 0 100px;
-        }
-        
-        .lesson-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-        }
-        
-        .lesson-number {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--accent-color);
-            color: white;
-            width: 50px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-        
-        .lesson-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            display: block;
-        }
-        
-        .lesson-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #2d3436;
-            line-height: 1.3;
-        }
-        
-        .lesson-description {
-            color: #636e72;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        
-        .lesson-link {
-            display: inline-block;
-            background: var(--accent-color);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        
-        .lesson-link:hover {
-            transform: translateX(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .lesson-1 { --accent-color: #ff6b6b; }
-        .lesson-2 { --accent-color: #4ecdc4; }
-        .lesson-3 { --accent-color: #45b7d1; }
-        .lesson-4 { --accent-color: #f9ca24; }
-        .lesson-5 { --accent-color: #6c5ce7; }
-        .lesson-6 { --accent-color: #fd79a8; }
-        .lesson-7 { --accent-color: #00b894; }
-        
-        .intro-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .stat-item {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .progress-bar {
-            background: rgba(255,255,255,0.2);
-            height: 8px;
-            border-radius: 4px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            background: white;
-            height: 100%;
-            border-radius: 4px;
-            width: 100%;
-            animation: fillProgress 2s ease-in-out;
-        }
-        
-        @keyframes fillProgress {
-            from { width: 0%; }
-            to { width: 100%; }
-        }
-        
-        .navigation-help {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-top: 30px;
-            border-left: 5px solid #667eea;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🤖 Self-Correcting RAG Complete Guide</h1>
-            <p>دليل شامل لأنظمة الذكاء الاصطناعي المتطورة - شرح بالمصرية العامية</p>
-        </div>
-
-        <div class="intro-card">
-            <h2 style="margin-bottom: 20px;">مرحباً بك في رحلة التعلم! 🚀</h2>
-            <p style="font-size: 1.1rem; line-height: 1.6;">
-                هنا هتلاقي شرح مفصل ومبسط لكل حاجة تحتاج تعرفها عن أنظمة الـ Self-Correcting RAG. 
-                كل درس مشروح بالمصرية العامية مع أمثلة عملية وتطبيقات حقيقية.
-            </p>
-            
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number">7</div>
-                    <div>دروس شاملة</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">3</div>
-                    <div>تقنيات متقدمة</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">100%</div>
-                    <div>شرح بالعربية</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">∞</div>
-                    <div>أمثلة عملية</div>
-                </div>
-            </div>
-            
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
-            
-            <p style="margin-top: 15px; opacity: 0.9;">ابدأ من الدرس الأول واتبع الترتيب للاستفادة القصوى</p>
-        </div>
-
-        <div class="lessons-grid">
-            <div class="lesson-card lesson-1">
-                <div class="lesson-number">13.1.1</div>
-                <div class="lesson-icon">🚨</div>
-                <div class="lesson-title">مقدمة عن مشاكل الـ Naive RAG</div>
-                <div class="lesson-description">
-                    فهم المشاكل الأساسية في أنظمة الاسترجاع التقليدية وليه محتاجين حلول أذكى. 
-                    هنتعرف على التحديات الثلاثة الرئيسية وتأثيرها على جودة النتائج.
-                </div>
-                <a href="13.1.1_naive_rag_problems_introduction.html" class="lesson-link">ابدأ التعلم</a>
-            </div>
-
-            <div class="lesson-card lesson-2">
-                <div class="lesson-number">13.1.2</div>
-                <div class="lesson-icon">🎯</div>
-                <div class="lesson-title">التقنيات الثلاثة - نظرة عامة</div>
-                <div class="lesson-description">
-                    مقارنة شاملة بين التقنيات الثلاثة للـ Self-Correcting RAG ومتى نستخدم كل واحدة. 
-                    فهم الفروقات والمميزات لكل نهج.
-                </div>
-                <a href="13.1.2_three_techniques_overview.html" class="lesson-link">استكشف التقنيات</a>
-            </div>
-
-            <div class="lesson-card lesson-3">
-                <div class="lesson-number">13.1.3</div>
-                <div class="lesson-icon">🔄</div>
-                <div class="lesson-title">Retry Query Engine - الهدف والغرض</div>
-                <div class="lesson-description">
-                    شرح مفصل لأول تقنية وإزاي بتحسن الإجابات تدريجياً. 
-                    فهم الأهداف الأساسية والفوائد المتوقعة من استخدام هذا النظام.
-                </div>
-                <a href="13.1.3_retry_query_engine_purpose_goals.html" class="lesson-link">فهم الأساسيات</a>
-            </div>
-
-            <div class="lesson-card lesson-4">
-                <div class="lesson-number">13.1.4</div>
-                <div class="lesson-icon">⚙️</div>
-                <div class="lesson-title">Retry Query Engine - المعاملات</div>
-                <div class="lesson-description">
-                    تفاصيل تقنية عن كل معامل مطلوب وإزاي نستخدمهم صح. 
-                    شرح كامل للـ Base Query Engine والـ Evaluator والمعاملات التانية.
-                </div>
-                <a href="13.1.4_retry_query_engine_parameters.html" class="lesson-link">تعلم التفاصيل</a>
-            </div>
-
-            <div class="lesson-card lesson-5">
-                <div class="lesson-number">13.1.5</div>
-                <div class="lesson-icon">⚡</div>
-                <div class="lesson-title">كيفية العمل تحت الغطاء</div>
-                <div class="lesson-description">
-                    رحلة تقنية عميقة داخل النظام لفهم كل خطوة بالتفصيل. 
-                    شرح الـ Recursion والتحسين التدريجي وآليات اتخاذ القرار.
-                </div>
-                <a href="13.1.5_retry_query_engine_internal_workings.html" class="lesson-link">اكتشف الآلية</a>
-            </div>
-
-            <div class="lesson-card lesson-6">
-                <div class="lesson-number">13.1.6</div>
-                <div class="lesson-icon">🚀</div>
-                <div class="lesson-title">التطبيق العملي</div>
-                <div class="lesson-description">
-                    خطوات التنفيذ من الألف للياء مع أمثلة حقيقية. 
-                    شرح الـ Prompts المستخدمة والـ Pipeline وكيفية الحصول على أفضل النتائج.
-                </div>
-                <a href="13.1.6_retry_query_engine_practical_implementation.html" class="lesson-link">طبق عملياً</a>
-            </div>
-
-            <div class="lesson-card lesson-7">
-                <div class="lesson-number">13.1.7</div>
-                <div class="lesson-icon">📊</div>
-                <div class="lesson-title">RetrySourceQueryEngine - نظرة عامة</div>
-                <div class="lesson-description">
-                    فهم التقنية الثانية اللي بتحسن مصادر البيانات نفسها. 
-                    شرح الفرق بينها وبين النظام الأول ومتى نستخدم كل واحد.
-                </div>
-                <a href="13.1.7_retry_source_query_engine_overview.html" class="lesson-link">تعلم المتقدم</a>
-            </div>
-        </div>
-
-        <div class="navigation-help">
-            <h3 style="color: #667eea; margin-bottom: 15px;">📚 نصائح للاستفادة القصوى</h3>
-            <ul style="padding-right: 25px; line-height: 1.8;">
-                <li><strong>اتبع الترتيب:</strong> ابدأ من الدرس الأول عشان تبني فهم تدريجي</li>
-                <li><strong>خذ وقتك:</strong> كل درس فيه معلومات كتيرة، متتعجلش</li>
-                <li><strong>طبق عملياً:</strong> حاول تطبق اللي بتتعلمه على مشاريعك الخاصة</li>
-                <li><strong>راجع لو احتجت:</strong> الدروس مصممة للمراجعة والرجوع ليها</li>
-                <li><strong>اقرأ الكود:</strong> لو في أكواد، اقراها بتمعن عشان تفهم التفاصيل</li>
-            </ul>
-        </div>
-    </div>
-</body>
-</html>

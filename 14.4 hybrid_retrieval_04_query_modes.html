@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنماط الاستعلام في Vector Store - Query Modes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .query-mode {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid;
+        }
+        
+        .default-mode { border-left-color: #3b82f6; }
+        .hybrid-mode { border-left-color: #10b981; }
+        .semantic-mode { border-left-color: #8b5cf6; }
+        .text-mode { border-left-color: #f59e0b; }
+        .similarity-mode { border-left-color: #ef4444; }
+        
+        .comparison-table {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            direction: rtl;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        
+        .comparison-table th {
+            background: #4f46e5;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .benefit-item {
+            background: #d1f2eb;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 أنماط الاستعلام</h1>
+            <p>الجزء الرابع: فهم الطرق المختلفة للبحث في Vector Store</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 إيه هي Query Modes؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🎮 تشبيه ألعاب الفيديو:</h3>
+                    <p>تخيل لعبة فيديو فيها أنماط مختلفة للعب: نمط المبتدئين، نمط المحترفين، نمط التعاون، ونمط المنافسة. كل نمط ليه قواعد وطريقة لعب مختلفة، لكن نفس اللعبة. Query Modes شبه كده بالضبط - نفس نظام البحث، بس بطرق مختلفة حسب إيه اللي محتاجه!</p>
+                </div>
+                
+                <p>Query Modes هي الطرق المختلفة اللي ممكن نستخدمها للبحث في Vector Store. المدرس قال إننا لمسنا الموضوع ده خلال الكورس، بس دلوقتي هندخل في التفاصيل أكتر.</p>
+                
+                <div class="highlight">
+                    <h3>💡 المفهوم الأساسي:</h3>
+                    <p>بدل ما نكون محدودين بطريقة بحث واحدة، عندنا خيارات متعددة نقدر نختار منها حسب طبيعة السؤال ونوع النتايج اللي عايزينها.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📊 الأنماط المختلفة للاستعلام</h2>
+            <div class="card-content">
+                <p>تعالوا نشوف كل نمط بالتفصيل وإمتى نستخدم كل واحد:</p>
+                
+                <div class="query-mode default-mode">
+                    <h4>🎯 Default Query Mode</h4>
+                    <p><strong>الوصف:</strong> ده النمط الافتراضي اللي كنا نستخدمه طول الوقت</p>
+                    <p><strong>الآلية:</strong> بيعمل Vector Search بحت - بيجيب المتجهات الأكثر تشابهاً مع متجه السؤال</p>
+                    <p><strong>متى نستخدمه:</strong> لما عايزين بحث دلالي بسيط وسريع</p>
+                    <p><strong>مثال:</strong> "عايز معلومات عن الطبخ" - هيجيب كل المحتوى المتعلق بالطبخ</p>
+                </div>
+                
+                <div class="query-mode hybrid-mode">
+                    <h4>🔄 Hybrid Mode</h4>
+                    <p><strong>الوصف:</strong> ده النجم بتاع العرض! بيجمع بين البحث النصي التقليدي والبحث الشعاعي</p>
+                    <p><strong>الآلية:</strong> Vector Index بيلاقي الوثائق ذات الصلة + Document Store بيعمل بحث نصي</p>
+                    <p><strong>متى نستخدمه:</strong> لما عايزين أحسن النتايج من الاتنين مع بعض</p>
+                    <p><strong>مثال:</strong> "مقالات أحمد عن الطبخ" - هيجمع بين البحث بالمؤلف والموضوع</p>
+                </div>
+                
+                <div class="query-mode semantic-mode">
+                    <h4>🧠 Semantic Hybrid</h4>
+                    <p><strong>الوصف:</strong> زي الـ Hybrid العادي، بس بيضيف Semantic Re-ranker</p>
+                    <p><strong>الآلية:</strong> بحث نصي + بحث شعاعي + إعادة ترتيب دلالي للنتايج</p>
+                    <p><strong>متى نستخدمه:</strong> لما عايزين دقة أعلى في ترتيب النتايج</p>
+                    <p><strong>مثال:</strong> نفس المثال فوق، بس النتايج هتكون مرتبة أحسن حسب الصلة</p>
+                </div>
+                
+                <div class="query-mode text-mode">
+                    <h4>🔤 Text Search</h4>
+                    <p><strong>الوصف:</strong> بحث نصي تقليدي بحت - دوّر على الكلمات بالضبط</p>
+                    <p><strong>الآلية:</strong> بحث عن تطابق الكلمات المحددة بدون أي ذكاء دلالي</p>
+                    <p><strong>متى نستخدمه:</strong> لما عايزين كلمات أو عبارات محددة بالضبط</p>
+                    <p><strong>مثال:</strong> "جيبلي كل اللي فيه كلمة 'الذكاء الاصطناعي' بالحروف دي"</p>
+                </div>
+                
+                <div class="query-mode similarity-mode">
+                    <h4>📏 Similarity Top K و Hybrid Top K</h4>
+                    <p><strong>الوصف:</strong> تحديد عدد النتايج اللي عايزينها من كل نمط</p>
+                    <p><strong>Similarity Top K:</strong> كام نتيجة من البحث الشعاعي</p>
+                    <p><strong>Hybrid Top K:</strong> كام نتيجة من البحث المختلط</p>
+                    <p><strong>متى نستخدمهم:</strong> للتحكم في كمية النتايج حسب الحاجة</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⚖️ مقارنة بين الأنماط المختلفة</h2>
+            <div class="card-content">
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>النمط</th>
+                                <th>السرعة</th>
+                                <th>الدقة</th>
+                                <th>الذكاء</th>
+                                <th>أحسن استخدام</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Default Vector</td>
+                                <td>سريع</td>
+                                <td>جيدة</td>
+                                <td>عالي</td>
+                                <td>البحث الدلالي البسيط</td>
+                            </tr>
+                            <tr>
+                                <td>Text Search</td>
+                                <td>سريع جداً</td>
+                                <td>دقيق للكلمات المحددة</td>
+                                <td>منخفض</td>
+                                <td>البحث عن كلمات محددة</td>
+                            </tr>
+                            <tr>
+                                <td>Hybrid</td>
+                                <td>متوسط</td>
+                                <td>عالية جداً</td>
+                                <td>عالي</td>
+                                <td>البحث الشامل</td>
+                            </tr>
+                            <tr>
+                                <td>Semantic Hybrid</td>
+                                <td>أبطأ شوية</td>
+                                <td>الأعلى</td>
+                                <td>الأعلى</td>
+                                <td>البحث المعقد عالي الجودة</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎮 إزاي نستخدم الأنماط المختلفة؟</h2>
+            <div class="card-content">
+                <p>المدرس هيورينا إزاي نطبق الأنماط دي عملياً. الموضوع سهل جداً:</p>
+                
+                <div class="highlight">
+                    <h3>🔧 الطريقة:</h3>
+                    <p>كل اللي محتاجين نعمله إننا نمرر النمط كـ argument لـ as_retriever method في الـ index!</p>
+                </div>
+                
+                <p>المدرس هيعمل function عشان يورينا الفرق بين كل نمط:</p>
+                
+                <div class="benefit-grid">
+                    <div class="benefit-item">
+                        <h4>📝 إنشاء Function</h4>
+                        <p>هيعمل function تاخد query string والـ index وkeyword arguments</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>🔧 تعريف Retriever</h4>
+                        <p>هيستخدم as_retriever method ويمرر الـ keyword arguments</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>🔍 استرجاع النتايج</h4>
+                        <p>هيستخدم retrieve method عشان يجيب الوثائق</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>📊 عرض النتايج</h4>
+                        <p>هيطبع النتايج مع الـ scores عشان نشوف الفرق</p>
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>🎯 التطبيق العملي:</h3>
+                    <p>المدرس هيعمل dictionary فيه كل الأنماط المختلفة، وهيعدي عليهم واحد واحد عشان نشوف إزاي كل نمط بيدي نتايج مختلفة لنفس السؤال. ده هيخلينا نفهم عملياً إمتى نستخدم كل نمط!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎓 الدروس المستفادة</h2>
+            <div class="card-content">
+                <div class="benefit-grid">
+                    <div class="benefit-item">
+                        <h4>🎯 مرونة الاختيار</h4>
+                        <p>مش لازم نلتزم بنمط واحد - نقدر نغير حسب طبيعة كل سؤال</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>⚡ توازن الأداء</h4>
+                        <p>كل نمط ليه مميزات وعيوب - المهم نعرف إمتى نستخدم إيه</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>🔧 سهولة التطبيق</h4>
+                        <p>تغيير النمط سهل جداً - مجرد تمرير parameter مختلف</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <h4>📈 تحسين النتايج</h4>
+                        <p>فهم الأنماط المختلفة بيحسن جودة نتايج البحث بشكل كبير</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <h3>💡 النصيحة الذهبية:</h3>
+                    <p>جرب الأنماط المختلفة مع نفس السؤال وشوف الفرق في النتايج. ده هيخليك تفهم أحسن نمط لكل نوع من الأسئلة!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="hybrid_retrieval_03_hybrid_system.html" class="nav-button">⬅️ السابق: النظام المختلط</a>
+            <a href="hybrid_retrieval_05_vectors.html" class="nav-button">التالي: أنواع المتجهات ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

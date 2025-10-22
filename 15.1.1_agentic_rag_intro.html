@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15.1.1 - مقدمة عن Agentic RAG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .comparison-card {
+            background: #e8f4fd;
+            border: 2px solid #3182ce;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #3182ce;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .importance-box {
+            background: #fef7cd;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .when-to-use {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 مقدمة عن Agentic RAG</h1>
+            <p>الفصل 15.1.1: فهم مفهوم الـ Data Agent في LlamaIndex</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🧠 إيه هو Data Agent؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🏢 تشبيه الموظف الذكي:</h3>
+                    <p>تخيل إن عندك موظف محترف في الشركة، ده الموظف مش بس شاطر، ده كمان بيفهم كل حاجة وقادر يشتغل مع أي نوع بيانات. بيعرف يدور في الملفات، يكلم الأنظمة المختلفة، ويجاوب على أي سؤال تسأله. ده بالضبط الـ Data Agent!</p>
+                </div>
+                
+                <p>الـ Data Agent في LlamaIndex هو زي موظف آلي ذكي مدعوم بنموذج لغة كبير (Large Language Model). الموظف ده قادر ينفذ مهام كتير مختلفة على أنواع مختلفة من البيانات ومصادر البيانات، وكمان يقدر يستخدم أدوات مساعدة.</p>
+                
+                <div class="highlight">
+                    <h3>🎯 الفكرة الأساسية:</h3>
+                    <p>بدل ما تكتب كود معقد لكل مهمة لوحدها، الـ Agent يقدر يفهم إيه المطلوب منه ويقرر بنفسه أحسن طريقة ينفذ بيها المهمة دي.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔧 قدرات الـ Data Agent</h2>
+            <div class="card-content">
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <strong>📄 التعامل مع البيانات المختلفة:</strong>
+                        <p>يقدر يشتغل مع بيانات منظمة (زي Excel)، نص منظمة (زي JSON)، أو حتى نصوص عادية مش منظمة خالص.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <strong>🔍 البحث والاسترجاع الذكي:</strong>
+                        <p>مش بس يدور في البيانات، ده يفهم السياق ويجيب أحسن النتايج المناسبة للسؤال.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <strong>🌐 التفاعل مع الخدمات الخارجية:</strong>
+                        <p>يقدر يتصل بـ APIs مختلفة، يستدعي functions، ويتفاعل مع خدمات خارجية.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <strong>💾 معالجة وحفظ المعلومات:</strong>
+                        <p>مش بس يجاوب على الأسئلة، ده كمان يقدر يعالج المعلومات ويحفظها للاستخدام المستقبلي.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🌟 ليه Agentic RAG مهم؟</h2>
+            <div class="card-content">
+                <div class="importance-box">
+                    <h3>💡 الأهمية الحقيقية:</h3>
+                    
+                    <div class="comparison-item">
+                        <strong>التطور الطبيعي للـ RAG:</strong>
+                        <p>RAG العادي بيدور في البيانات ويرجع نتايج. Agentic RAG بيفكر ويقرر إيه أحسن طريقة يجاوب بيها على السؤال.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>المرونة في التنفيذ:</strong>
+                        <p>مش محتاج تبرمج كل حالة لوحدها. الـ Agent بيتكيف مع المواقف المختلفة تلقائياً.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>القدرة على التعلم:</strong>
+                        <p>كل ما يستخدم أكتر، كل ما بيبقى أشطر في اتخاذ القرارات المناسبة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⏰ إمتى نستخدم Agentic RAG؟</h2>
+            <div class="card-content">
+                <div class="when-to-use">
+                    <h3>🎯 الحالات المناسبة:</h3>
+                    
+                    <div class="comparison-item">
+                        <strong>البيانات المعقدة والمتنوعة:</strong>
+                        <p>لما يكون عندك أنواع مختلفة من البيانات ومحتاج تتعامل معها كلها في نفس الوقت.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>الاستعلامات المعقدة:</strong>
+                        <p>لما المستخدم يسأل أسئلة محتاجة تفكير وربط بين معلومات مختلفة.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>التطبيقات التفاعلية:</strong>
+                        <p>لما عايز النظام يفهم السياق ويقدر يكمل محادثة طبيعية مع المستخدم.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>البيئات الديناميكية:</strong>
+                        <p>لما البيانات بتتغير باستمرار والنظام محتاج يتكيف مع التغييرات دي.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔄 البيئة الديناميكية</h2>
+            <div class="card-content">
+                <div class="comparison-card">
+                    <h3>🌊 إيه معنى البيئة الديناميكية؟</h3>
+                    
+                    <div class="comparison-item">
+                        <strong>التغيير المستمر:</strong>
+                        <p>البيانات مش ثابتة، بتتغير وتتحدث باستمرار زي الأخبار أو أسعار الأسهم.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>التفاعل في الوقت الفعلي:</strong>
+                        <p>النظام يقدر يتجاوب مع المتغيرات الجديدة ويعدل إجاباته بناء عليها.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>التعلم من التفاعل:</strong>
+                        <p>كل تفاعل مع المستخدم بيخلي الـ Agent يفهم أكتر ويحسن من أدائه.</p>
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>🎪 مثال من الحياة:</h3>
+                    <p>تخيل مذيع أخبار محترف. مش بس بيقرا الأخبار المكتوبة، ده لما يحصل خبر جديد، يقدر يربطه بالأخبار اللي فاتت ويقدم تحليل فوري. ده اللي الـ Agentic RAG بيعمله مع البيانات!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="15.1.2_reasoning_loop.html" class="nav-button">التالي: Reasoning Loop ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

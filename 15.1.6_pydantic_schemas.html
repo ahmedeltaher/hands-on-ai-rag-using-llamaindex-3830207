@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15.1.6 - Pydantic Schemas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            direction: ltr;
+            text-align: left;
+            overflow-x: auto;
+        }
+        
+        .code-card code {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .schema-structure {
+            background: #f8fafc;
+            border: 2px solid #6366f1;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .schema-field {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #6366f1;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .validation-section {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .validation-rule {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #ef4444;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .benefit-item {
+            background: #f0fdf4;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+        }
+        
+        .comparison-section {
+            background: #fefce8;
+            border: 2px solid #eab308;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #eab308;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Pydantic Schemas</h1>
+            <p>الفصل 15.1.6: قواعد التنظيم والتحقق من البيانات</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🏗️ إيه هو Pydantic Schema؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>📝 تشبيه استمارة التقديم:</h3>
+                    <p>تخيل إنك بتقدم على وظيفة، والشركة مديالك استمارة محددة. الاستمارة دي مش بس ورقة فاضية - فيها حقول محددة: الاسم (لازم يكون نص)، السن (لازم يكون رقم)، البريد الإلكتروني (لازم يكون صيغة إيميل صحيحة). لو حطيت حاجة غلط، الاستمارة ترفضها. ده نفس فكرة Pydantic Schema!</p>
+                </div>
+                
+                <p>الـ Pydantic Schema هو "نموذج البيانات المثالي" اللي بيحدد إيه الشكل اللي لازم البيانات تبقى عليه عشان الـ Agent يقدر يشتغل معاها صح.</p>
+                
+                <div class="code-card">
+                    <code>
+from pydantic import BaseModel, Field
+from typing import List, Optional
+
+class DocumentSchema(BaseModel):
+    """Schema لتنظيم بيانات المستندات"""
+    
+    title: str = Field(
+        description="عنوان المستند", 
+        min_length=1,
+        max_length=200
+    )
+    
+    content: str = Field(
+        description="محتوى المستند الفعلي"
+    )
+    
+    keywords: List[str] = Field(
+        description="قائمة بالكلمات المفتاحية",
+        default=[]
+    )
+    
+    confidence_score: float = Field(
+        description="درجة الثقة في المحتوى",
+        ge=0.0,  # أكبر من أو يساوي صفر
+        le=1.0   # أصغر من أو يساوي واحد
+    )
+    
+    created_date: Optional[str] = Field(
+        description="تاريخ الإنشاء", 
+        default=None
+    )
+                    </code>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 ليه نحتاج Schemas في الـ Agentic RAG؟</h2>
+            <div class="card-content">
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <strong>✅ ضمان جودة البيانات:</strong>
+                        <p>كل البيانات اللي بتدخل للـ Agent تبقى بالشكل الصحيح والمتوقع</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>🔍 تسهيل الفهرسة:</strong>
+                        <p>الـ Agent يعرف بالظبط إيه نوع كل حقل وإزاي يتعامل معاه</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>⚡ تحسين الأداء:</strong>
+                        <p>البيانات المنظمة تخلي البحث والاستعلام أسرع وأدق</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>🛡️ منع الأخطاء:</strong>
+                        <p>اكتشاف المشاكل في البيانات قبل ما تسبب مشاكل للـ Agent</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>📝 توثيق واضح:</strong>
+                        <p>كل مطور يشوف الكود يفهم بالظبط إيه البيانات المطلوبة</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>🔄 سهولة الصيانة:</strong>
+                        <p>لو عايز تغير بنية البيانات، تعرف تأثيرها على النظام كله</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔧 مكونات Schema المتقدم</h2>
+            <div class="card-content">
+                <div class="schema-structure">
+                    <h3>📊 العناصر الأساسية:</h3>
+                    
+                    <div class="schema-field">
+                        <strong>🏷️ Field Types (أنواع الحقول):</strong>
+                        <p>تحديد نوع البيانات - str للنصوص، int للأرقام، List للقوائم، bool للصح/خطأ، إلخ.</p>
+                    </div>
+                    
+                    <div class="schema-field">
+                        <strong>📏 Validation Rules (قواعد التحقق):</strong>
+                        <p>شروط لازم البيانات تحققها - زي الحد الأدنى والأقصى للطول أو القيمة.</p>
+                    </div>
+                    
+                    <div class="schema-field">
+                        <strong>🔧 Default Values (القيم الافتراضية):</strong>
+                        <p>قيم تتحط تلقائياً لو المستخدم مدخلش حاجة في الحقل ده.</p>
+                    </div>
+                    
+                    <div class="schema-field">
+                        <strong>📝 Descriptions (الأوصاف):</strong>
+                        <p>شرح واضح لكل حقل عشان الـ Agent والمطورين يفهموا الغرض منه.</p>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <code>
+class SearchResultSchema(BaseModel):
+    """Schema لنتائج البحث المرجعة من الـ Agent"""
+    
+    query: str = Field(
+        description="الاستعلام الأصلي من المستخدم"
+    )
+    
+    results: List[DocumentMatch] = Field(
+        description="قائمة بالنتائج المطابقة",
+        min_items=0,
+        max_items=50
+    )
+    
+    total_matches: int = Field(
+        description="العدد الكلي للنتائج الموجودة",
+        ge=0
+    )
+    
+    search_time: float = Field(
+        description="الوقت المستغرق في البحث بالثواني",
+        gt=0.0
+    )
+    
+    filters_applied: Optional[List[str]] = Field(
+        description="قائمة بالفلاتر المطبقة",
+        default=None
+    )
+                    </code>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🚨 التحقق من صحة البيانات</h2>
+            <div class="card-content">
+                <div class="validation-section">
+                    <h3>🔍 أنواع التحقق:</h3>
+                    
+                    <div class="validation-rule">
+                        <strong>📏 Length Validation:</strong>
+                        <p>التأكد من طول النصوص - مثلاً العنوان لازم يكون أقل من 200 حرف</p>
+                    </div>
+                    
+                    <div class="validation-rule">
+                        <strong>🔢 Range Validation:</strong>
+                        <p>التأكد من نطاق الأرقام - مثلاً درجة الثقة لازم تكون بين 0 و 1</p>
+                    </div>
+                    
+                    <div class="validation-rule">
+                        <strong>📧 Format Validation:</strong>
+                        <p>التأكد من صيغة البيانات - مثلاً البريد الإلكتروني لازم يكون صيغة صحيحة</p>
+                    </div>
+                    
+                    <div class="validation-rule">
+                        <strong>✅ Required Fields:</strong>
+                        <p>التأكد من وجود الحقول الإجبارية - مثلاً المحتوى لازم يكون موجود</p>
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>🚪 تشبيه البواب الأمني:</h3>
+                    <p>الـ Schema زي البواب الأمني قدام المبنى - مش بيسمح لأي حد يدخل غير لو معاه الأوراق الصحيحة بالشكل المطلوب. لو حد جي بهوية منتهية الصلاحية أو مكتوب عليها بيانات غلط، البواب مش هيسمحله يدخل!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🏗️ Schemas للـ Agent Tools</h2>
+            <div class="card-content">
+                <div class="schema-structure">
+                    <h3>🛠️ تنظيم أدوات الـ Agent:</h3>
+                    
+                    <div class="code-card">
+                        <code>
+class SearchToolInput(BaseModel):
+    """Schema للبيانات الداخلة لأداة البحث"""
+    
+    query: str = Field(
+        description="نص الاستعلام للبحث عنه"
+    )
+    
+    max_results: int = Field(
+        description="أقصى عدد نتائج مطلوب",
+        default=10,
+        ge=1,
+        le=100
+    )
+    
+    filter_by_date: Optional[str] = Field(
+        description="تاريخ للفلترة بصيغة YYYY-MM-DD",
+        default=None
+    )
+    
+    include_metadata: bool = Field(
+        description="هل نشمل الـ metadata في النتائج؟",
+        default=True
+    )
+
+class SearchToolOutput(BaseModel):
+    """Schema للبيانات الخارجة من أداة البحث"""
+    
+    success: bool = Field(
+        description="هل العملية نجحت؟"
+    )
+    
+    results: List[SearchResult] = Field(
+        description="النتائج المرجعة"
+    )
+    
+    error_message: Optional[str] = Field(
+        description="رسالة الخطأ لو حصل مشكلة",
+        default=None
+    )
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🆚 مع وبدون Schemas</h2>
+            <div class="card-content">
+                <div class="comparison-section">
+                    <h3>📊 المقارنة:</h3>
+                    
+                    <div class="comparison-item">
+                        <strong>❌ بدون Schemas:</strong>
+                        <p>• البيانات ممكن تيجي بأي شكل • أخطاء كتير في وقت التشغيل • صعوبة في فهم المطلوب • مشاكل في التكامل بين أجزاء النظام</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>✅ مع Schemas:</strong>
+                        <p>• البيانات منظمة ومضمونة • أخطاء أقل وتكتشف بدري • وضوح في المطلوب • سهولة في الصيانة والتطوير</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <h3>💡 النتيجة:</h3>
+                    <p>استخدام Pydantic Schemas مش مجرد "nice to have" - ده ضرورة حقيقية لأي نظام Agent محترف. بيوفر عليك مشاكل كتيرة وبيخلي النظام أكثر استقراراً وسهولة في الصيانة.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔄 التكامل مع باقي النظام</h2>
+            <div class="card-content">
+                <div class="schema-structure">
+                    <h3>🌐 الربط الشامل:</h3>
+                    
+                    <div class="schema-field">
+                        <strong>مع VectorStoreInfo:</strong>
+                        <p>الـ Schemas بتحدد بنية الـ metadata اللي الـ VectorStoreInfo بيصفها</p>
+                    </div>
+                    
+                    <div class="schema-field">
+                        <strong>مع الـ Tools:</strong>
+                        <p>كل أداة من أدوات الـ Agent ليها input و output schemas محددة</p>
+                    </div>
+                    
+                    <div class="schema-field">
+                        <strong>مع الـ Reasoning Loop:</strong>
+                        <p>البيانات المتبادلة في كل مرحلة من الـ loop ليها schema يضمن سلامتها</p>
+                    </div>
+                    
+                    <div class="schema-field">
+                        <strong>مع المستخدم:</strong>
+                        <p>حتى البيانات اللي بتيجي من المستخدم بتتحقق من صحتها قبل المعالجة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="15.1.5_vectorstore_info.html" class="nav-button">⬅️ السابق: VectorStoreInfo Object</a>
+            <a href="15.1.7_function_definitions.html" class="nav-button">التالي: Function Definitions ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

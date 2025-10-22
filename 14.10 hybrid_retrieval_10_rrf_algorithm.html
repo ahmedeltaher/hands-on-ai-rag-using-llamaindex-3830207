@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خوارزمية RRF - Reciprocal Rank Fusion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .formula-box {
+            background: #fff8e1;
+            border: 2px solid #ffa726;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .formula {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #e65100;
+            margin: 15px 0;
+            direction: ltr;
+            text-align: center;
+        }
+        
+        .calculation-example {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .calc-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #4caf50;
+        }
+        
+        .comparison-table {
+            background: #f3e5f5;
+            border: 2px solid #ba68c8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .table-header {
+            font-weight: bold;
+            background: #9c27b0;
+            color: white;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .advantage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .advantage-item {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .parameter-explanation {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 خوارزمية RRF</h1>
+            <p>الجزء العاشر: Reciprocal Rank Fusion بالتفصيل الممل!</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🧮 إيه هي خوارزمية RRF؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🏆 تشبيه مسابقة المواهب:</h3>
+                    <p>تخيل مسابقة مواهب فيها 3 حكام مختلفين. كل حكم بيرتب المتسابقين حسب شوفته. مش بنجمع الدرجات (عشان كل حكم ليه مقياس مختلف)، إنما بنشوف مين اللي جه في مراكز متقدمة عند أكتر من حكم. اللي يجي الأول عند حكم يلاقي نقاط كتير، اللي يجي التاني يلاقي نقاط أقل شوية، وهكذا. في الآخر نجمع النقاط دي عشان نطلع بالترتيب النهائي!</p>
+                </div>
+                
+                <p>RRF (Reciprocal Rank Fusion) هي طريقة ذكية لدمج نتايج عدة محركات بحث مختلفة، من غير ما نحتاج نفهم تفاصيل scoring system بتاع كل محرك. بدل ما نجمع الـ scores (اللي ممكن تكون مختلفة في النطاق والمعنى)، بنركز على الترتيب (ranking) بس.</p>
+                
+                <div class="highlight">
+                    <h3>💡 الفكرة الجوهرية:</h3>
+                    <p>كل ما الوثيقة جاية في مرتبة أحسن في أي نظام بحث، كل ما تاخد نقاط أكتر في النتيجة النهائية. والعكس صحيح!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🧮 المعادلة الرياضية لـ RRF</h2>
+            <div class="card-content">
+                <div class="formula-box">
+                    <h3>📐 المعادلة الأساسية:</h3>
+                    <div class="formula">
+                        RRF(d) = Σ (1 / (k + rank_i(d)))
+                    </div>
+                    <p>حيث d = الوثيقة، rank_i(d) = ترتيب الوثيقة في النظام i، k = ثابت (عادة 60)</p>
+                </div>
+                
+                <div class="parameter-explanation">
+                    <h3>🔤 شرح المعادلة:</h3>
+                    
+                    <div class="calc-step">
+                        <strong>d:</strong> الوثيقة اللي بنحسبلها الـ RRF Score
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>rank_i(d):</strong> ترتيب الوثيقة d في نظام البحث رقم i (1 = الأول، 2 = التاني، وهكذا)
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>k:</strong> ثابت للتنظيم (عادة 60)، كل ما زاد كل ما قل تأثير الفروق في الترتيب
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>Σ:</strong> مجموع النقاط من كل أنظمة البحث
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📊 مثال حسابي شامل</h2>
+            <div class="card-content">
+                <p>تعالوا نشوف مثال عملي بالأرقام عشان نفهم إزاي RRF بتشتغل:</p>
+                
+                <div class="calculation-example">
+                    <h3>📋 البيانات:</h3>
+                    <p>عندنا 4 وثائق (A, B, C, D) ونظامين بحث (Vector Search و BM25)، وقيمة k = 60:</p>
+                    
+                    <div class="comparison-table">
+                        <div class="table-row table-header">
+                            <div>الوثيقة</div>
+                            <div>ترتيب Vector</div>
+                            <div>ترتيب BM25</div>
+                            <div>RRF Score</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div>الوثيقة A</div>
+                            <div>1</div>
+                            <div>3</div>
+                            <div>?</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div>الوثيقة B</div>
+                            <div>2</div>
+                            <div>1</div>
+                            <div>?</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div>الوثيقة C</div>
+                            <div>3</div>
+                            <div>2</div>
+                            <div>?</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div>الوثيقة D</div>
+                            <div>4</div>
+                            <div>4</div>
+                            <div>?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calculation-example">
+                    <h3>🧮 الحسابات التفصيلية:</h3>
+                    
+                    <div class="calc-step">
+                        <strong>الوثيقة A:</strong>
+                        <p>RRF(A) = 1/(60+1) + 1/(60+3) = 1/61 + 1/63 = 0.0164 + 0.0159 = 0.0323</p>
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>الوثيقة B:</strong>
+                        <p>RRF(B) = 1/(60+2) + 1/(60+1) = 1/62 + 1/61 = 0.0161 + 0.0164 = 0.0325</p>
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>الوثيقة C:</strong>
+                        <p>RRF(C) = 1/(60+3) + 1/(60+2) = 1/63 + 1/62 = 0.0159 + 0.0161 = 0.0320</p>
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>الوثيقة D:</strong>
+                        <p>RRF(D) = 1/(60+4) + 1/(60+4) = 1/64 + 1/64 = 0.0156 + 0.0156 = 0.0312</p>
+                    </div>
+                </div>
+                
+                <div class="calculation-example">
+                    <h3>🏆 النتيجة النهائية:</h3>
+                    
+                    <div class="comparison-table">
+                        <div class="table-row table-header">
+                            <div>الترتيب النهائي</div>
+                            <div>الوثيقة</div>
+                            <div>RRF Score</div>
+                            <div>التفسير</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div>1</div>
+                            <div>B</div>
+                            <div>0.0325</div>
+                            <div>متفوقة في المجموع</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div>2</div>
+                            <div>A</div>
+                            <div>0.0323</div>
+                            <div>ممتازة في Vector</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div>3</div>
+                            <div>C</div>
+                            <div>0.0320</div>
+                            <div>متوسطة في الاتنين</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div>4</div>
+                            <div>D</div>
+                            <div>0.0312</div>
+                            <div>ضعيفة في الاتنين</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 ليه RRF ذكية كده؟</h2>
+            <div class="card-content">
+                <div class="advantage-grid">
+                    <div class="advantage-item">
+                        <strong>🎭 مستقلة عن الـ Scores:</strong>
+                        <p>مش محتاجة تفهم معنى أو نطاق الـ scores من كل نظام. بتشتغل على الترتيب بس.</p>
+                    </div>
+                    
+                    <div class="advantage-item">
+                        <strong>⚖️ عدالة في التقييم:</strong>
+                        <p>كل نظام بحث ليه نفس الوزن في التأثير على النتيجة النهائية.</p>
+                    </div>
+                    
+                    <div class="advantage-item">
+                        <strong>🔨 بساطة التطبيق:</strong>
+                        <p>مش محتاجة معايرة معقدة أو ضبط معاملات كتير.</p>
+                    </div>
+                    
+                    <div class="advantage-item">
+                        <strong>📈 مقاومة للاختلافات:</strong>
+                        <p>لو نظام واحد جاب نتايج غريبة، الأنظمة التانية هتعدل النتيجة.</p>
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>🧠 الذكاء الخفي في RRF:</h3>
+                    <p>الخوارزمية بتفهم إن الفرق بين المركز الأول والتاني مهم أكتر من الفرق بين المركز العاشر والحداشر. ده عشان كده الـ reciprocal (المقلوب) بيدي وزن أكبر للمراكز المتقدمة!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⚙️ تأثير معامل k</h2>
+            <div class="card-content">
+                <div class="parameter-explanation">
+                    <h3>🎛️ إيه دور الـ k؟</h3>
+                    
+                    <div class="calc-step">
+                        <strong>k صغير (مثلاً 10):</strong>
+                        <p>الفروق في الترتيب تأثيرها كبير. المركز الأول يفرق كتير عن المركز التاني.</p>
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>k كبير (مثلاً 100):</strong>
+                        <p>الفروق في الترتيب تأثيرها أقل. المراكز قريبة من بعض في النتيجة.</p>
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>k = 60 (القيمة المعيارية):</strong>
+                        <p>توازن كويس بين الحساسية للترتيب والاستقرار في النتايج.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <h3>💡 نصيحة عملية:</h3>
+                    <p>ابدأ بـ k = 60 واختبر النتايج. لو عايز المراكز المتقدمة تفرق أكتر، قلل k. لو عايز توزيع أكتر عدالة، زود k.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🚀 مميزات وعيوب RRF</h2>
+            <div class="card-content">
+                <div class="calculation-example">
+                    <h3>✅ المميزات:</h3>
+                    
+                    <div class="calc-step">
+                        <strong>سهولة التطبيق:</strong> مش محتاجة فهم عميق لكل نظام بحث
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>أداء ثابت:</strong> نتايج مستقرة ومتوقعة في معظم الحالات
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>مرونة:</strong> تشتغل مع أي عدد من أنظمة البحث
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>عدالة:</strong> كل نظام ليه نفس الفرصة في التأثير
+                    </div>
+                </div>
+                
+                <div class="parameter-explanation">
+                    <h3>⚠️ العيوب والتحديات:</h3>
+                    
+                    <div class="calc-step">
+                        <strong>تجاهل قوة الـ Scores:</strong> ممكن نضيع معلومات مفيدة من الـ confidence scores
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>صعوبة التخصيص:</strong> مش سهل نعطي وزن أكبر لنظام معين
+                    </div>
+                    
+                    <div class="calc-step">
+                        <strong>حساسية للترتيب:</strong> لو نظام واحد غلط في الترتيب، هيأثر على النتيجة
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <h3>🎯 الخلاصة العملية:</h3>
+                    <p>RRF اختيار ممتاز لما تكون عايز حل بسيط وفعال لدمج نتايج بحث متعددة، خاصة لما مش عارف إيه أحسن وزن لكل نظام!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="hybrid_retrieval_09_fusion_modes.html" class="nav-button">⬅️ السابق: أنماط الدمج</a>
+            <a href="hybrid_retrieval_11_final_implementation.html" class="nav-button">التالي: التطبيق النهائي ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

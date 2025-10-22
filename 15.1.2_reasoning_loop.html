@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15.1.2 - Reasoning Loop والأدوات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .reasoning-steps {
+            background: #e8f4fd;
+            border: 2px solid #3182ce;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .step-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #3182ce;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tools-section {
+            background: #fef7cd;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tool-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Reasoning Loop والأدوات</h1>
+            <p>الفصل 15.1.2: فهم عقل الـ Agent - إزاي بيفكر ويقرر؟</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔄 إيه هو Reasoning Loop؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🧩 تشبيه حل الألغاز:</h3>
+                    <p>تخيل إنك بتحل لغز معقد. إنت مش بتاخد خطوة واحدة وتخلص، إنت بتفكر: "إيه اللي عندي؟ إيه اللي محتاجه؟ إيه أحسن خطوة ممكن أعملها دلوقتي؟" وبعدين تنفذ الخطوة دي وتفكر تاني. ده بالضبط الـ Reasoning Loop!</p>
+                </div>
+                
+                <p>الـ Reasoning Loop هو القلب النابض للـ Data Agent. هو العملية العقلية اللي الـ Agent بيستخدمها عشان يقرر إيه اللي هيعمله في كل خطوة. مش مجرد تنفيذ أعمى للتعليمات، ده تفكير حقيقي ومنطقي.</p>
+                
+                <div class="highlight">
+                    <h3>🎯 الهدف الأساسي:</h3>
+                    <p>الـ Reasoning Loop بيخلي الـ Agent يفكر زي الإنسان: يحلل المشكلة، يختار الحل المناسب، وينفذه بالطريقة الصحيحة.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🎯 مكونات الـ Reasoning Loop</h2>
+            <div class="card-content">
+                <div class="reasoning-steps">
+                    <h3>🔍 خطوات التفكير:</h3>
+                    
+                    <div class="step-item">
+                        <strong>1. فهم المهمة:</strong>
+                        <p>الـ Agent بيحلل السؤال أو المهمة اللي جاتله ويفهم إيه المطلوب منه بالضبط.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>2. تحديد الأدوات المطلوبة:</strong>
+                        <p>من بين كل الأدوات المتاحة، بيختار إيه الأدوات اللي محتاجها عشان ينجز المهمة دي.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>3. ترتيب الخطوات:</strong>
+                        <p>بيقرر إيه الترتيب الصحيح لاستخدام الأدوات. يعني إيه اللي يعمله الأول وإيه اللي يعمله بعدين.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>4. تحديد المعاملات:</strong>
+                        <p>لكل أداة، بيحدد إيه المعاملات أو الإعدادات اللي محتاجها عشان تشتغل صح.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>5. تقييم النتايج:</strong>
+                        <p>بعد كل خطوة، بيشوف هل النتيجة كويسة ولا محتاج يعدل في الخطة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🛠️ الأدوات (Tools) في النظام</h2>
+            <div class="card-content">
+                <div class="tools-section">
+                    <h3>🧰 صندوق أدوات الـ Agent:</h3>
+                    
+                    <div class="tool-item">
+                        <strong>🔍 أدوات البحث واسترجاع البيانات:</strong>
+                        <p>زي المكتبة الرقمية - بتدور في البيانات وترجع أحسن النتايج المتاحة.</p>
+                    </div>
+                    
+                    <div class="tool-item">
+                        <strong>🌐 أدوات الـ APIs:</strong>
+                        <p>عشان يتصل بخدمات خارجية ويجيب معلومات من الإنترنت أو قواعد بيانات بعيدة.</p>
+                    </div>
+                    
+                    <div class="tool-item">
+                        <strong>⚙️ أدوات المعالجة المعقدة:</strong>
+                        <p>تحليل النصوص، معالجة الصور، حسابات رياضية معقدة، وحاجات متقدمة تانية.</p>
+                    </div>
+                    
+                    <div class="tool-item">
+                        <strong>💾 أدوات التخزين والذاكرة:</strong>
+                        <p>عشان يحفظ المعلومات المهمة ويرجعلها تاني لما يحتاجها.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🤝 التفاعل الذكي</h2>
+            <div class="card-content">
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <strong>🎭 التكيف مع السياق:</strong>
+                        <p>نفس الأداة ممكن تستخدم بطريقة مختلفة حسب السؤال والسياق.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>🔄 التعلم من الأخطاء:</strong>
+                        <p>لو حاجة مشيتش صح، بيحاول طريقة تانية أو يعدل في النهج.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>⚡ التحسين المستمر:</strong>
+                        <p>كل ما يستخدم أكتر، كل ما بيبقى أسرع وأدق في اتخاذ القرارات.</p>
+                    </div>
+                    
+                    <div class="comparison-item">
+                        <strong>🎯 الدقة في الاختيار:</strong>
+                        <p>مش بيستخدم كل الأدوات، بيختار بس اللي محتاجه فعلاً للمهمة.</p>
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>👨‍🍳 مثال الطباخ الماهر:</h3>
+                    <p>تخيل طباخ محترف في المطبخ. عنده أدوات كتير: سكاكين، مقالي، توابل، etc. بس هو مش بيستخدم كل حاجة في كل طبخة. بيشوف إيه اللي هيطبخه وبناء عليه بيختار الأدوات المناسبة ويرتب خطوات الطبخ. ده اللي الـ Agent بيعمله بالضبط!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🌟 ليه الـ Reasoning Loop مهم؟</h2>
+            <div class="card-content">
+                <div class="reasoning-steps">
+                    <h3>💡 الأهمية الحقيقية:</h3>
+                    
+                    <div class="step-item">
+                        <strong>الذكاء الاصطناعي الحقيقي:</strong>
+                        <p>بدل الأتمتة البسيطة، ده ذكاء حقيقي يقدر يتعامل مع المواقف الغير متوقعة.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>الكفاءة والسرعة:</strong>
+                        <p>بيوفر وقت ومجهود عشان مش بيجرب كل حاجة، بيختار الحل الأمثل من الأول.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>التعامل مع التعقيد:</strong>
+                        <p>يقدر يحل مشاكل معقدة محتاجة خطوات متعددة ومترابطة.</p>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>المرونة والتكيف:</strong>
+                        <p>لو البيانات اتغيرت أو المتطلبات اختلفت، يقدر يعدل في النهج تلقائياً.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="15.1.1_agentic_rag_intro.html" class="nav-button">⬅️ السابق: مقدمة Agentic RAG</a>
+            <a href="15.1.3_setup_imports.html" class="nav-button">التالي: الإعداد والـ Imports ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>

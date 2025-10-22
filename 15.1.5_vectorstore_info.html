@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15.1.5 - VectorStoreInfo Object</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            color: #34495e;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+        
+        .code-card {
+            background: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            direction: ltr;
+            text-align: left;
+            overflow-x: auto;
+        }
+        
+        .code-card code {
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .vectorstore-structure {
+            background: #e0f2fe;
+            border: 2px solid #0277bd;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .info-property {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #0277bd;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .analogy-box {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .agent-interaction {
+            background: #fef7e0;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .interaction-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .benefit-item {
+            background: #f0fdf4;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 VectorStoreInfo Object</h1>
+            <p>الفصل 15.1.5: دليل البحث الذكي للـ Agent</p>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🗂️ إيه هو VectorStoreInfo؟</h2>
+            <div class="card-content">
+                <div class="analogy-box">
+                    <h3>🗺️ تشبيه خريطة المكتبة:</h3>
+                    <p>تخيل إنك داخل مكتبة ضخمة فيها ملايين الكتب، وعايز تدور على معلومة معينة. إيه اللي هيساعدك؟ الفهرس! الفهرس ده مش بس بيقولك إيه موجود، ده بيقولك إزاي تدور، وإيه أحسن طريقة للبحث، وإيه نوع المعلومات اللي ممكن تلاقيها. ده بالظبط دور VectorStoreInfo!</p>
+                </div>
+                
+                <p>الـ VectorStoreInfo هو زي "دليل الإرشادات" للـ Agent. بيقوله إيه اللي موجود في قاعدة البيانات، وإزاي يدور فيها، وإيه أحسن استراتيجيات البحث اللي يستخدمها.</p>
+                
+                <div class="code-card">
+                    <code>
+# إنشاء VectorStoreInfo للمستندات
+vector_store_info = VectorStoreInfo(
+    content_info="خلاصة معلومات مهمة من مجموعة مستندات",
+    metadata_info=[
+        MetadataInfo(
+            name="file_name",
+            type="str", 
+            description="اسم الملف المصدر"
+        ),
+        MetadataInfo(
+            name="creation_date",
+            type="str",
+            description="تاريخ إنشاء المستند"
+        )
+    ]
+)
+                    </code>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🏗️ مكونات VectorStoreInfo</h2>
+            <div class="card-content">
+                <div class="vectorstore-structure">
+                    <h3>📝 المكونات الأساسية:</h3>
+                    
+                    <div class="info-property">
+                        <strong>🔍 Content Info:</strong>
+                        <p>وصف عام لنوع المحتوى الموجود في قاعدة البيانات. زي ما تقول للـ Agent "إنت هتدور في مستندات تقنية عن الذكاء الاصطناعي" أو "ده أرشيف من المراسلات التجارية".</p>
+                    </div>
+                    
+                    <div class="info-property">
+                        <strong>🏷️ Metadata Info:</strong>
+                        <p>قائمة تفصيلية بكل الـ metadata المتاحة مع كل مستند - زي اسم الملف، التاريخ، المؤلف، النوع، الموضوع، إلخ.</p>
+                    </div>
+                    
+                    <div class="info-property">
+                        <strong>📋 Schema Information:</strong>
+                        <p>شرح تفصيلي لبنية البيانات وأنواعها - إيه اللي string وإيه اللي date وإيه اللي number.</p>
+                    </div>
+                    
+                    <div class="info-property">
+                        <strong>🔧 Search Capabilities:</strong>
+                        <p>إيه أنواع البحث المتاحة - البحث بالمحتوى، البحث بالكلمات المفتاحية، البحث بالتاريخ، إلخ.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🤖 إزاي الـ Agent بيستخدم المعلومات دي؟</h2>
+            <div class="card-content">
+                <div class="agent-interaction">
+                    <h3>🎯 عملية اتخاذ القرار:</h3>
+                    
+                    <div class="interaction-step">
+                        <strong>الخطوة 1: قراءة السؤال:</strong>
+                        <p>المستخدم يسأل سؤال زي "عايز أعرف عن التطورات الأخيرة في الـ Machine Learning"</p>
+                    </div>
+                    
+                    <div class="interaction-step">
+                        <strong>الخطوة 2: استشارة VectorStoreInfo:</strong>
+                        <p>الـ Agent يشوف إيه المتاح: "آه، في metadata للتاريخ، وفي تصنيف للمواضيع، وفي كلمات مفتاحية"</p>
+                    </div>
+                    
+                    <div class="interaction-step">
+                        <strong>الخطوة 3: تحديد استراتيجية البحث:</strong>
+                        <p>"هدور بالكلمات المفتاحية 'Machine Learning' مع تصفية بالتاريخ للسنة الأخيرة"</p>
+                    </div>
+                    
+                    <div class="interaction-step">
+                        <strong>الخطوة 4: تنفيذ البحث:</strong>
+                        <p>استخدام أحسن طريقة بحث بناء على المعلومات المتاحة</p>
+                    </div>
+                </div>
+                
+                <div class="analogy-box">
+                    <h3>🧭 تشبيه البوصلة الذكية:</h3>
+                    <p>الـ VectorStoreInfo زي البوصلة الذكية اللي مش بس بتوريك الاتجاه، ده كمان بتقولك إيه أحسن طريق تاخده، وإيه العوائق اللي ممكن تقابلك، وإيه الإمكانيات المتاحة في كل طريق. كده الـ Agent مش بيخبط خبط عشوائي!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📋 MetadataInfo بالتفصيل</h2>
+            <div class="card-content">
+                <div class="vectorstore-structure">
+                    <h3>🔍 مكونات كل MetadataInfo:</h3>
+                    
+                    <div class="info-property">
+                        <strong>📛 Name (الاسم):</strong>
+                        <p>الاسم الفعلي للـ metadata - زي "file_name" أو "author" أو "creation_date"</p>
+                    </div>
+                    
+                    <div class="info-property">
+                        <strong>🏷️ Type (النوع):</strong>
+                        <p>نوع البيانات - str للنصوص، int للأرقام، date للتواريخ، bool للصح/خطأ</p>
+                    </div>
+                    
+                    <div class="info-property">
+                        <strong>📝 Description (الوصف):</strong>
+                        <p>شرح واضح للـ Agent عن إيه اللي الحقل ده بيمثله وإزاي يستخدمه في البحث</p>
+                    </div>
+                </div>
+                
+                <div class="code-card">
+                    <code>
+# مثال متقدم لـ MetadataInfo
+metadata_info_list = [
+    MetadataInfo(
+        name="document_type",
+        type="str",
+        description="نوع المستند - تقرير، مقال، دراسة، إلخ"
+    ),
+    MetadataInfo(
+        name="confidence_score", 
+        type="float",
+        description="درجة الثقة في المحتوى من 0.0 إلى 1.0"
+    ),
+    MetadataInfo(
+        name="keywords",
+        type="list[str]", 
+        description="قائمة بالكلمات المفتاحية المستخرجة"
+    ),
+    MetadataInfo(
+        name="language",
+        type="str",
+        description="لغة المستند - ar, en, fr, إلخ"
+    )
+]
+                    </code>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🌟 الفوائد العملية</h2>
+            <div class="card-content">
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <strong>🎯 دقة في البحث:</strong>
+                        <p>الـ Agent يعرف بالظبط إيه اللي يدور عليه وفين يدور</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>⚡ سرعة في النتائج:</strong>
+                        <p>مش بيضيع وقت في بحث عشوائي، ده بيروح للهدف على طول</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>🧠 ذكاء في الاختيار:</strong>
+                        <p>يختار أحسن استراتيجية بحث بناء على نوع السؤال</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>📊 فلترة متقدمة:</strong>
+                        <p>يقدر يرشح النتائج بناء على معايير متعددة</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>🔄 مرونة في التعامل:</strong>
+                        <p>يتكيف مع أنواع مختلفة من الاستعلامات والاحتياجات</p>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <strong>🎨 تخصيص النتائج:</strong>
+                        <p>يرجع النتائج بالشكل اللي يناسب المستخدم</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔗 الربط مع باقي النظام</h2>
+            <div class="card-content">
+                <div class="agent-interaction">
+                    <h3>🌐 التكامل الشامل:</h3>
+                    
+                    <div class="interaction-step">
+                        <strong>مع الـ Reasoning Loop:</strong>
+                        <p>يساعد الـ Agent يخطط لاستراتيجية البحث قبل ما يبدأ</p>
+                    </div>
+                    
+                    <div class="interaction-step">
+                        <strong>مع الـ Tools:</strong>
+                        <p>يحدد إيه الأدوات المناسبة للبحث بناء على المعلومات المتاحة</p>
+                    </div>
+                    
+                    <div class="interaction-step">
+                        <strong>مع الـ Vector Store:</strong>
+                        <p>يوجه عملية البحث في قاعدة البيانات الشعاعية بكفاءة</p>
+                    </div>
+                    
+                    <div class="interaction-step">
+                        <strong>مع النتائج:</strong>
+                        <p>يساعد في تنسيق وترتيب النتائج بالشكل الأنسب</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="15.1.4_metadata_transformations.html" class="nav-button">⬅️ السابق: Metadata والـ Transformations</a>
+            <a href="15.1.6_pydantic_schemas.html" class="nav-button">التالي: Pydantic Schemas ⬅️</a>
+        </div>
+    </div>
+</body>
+</html>
