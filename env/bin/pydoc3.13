@@ -1,0 +1,5 @@
+#!/Users/I550080/hands-on-ai-rag-using-llamaindex-3830207/env/bin/python3.13
+
+import pydoc
+if __name__ == '__main__':
+    pydoc.cli()

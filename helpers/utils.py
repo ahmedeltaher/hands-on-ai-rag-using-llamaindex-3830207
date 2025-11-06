@@ -7,17 +7,11 @@ from IPython.display import Markdown, display
 from qdrant_client import QdrantClient, AsyncQdrantClient
 from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.core.ingestion import IngestionPipeline
-from llama_index.core.query_pipeline import QueryPipeline
+from llama_index.core.workflow import Workflow, step, StartEvent, StopEvent
 from llama_index.core.settings import Settings
 from llama_index.core.storage.docstore import SimpleDocumentStore
 from llama_index.embeddings.cohere import CohereEmbedding
-from llama_index.embeddings.openai import OpenAIEmbedding
-
-from llama_index.embeddings.fastembed import FastEmbedEmbedding
-from llama_index.llms.cohere import Cohere
-from llama_index.llms.openai import OpenAI
-from llama_index.llms.mistralai import MistralAI
-
+from llama_index.llms.ollama import Ollama
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 
 def setup_llm(provider, model, api_key, **kwargs):
@@ -28,31 +22,23 @@ def setup_llm(provider, model, api_key, **kwargs):
     - api_key (str): The API key for authenticating with the LLM service.
     - model (str): The model identifier for the LLM service.
     """
-        
-    if provider == "cohere":
-        Settings.llm = Cohere(model=model, api_key=api_key, **kwargs)
-    elif provider == "openai":
-        Settings.llm = OpenAI(model=model, api_key=api_key, **kwargs)
-    elif provider == "mistral":
-        Settings.llm = MistralAI(model=model, api_key=api_key, **kwargs)
+    if provider == "ollama":
+        Settings.llm = Ollama(model="qwen2.5:7b",request_timeout=120.0,context_window=8000)
     else:
-        raise ValueError(f"Invalid provider: {provider}. Pick one of 'cohere', 'openai', or 'mistral'.")
+        Settings.llm = Ollama(model="qwen2.5:7b",request_timeout=120.0,context_window=8000)
 
 def setup_embed_model(provider, **kwargs):
     """
     Configures the embedding model settings.
 
     Parameters:
-    - model_name (str): The model identifier for the embedding service.
+    - provider (str): The embedding provider ('cohere' is the only supported option)
+    - **kwargs: Additional keyword arguments including api_key
     """
     if provider == "cohere":
         Settings.embed_model = CohereEmbedding(model_name="embed-english-v3.0", **kwargs)
-    elif provider == "openai":
-        Settings.embed_model = OpenAIEmbedding(model_name="text-embedding-3-large", **kwargs)
-    elif provider == "fastembed":
-        Settings.embed_model = FastEmbedEmbedding(model_name="BAAI/bge-base-en-v1.5", **kwargs)
     else:
-        raise ValueError(f"Invalid provider: {provider}. Pick one of 'cohere', 'fastembed', or 'openai'.")
+        raise ValueError(f"Invalid provider: {provider}. Currently only 'cohere' is supported.")
 
 def setup_vector_store(qdrant_url, qdrant_api_key, collection_name, enable_hybrid=False):
     """
@@ -85,7 +71,7 @@ def get_documents_from_docstore(persist_dir):
     documents = list(docstore.docs.values())
     return documents
 
-def create_index(from_where, embed_model=Settings.embed_model, **kwargs):
+def create_index(from_where, embed_model=None, **kwargs):
     """
     Creates and returns a VectorStoreIndex instance configured with the specified parameters.
 
@@ -99,6 +85,10 @@ def create_index(from_where, embed_model=Settings.embed_model, **kwargs):
     Returns:
     - VectorStoreIndex: An instance of VectorStoreIndex configured with the specified Qdrant client and vector store.
     """
+    # Use the passed embed_model or fall back to Settings.embed_model
+    if embed_model is None:
+        embed_model = Settings.embed_model
+    
     if from_where=="vector_store":
         index = VectorStoreIndex.from_vector_store(embed_model=embed_model, **kwargs)
         return index
@@ -131,23 +121,48 @@ def ingest(transformations, documents, **kwargs):
     
     return pipeline.run(nodes=documents)
 
-def create_query_pipeline(chain, verbose=True):
+def create_query_workflow(query_engine, verbose=True):
     """
-    Creates and returns a QueryPipeline instance configured with the specified chain of components.
+    Creates and returns a Workflow instance configured with a query engine.
 
     Parameters:
-    - chain (list): A list of components to be used in the pipeline. Each component in the list should be an instance of a module that can be used in a QueryPipeline (e.g., LLMs, query engines).
-    - verbose (bool): If True, enables verbose output for the pipeline.
+    - query_engine: The query engine to be used in the workflow.
+    - verbose (bool): If True, enables verbose output for the workflow.
 
     Returns:
-    - QueryPipeline: An instance of QueryPipeline configured with the specified chain of components.
+    - Workflow: An instance of Workflow configured with the specified query engine.
     """
-    pipeline = QueryPipeline(
-        chain=chain,
-        verbose=verbose
-    )
+    class QueryEvent(StartEvent):
+        input: str
 
-    return pipeline
+    class ResponseEvent(StopEvent):
+        result: str
+
+    class QueryWorkflow(Workflow):
+        def __init__(self, query_engine, **kwargs):
+            super().__init__(**kwargs)
+            self.query_engine = query_engine
+        
+        @step
+        async def run_query(self, ev: QueryEvent) -> ResponseEvent:
+            response = self.query_engine.query(ev.input)
+            return ResponseEvent(result=str(response))
+
+    return QueryWorkflow(query_engine=query_engine, verbose=verbose)
+
+# Keep the old function name for backward compatibility but mark as deprecated
+def create_query_pipeline(chain, verbose=True):
+    """
+    DEPRECATED: Use create_query_workflow instead.
+    QueryPipeline is deprecated in LlamaIndex, use Workflow instead.
+    """
+    print("Warning: create_query_pipeline is deprecated. Use create_query_workflow instead.")
+    # For backward compatibility, assume first item after InputComponent is query_engine
+    if len(chain) >= 2:
+        query_engine = chain[1]  # Assume second item is query_engine
+        return create_query_workflow(query_engine, verbose)
+    else:
+        raise ValueError("Chain must contain at least 2 components for workflow conversion")
 
 def create_query_engine(index, mode, **kwargs):
     """
