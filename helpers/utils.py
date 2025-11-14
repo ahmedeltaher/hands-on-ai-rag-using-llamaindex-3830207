@@ -100,7 +100,7 @@ def create_index(from_where, embed_model=None, **kwargs):
 
 def ingest(transformations, documents, **kwargs):
     """
-    Createsan IngestionPipeline and ingests the documents.
+    Creates an IngestionPipeline and ingests the documents.
 
     Parameters:
     - transformations (list): A list of transformations to apply in the pipeline.
@@ -111,7 +111,7 @@ def ingest(transformations, documents, **kwargs):
         - cache: An instance of an ingestion cache.
 
     Returns:
-    
+    - list: A list of processed nodes
     """
     
     pipeline = IngestionPipeline(
@@ -119,7 +119,7 @@ def ingest(transformations, documents, **kwargs):
         **kwargs
     )
     
-    return pipeline.run(nodes=documents)
+    return pipeline.run(documents=documents)
 
 def create_query_workflow(query_engine, verbose=True):
     """
